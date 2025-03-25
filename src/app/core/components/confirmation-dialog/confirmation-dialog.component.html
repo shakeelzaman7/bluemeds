@@ -1,0 +1,21 @@
+<div class="flex items-center" [class]="!showTitle ? 'justify-end' : 'justify-between'">
+  <div *ngIf="showTitle">Confirmar</div>
+  <button type="button" mat-icon-button (click)="close(null)" tabindex="-1">
+      <mat-icon class="text-[#707070]" [icIcon]="icClose"></mat-icon>
+  </button>
+</div>
+
+<div>
+  <p class="text-[#707070] text-center text-base sm:mx-10">{{message}}</p>
+  <p *ngIf="question" class="text-[#2A51A3] text-center text-base sm:mx-10 mt-2">{{question}}</p>
+</div>
+
+
+<div *ngIf="!invStyle" class="text-center mx-auto flex flex-wrap-reverse sm:flex-nowrap justify-center mt-5" style="width: 100%">
+  <button mat-button class="rounded-full text-[#2A51A3] w-48 sm:w-64 px-5 m-1" style="border: 1px solid #2A51A3" (click)="close(false)">{{buttonText_1}}</button>
+  <button mat-button class="rounded-full border-[#2A51A3] w-48 sm:w-64 px-5 m-1 border-2 bg-[#2A51A3] text-white " (click)="close(true)">{{buttonText_2}}</button>
+</div>
+<div *ngIf="invStyle" class="text-center mx-auto flex flex-wrap sm:flex-nowrap justify-center mt-5" style="width: 100%">
+  <button mat-button class="rounded-full border-[#2A51A3] w-48 sm:w-64 px-5 m-1 border-2 bg-[#2A51A3] text-white " (click)="close(false)">{{buttonText_1}}</button>
+  <button mat-button class="rounded-full text-[#2A51A3] w-48 sm:w-64 px-5 m-1" style="border: 1px solid #2A51A3"  (click)="close(true)">{{buttonText_2}}</button>
+</div>

@@ -1,0 +1,82 @@
+.number {
+    span {
+        width: 2em;
+        line-height: 1.9em;
+        font-size: 2em;
+        color: var(--ion-color-tertiary);
+        border: 1px solid #A8A9AB;
+        border-radius: 50%;
+        display: inline-block;
+        background-color: white;
+    }
+
+    span.selected {
+        color: white;
+        border: 1px solid var(--ion-color-tertiary);
+        background-color: var(--ion-color-tertiary);
+    }
+}
+
+h1.selectedText {
+    color: var(--ion-color-tertiary);
+}
+
+.mat-expansion-panel-header {
+  background-color: #f0f9fd;
+}
+
+.mat-expanded:focus {
+  background: #f0f9fd !important;
+}
+
+.example-headers-align .mat-expansion-panel-header-description {
+  justify-content: space-between;
+  align-items: center;
+}
+
+.mat-header-cell {
+  background-color: #36abe0;
+  color: #fff;
+}
+
+.header-columns-custom {
+  background-color: #36abe0;
+  color: #fff;
+}
+
+.needHelpOption {
+  --background: #C5DFF5;
+  --color: #5C84CC;
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+.inputBoxSelect select option {
+  border-bottom: 2px solid #333333;
+}
+
+::ng-deep .mat-radio-checked .mat-radio-outer-circle {
+  border-color: #1C9AD6 !important;
+}
+
+::ng-deep .mat-radio-checked .mat-radio-inner-circle {
+  background-color: #1C9AD6 !important;
+}
+
+::ng-deep .mat-radio-button.mat-accent .mat-radio-ripple .mat-ripple-element {
+  background-color: transparent !important;
+}
+
+::ng-deep .mat-tooltip {
+  font-size: 16px !important;
+}

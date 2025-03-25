@@ -1,0 +1,431 @@
+<ion-header class="force-white">
+  <ion-toolbar class="force-white">
+    <div class="flex items-center px-3" [class]="deliveryItem.id ? 'justify-between' : 'justify-end'">
+      <button *ngIf="deliveryItem.id" (click)="deleteFromList()" [disabled]="deliveryItem.insurance_auth?.configured">
+        <ion-icon slot="icon-only" name="trash-outline" style="font-size: 24px;"></ion-icon>
+      </button>
+      <button (click)="close()">
+        <ion-icon slot="icon-only" name="close-circle-outline" style="font-size: 24px;"></ion-icon>
+      </button>
+    </div>
+  </ion-toolbar>
+</ion-header>
+<ion-content class="ion-padding bg-white overflow-hidden">
+  <ion-grid style="background:white">
+    <ion-row>
+      <ion-col size="12" sizeMd="6">
+        <div class="overflow-clip max-w-xs relative" style="border-radius: 1em; border: 1px solid #c6c9ce">
+          <ion-slides pager="true" [options]="{initialSlide: 0,speed: 400}" #slides>
+            <ng-container *ngFor="let index of [1, 2, 3]">
+              <ion-slide *ngIf="flagShowLoadImages[index - 1]">
+                <img class="" default="/assets/bluemeds/placeholder.png" (error)="validateErrorImage(index - 1)"
+                     [src]="'https://blue-production-s3-public-media.s3.amazonaws.com/productos/' + publication.product.productCode + '_'  + index + '.jpg'"
+                     alt="">
+              </ion-slide>
+            </ng-container>
+            <!-- Si los 3 son falsos -->
+            <ion-slide *ngIf="!flagShowLoadImages[0] && !flagShowLoadImages[1] && !flagShowLoadImages[2]">
+              <img src="/assets/bluemeds/placeholder.png" alt="">
+            </ion-slide>
+          </ion-slides>
+          <button *ngIf="countErrorImages < 2" (click)="nextPrevSlide('prev')" class="absolute left-[-0.5rem] top-[8rem] z-50">
+            <ion-icon name="chevron-back-outline" class="text-[#1C9AD6] text-[2.5rem]"></ion-icon>
+          </button>
+          <button *ngIf="countErrorImages < 2" (click)="nextPrevSlide('next')" class="absolute right-[-0.5rem] top-[8rem] z-50">
+            <ion-icon name="chevron-forward-outline" class="text-[#1C9AD6] text-[2.5rem]"></ion-icon>
+          </button>
+        </div>
+      </ion-col>
+
+      <ion-col size="12" sizeMd="6">
+        <ion-row class="min-h-[2.5em] pl-[0.65rem]">
+          <ion-col class="font-semibold text-lg text-[#2A51A3]"><ion-label>{{publication.product.name}}</ion-label></ion-col>
+        </ion-row>
+
+        <ion-row class="bg-[#F2F3F2] m-0 rounded-t-lg px-2 mt-3"
+                  [class]="{'rounded-b-lg': !showDeliveryData}"
+                  *ngIf="layoutService.isMobile() && delivery_method !== null" (click)="showDeliveryData = !showDeliveryData">
+          <ion-col size="8">
+            <ion-label style="font-weight: 600;">Datos de entrega</ion-label>
+          </ion-col>
+          <ion-col size="4" class="flex justify-end">
+            <button fill="clear">
+              <ion-icon slot="icon-only" [name]="showDeliveryData ? 'chevron-up-outline' : 'chevron-down-outline'" style="font-size: 24px;"></ion-icon>
+            </button>
+          </ion-col>
+        </ion-row>
+
+        <ng-container *ngIf="showDeliveryData">
+          <!-- campos si ha seleccionado periodicamente -->
+          <ion-grid *ngIf="delivery_method == 'by_date'" class="p-0" [class]="{'bg-[#F2F3F2]': layoutService.isMobile()}">
+            <ion-row class="min-h-[2.5em] pl-3 pt-1">
+              <ion-col size="6" class="flex items-center">
+                <ion-label class="text-[#666666]" style="font-weight: 600">
+                  <div class="flex items-center" (click)="tooltipQuantity.toggle()">
+                    <label class="w-[5.5rem] text-base">Cantidad:</label>
+                    <span class="flex items-center">
+                      <mat-icon matTooltip="Es la cantidad de presentaciones que recibirás. Ejemplo: caja, frasco."
+                                svgIcon="exclamation-info" aria-hidden="false" aria-label="Exclamation Info"
+                                #tooltipQuantity="matTooltip"
+                                class="w-4 h-4 ml-1 text-[#1C9AD6]">
+                      </mat-icon>
+                    </span>
+                  </div>
+                </ion-label>
+              </ion-col>
+              <ion-col size="6" class="text-[#888]">
+                <input [(ngModel)]="deliveryItem.quantity" min="1" (input)="calculate_total_savings()" type="number"
+                      class="w-[7rem] border rounded-full py-[0.2rem] pl-[0.90rem] pr-2 outline-none disabled:opacity-[0.8]"
+                      style="box-sizing: border-box"
+                      [class]="flagValidateInputs.quantity ? 'border-[#F44336]' : 'border-[#0038AE]'"
+                      [disabled]="deliveryItem.insurance_auth?.configured"
+                >
+                <div *ngIf="flagValidateInputs.quantity" class="flex items-center mt-1">
+                  <ion-icon name="alert-circle" class="text-[#621B16] font-bold text-base"></ion-icon>
+                  <ion-text class="text-[#621B16] font-bold text-base ml-1">Este campo es obligatorio</ion-text>
+                </div>
+              </ion-col>
+            </ion-row>
+
+            <ion-row class="min-h-[2.5em] pl-3 pt-1">
+              <ion-col size="6" class="flex items-center">
+                <ion-label class="text-[#666666]" style="font-weight: 600">
+                  <div class="flex items-center" (click)="tooltipDay.toggle()">
+                    <label class="w-[5.5rem] text-base">Día de entrega:</label>
+                    <span class="flex items-center">
+                      <mat-icon matTooltip="En este día recibirás siempre tu medicamento."
+                                svgIcon="exclamation-info" aria-hidden="false" aria-label="Exclamation Info"
+                                #tooltipDay="matTooltip"
+                                class="w-4 h-4 ml-1 text-[#1C9AD6]">
+                      </mat-icon>
+                    </span>
+                  </div>
+                </ion-label>
+              </ion-col>
+              <ion-col size="6" class="text-[#888]">
+                <select [(ngModel)]="deliveryItem.delivery_day" (change)="deliveryDayChange()" class="w-[7rem] outline-none border rounded-full py-[0.2rem] px-2 bg-white"
+                        [class]="flagValidateInputs.day ? 'border-[#F44336]' : 'border-[#0038AE]'" [disabled]="deliveryItem.insurance_auth?.configured">
+                  <option *ngFor="let days of daysToSelect" [value]="days">{{days}}</option>
+                  <option *ngIf="deliveryItem.delivery_day === 31" value="31">31</option>
+                </select>
+                <div *ngIf="flagValidateInputs.day" class="flex items-center mt-1">
+                  <ion-icon name="alert-circle" class="text-[#621B16] font-bold text-base"></ion-icon>
+                  <ion-text class="text-[#621B16] font-bold text-base ml-1">Este campo es obligatorio</ion-text>
+                </div>
+              </ion-col>
+            </ion-row>
+
+            <ion-row class="min-h-[2.5em] pl-3 pt-1">
+              <ion-col size="6" class="flex items-center">
+                <ion-label class="text-[#666666]" style="font-weight: 600">
+                  <div class="flex items-center" (click)="tooltipEach.toggle()">
+                    <label class="w-[5.5rem] text-base">Entrega cada:</label>
+                    <span class="flex items-center">
+                      <mat-icon matTooltip="Es cada cuánto deseas que te despachemos tu medicamento."
+                                svgIcon="exclamation-info" aria-hidden="false" aria-label="Exclamation Info"
+                                #tooltipEach="matTooltip"
+                                class="w-4 h-4 ml-1 text-[#1C9AD6]">
+                      </mat-icon>
+                    </span>
+                  </div>
+                </ion-label>
+              </ion-col>
+              <ion-col size="6" class="text-[#888]">
+                <select [(ngModel)]="deliveryItem.each" (change)="changeEach()" name="timeToSelect"
+                        class="w-[7rem] outline-none border rounded-full py-[0.2rem] px-2 bg-white"
+                        [class]="flagValidateInputs.each ? 'border-[#F44336]' : 'border-[#0038AE]'"
+                        [disabled]="deliveryItem.insurance_auth?.configured"
+                >
+                  <option *ngFor="let interval of eachIntervals" [value]="interval.value">{{interval.name}}</option>
+                </select>
+                <div *ngIf="flagValidateInputs.each" class="flex items-center mt-1">
+                  <ion-icon name="alert-circle" class="text-[#621B16] font-bold text-base"></ion-icon>
+                  <ion-text class="text-[#621B16] font-bold text-base ml-1">Este campo es obligatorio</ion-text>
+                </div>
+              </ion-col>
+            </ion-row>
+
+            <ion-row class="min-h-[2.5em] pl-3 pt-1">
+              <ion-col size="6" class="flex items-center">
+                <ion-label class="text-[#666666]" style="font-weight: 600">
+                  <div class="flex items-center" (click)="tooltipDurations.toggle()">
+                    <label class="w-[5.5rem] text-base">Duración:</label>
+                    <span class="flex items-center">
+                      <mat-icon matTooltip="Es el tiempo máximo que recibirás tu medicamento. Puede que sea por un tiempo establecido o indefinidamente."
+                                svgIcon="exclamation-info" aria-hidden="false" aria-label="Exclamation Info"
+                                #tooltipDurations="matTooltip"
+                                class="w-4 h-4 ml-1 text-[#1C9AD6]">
+                      </mat-icon>
+                    </span>
+                  </div>
+                </ion-label>
+              </ion-col>
+              <ion-col size="6" class="text-[#888]">
+                <select [(ngModel)]="deliveryItem.duration" (change)="changeDuration($event)" name="durationToSelect"
+                        class="w-[7rem] outline-none border rounded-full py-[0.2rem] px-2 bg-white"
+                        [class]="flagValidateInputs.duration ? 'border-[#F44336]' : 'border-[#0038AE]'"
+                        [disabled]="deliveryItem.insurance_auth?.configured"
+                >
+                  <option *ngFor="let interval of durationIntervals[deliveryItem.each]" [value]="interval.value">{{interval.name}}</option>
+                  <option value="undefined">Indefinido</option>
+                </select>
+                <div *ngIf="flagValidateInputs.duration" class="flex items-center mt-1">
+                  <ion-icon name="alert-circle" class="text-[#621B16] font-bold text-base"></ion-icon>
+                  <ion-text class="text-[#621B16] font-bold text-base ml-1">Este campo es obligatorio</ion-text>
+                </div>
+              </ion-col>
+            </ion-row>
+
+            <ion-row class="min-h-[2.5em] pl-3 pt-1">
+              <ion-col size="6" class="flex items-center">
+                <ion-label class="text-[#666666]" style="font-weight: 600">
+                  <div class="flex items-center" (click)="tooltipFrom.toggle()">
+                    <label class="w-[5.5rem] text-base">Desde:</label>
+                    <span class="flex items-center">
+                      <mat-icon matTooltip="A partir de esta fecha te empezaremos a entregar tu medicamento."
+                                svgIcon="exclamation-info" aria-hidden="false" aria-label="Exclamation Info"
+                                #tooltipFrom="matTooltip"
+                                class="w-4 h-4 ml-1 text-[#1C9AD6]">
+                      </mat-icon>
+                    </span>
+                  </div>
+                </ion-label>
+              </ion-col>
+              <ion-col size="6" class="text-[#888]">
+                <select [(ngModel)]="deliveryItem.from_date" name="fromToSelect"
+                        class="w-[7rem] outline-none border rounded-full py-[0.2rem] px-2 bg-white"
+                        [disabled]="!deliveryItem.delivery_day || deliveryItem.insurance_auth?.configured"
+                        [class]="flagValidateInputs.from_date ? 'border-[#F44336]' : !deliveryItem.delivery_day ? 'border-gray' : 'border-[#0038AE]'"
+                >
+                  <ng-container *ngIf="fromDateData">
+                    <option *ngFor="let value of fromDateData" [value]="value">{{value}}</option>
+                  </ng-container>
+                </select>
+                <div *ngIf="flagValidateInputs.from_date" class="flex items-center mt-1">
+                  <ion-icon name="alert-circle" class="text-[#621B16] font-bold text-base"></ion-icon>
+                  <ion-text class="text-[#621B16] font-bold text-base ml-1">Este campo es obligatorio</ion-text>
+                </div>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+
+          <!-- campos si ha seleccionado según receta médica -->
+          <ion-grid *ngIf="delivery_method == 'by_recipe'" class="p-0">
+            <ion-row class="min-h-[2.5em] pl-3 pt-1">
+              <ion-col size="6">
+                <ion-label class="text-[#666666]" style="font-weight: 600">
+                  Dosis:
+                </ion-label>
+              </ion-col>
+              <ion-col size="6" class="text-[#888]">
+                <select [(ngModel)]="doseSelected" (change)="selectDoseChange($event)"
+                        class="w-[7rem] outline-none border rounded-full py-[0.2rem] px-2"
+                        [class]="flagValidateInputs.dose ? 'border border-[#F44336]' : 'border border-[#0038AE]'"
+                >
+                  <option *ngFor="let interval of dosageIntervals[publication.product.presentation?.trim()]" [value]="interval.value">
+                    {{interval.name}} {{interval.value > 1 ?
+                    dosageSemantics[publication.product.presentation?.trim()].plural :
+                    dosageSemantics[publication.product.presentation?.trim()].singular}}
+                  </option>
+                  <option [value]="-1">Otro{{ flagOtherDose ? ' - ' + deliveryItem.dose : ''}}</option>
+                </select>
+                <div *ngIf="flagValidateInputs.dose" class="flex items-center mt-1">
+                  <ion-icon name="alert-circle" class="text-[#621B16] font-bold text-base"></ion-icon>
+                  <ion-text class="text-[#621B16] font-bold text-base ml-1">Este campo es obligatorio</ion-text>
+                </div>
+              </ion-col>
+            </ion-row>
+
+            <ion-row class="min-h-[2.5em] pl-3 pt-1">
+              <ion-col size="6">
+                <ion-label class="text-[#666666]" style="font-weight: 600">
+                  Frecuencia:
+                </ion-label>
+              </ion-col>
+              <ion-col size="6" class="text-[#888]">
+                <select [(ngModel)]="deliveryItem.frequency_id" name="timeToSelect"
+                        class="w-[7rem] outline-none border rounded-full py-[0.2rem] px-2"
+                        [class]="flagValidateInputs.frequency ? 'border border-[#F44336]' : 'border border-[#0038AE]'"
+                >
+                  <option *ngFor="let f of frequencies" [value]="f.id">{{f.name}}</option>
+                </select>
+                <div *ngIf="flagValidateInputs.frequency" class="flex items-center mt-1">
+                  <ion-icon name="alert-circle" class="text-[#621B16] font-bold text-base"></ion-icon>
+                  <ion-text class="text-[#621B16] font-bold text-base ml-1">Este campo es obligatorio</ion-text>
+                </div>
+              </ion-col>
+            </ion-row>
+
+            <ion-row class="min-h-[2.5em] pl-3 pt-1">
+              <ion-col size="6">
+                <ion-label class="text-[#666666]" style="font-weight: 600">
+                  <div class="flex items-center" (click)="tooltipCustomDate.toggle()">
+                    <label>Fecha de próxima entrega:</label>
+                    <span class="flex items-center">
+                      <mat-icon matTooltip="En esta fecha te estaremos haciendo la próxima entrega de todos tus medicamentos."
+                                svgIcon="exclamation-info" aria-hidden="false" aria-label="Exclamation Info"
+                                #tooltipCustomDate="matTooltip"
+                                class="w-4 h-4 text-[#1C9AD6]">
+                      </mat-icon>
+                    </span>
+                  </div>
+                </ion-label>
+              </ion-col>
+              <ion-col size="6" class="flex items-center">
+                <mat-form-field style="visibility:hidden;max-height:0;max-width:0;">
+                  <input [min]="minStockDate" [max]="maxStockDate" #dateStock
+                        matInput [(ngModel)]="deliveryItem.stock_date" (click)="picker.open()" [matDatepicker]="picker">
+                </mat-form-field>
+                <mat-datepicker #picker></mat-datepicker>
+
+                <button style="display:block !important; border: 1px solid #2A51A3" (click)="picker.open()"
+                        class="w-[6.5rem] lg:w-[7rem] rounded-full py-[0.2rem] px-2 text-[#666]"
+                        [class]="flagValidateInputs.stock_date ? 'border border-[#F44336]' : 'border border-[#0038AE]'"
+                >
+                  <div class=" flex flex-row items-center justify-center">
+                    <div class="normal-case inline pr-2 text-bluemedsDarkBlue">{{deliveryItem.stock_date != 'Invalid Date' ? formatDate(deliveryItem.stock_date, 'DD/MM/YYYY') : ''}}</div>
+                    <ion-icon name="pencil"></ion-icon>
+                  </div>
+                </button>
+                <div *ngIf="flagValidateInputs.stock_date" class="flex items-center mt-1">
+                  <ion-icon name="alert-circle" class="text-[#621B16] font-bold text-base"></ion-icon>
+                  <ion-text class="text-[#621B16] font-bold text-base ml-1">Este campo es obligatorio</ion-text>
+                </div>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ng-container>
+
+        <ion-row class="bg-[#F2F3F2] m-0 rounded-t-lg px-2 mt-3"
+                  [class]="{'rounded-b-lg': !showPrice}"
+                  *ngIf="layoutService.isMobile()" (click)="showPrice = !showPrice"
+        >
+          <ion-col size="8">
+            <ion-label style="font-weight: 600;">Precios</ion-label>
+          </ion-col>
+          <ion-col size="4" class="flex justify-end">
+            <button fill="clear">
+              <ion-icon slot="icon-only" [name]="showPrice ? 'chevron-up-outline' : 'chevron-down-outline'" style="font-size: 24px;"></ion-icon>
+            </button>
+          </ion-col>
+        </ion-row>
+
+        <ng-container *ngIf="showPrice">
+          <ion-row class="min-h-[2.5em] pl-3 pt-1" [class]="{'bg-[#F2F3F2]': layoutService.isMobile()}">
+            <ion-col size="6"><ion-label class="text-[#666666]" style="font-weight: 600">Precio unitario normal:</ion-label></ion-col>
+            <ion-col size="1" class="text-[#888] text-right">Q </ion-col>
+            <ion-col size="4" class="text-right pr-5"><del class="text-[#888]">{{publication.normalPriceText}}</del></ion-col>
+            <ion-col size="1"></ion-col>
+          </ion-row>
+  
+          <ion-row class="min-h-[2.5em] pl-3 pt-1" [class]="{'bg-[#F2F3F2]': layoutService.isMobile()}">
+            <ion-col size="6"><ion-label class="text-[#666666]" style="font-weight: 600">Precio unitario Bluemeds:</ion-label></ion-col>
+            <ion-col size="1" class="text-[#888] text-right">Q </ion-col>
+            <ion-col size="4" class="text-right pr-5"><ion-text class="text-[#888]">{{showBluemedsPrice() ? publication.bluemedsPriceText : publication.normalPriceText}}</ion-text></ion-col>
+            <ion-col size="1"></ion-col>
+          </ion-row>
+
+          <ng-container *ngIf="deliveryItem?.more_info">
+            <ion-row class="min-h-[2.5em] pl-3 pt-1" [class]="{'bg-[#F2F3F2]': layoutService.isMobile()}">
+              <ion-col size="6"><ion-label class="text-[#666666]" style="font-weight: 600">Total:</ion-label></ion-col>
+              <ion-col size="1" class="text-[#888] text-right">Q </ion-col>
+              <ion-col size="4" class="text-right pr-5"><ion-text class="text-[#888]">{{  portal_monthly_price }}</ion-text></ion-col>
+              <ion-col size="1"></ion-col>
+            </ion-row>
+
+            <ion-row class="min-h-[2.5em] pl-3 pt-1" [class]="{'bg-[#F2F3F2]': layoutService.isMobile()}">
+              <ion-col size="6"><ion-label class="text-[#666666]" style="font-weight: 600">Ahorro total:</ion-label></ion-col>
+              <ion-col size="1" class="text-[#888] text-right">Q </ion-col>
+              <ion-col size="4" class="text-right pr-5"><ion-text class="text-[#888]">{{ monthly_total_savings_calculate }}</ion-text></ion-col>
+              <ion-col size="1"></ion-col>
+            </ion-row>
+  
+            <ion-row class="min-h-[2.5em] pl-3 pt-1" [class]="{'bg-[#F2F3F2]': layoutService.isMobile()}">
+              <ion-col size="6"></ion-col>
+              <ion-col size="1"></ion-col>
+              <ion-col size="5" class="text-left pr-5">
+                <span class="bg-[#E45900] rounded-l-[5px] text-white px-3 pt-[1px] text-bottom hasflag" style="font-weight: 600">
+                  {{ percentage_savings_calculate ? formatPorcentageNumber(percentage_savings_calculate) : '0' }} %
+                </span>
+              </ion-col>
+            </ion-row>
+          </ng-container>
+
+          <ng-container *ngIf="!deliveryItem?.more_info">
+            <ion-row class="min-h-[2.5em] pl-3 pt-1" [class]="{'bg-[#F2F3F2]': layoutService.isMobile()}">
+              <ion-col size="6"><ion-label class="text-[#666666]" style="font-weight: 600">Ahorras:</ion-label></ion-col>
+              <ion-col size="6"><ion-text class="text-[#888]">{{ publication.discountText.includes('Q') ? publication.discountText : 'Q ' + publication.discountText }}</ion-text></ion-col>
+            </ion-row>
+  
+            <ion-row class="min-h-[2.5em] pl-3 pt-1" [class]="{'bg-[#F2F3F2]': layoutService.isMobile()}">
+              <ion-col size="6"></ion-col>
+              <ion-col size="6">
+                <span class="bg-[#E45900] rounded-l-[5px] text-white px-3 pt-[1px] text-bottom hasflag" style="font-weight: 600">
+                  {{ publication.discountPercentage }}%
+                </span>
+              </ion-col>
+            </ion-row>
+          </ng-container>
+        </ng-container>
+
+        <ion-row class="bg-[#F2F3F2] m-0 rounded-t-lg px-2 mt-3"
+                  [class]="{'rounded-b-lg': !showDetails}"
+                  *ngIf="layoutService.isMobile()" (click)="showDetails = !showDetails">
+          <ion-col size="8">
+            <ion-label style="font-weight: 600;">Detalles del medicamento</ion-label>
+          </ion-col>
+          <ion-col size="4" class="flex justify-end">
+            <button fill="clear">
+              <ion-icon slot="icon-only" [name]="showDetails ? 'chevron-up-outline' : 'chevron-down-outline'" style="font-size: 24px;"></ion-icon>
+            </button>
+          </ion-col>
+        </ion-row>
+
+        <ng-container *ngIf="showDetails">
+          <ion-row class="min-h-[2.5em] pl-[0.65rem] pt-1 sm:pt-0.5 m-0" [class]="{'bg-[#F2F3F2]': layoutService.isMobile()}">
+            <ion-col size="6"><ion-label class="text-[#666666]" style="font-weight: 600;">Requiere receta:</ion-label></ion-col>
+            <ion-col size="6" class="text-[#888]" style="text-transform: lowercase">{{publication.product.details.requires_recipe ? 'Si' : 'No' }}</ion-col>
+          </ion-row>
+
+          <ion-row class="min-h-[2.5em] pl-[0.65rem] pt-1 sm:pt-0.5 m-0" [class]="{'bg-[#F2F3F2]': layoutService.isMobile()}">
+            <ion-col size="6"><ion-label class="text-[#666666]" style="font-weight: 600">Presentación:</ion-label></ion-col>
+            <ion-col size="6" class="text-[#888]" style="text-transform: lowercase">{{publication.product.presentation}}</ion-col>
+          </ion-row>
+
+          <ion-row class="min-h-[2.5em] pl-[0.65rem] pt-1 sm:pt-0.5" [class]="{'bg-[#F2F3F2]': layoutService.isMobile()}">
+            <ion-col size="6"><ion-label class="text-[#666666]" style="font-weight: 600">Concentración:</ion-label></ion-col>
+            <ion-col size="6" class="text-[#888]" style="text-transform: lowercase">{{publication.product.details.concentration}}</ion-col>
+          </ion-row>
+  
+          <ion-row class="min-h-[2.5em] pl-[0.65rem] pt-1 sm:pt-0.5" [class]="{'bg-[#F2F3F2]': layoutService.isMobile()}">
+            <ion-col size="6"><ion-label class="text-[#666666]" style="font-weight: 600;">Principio activo:</ion-label></ion-col>
+            <ion-col size="6" class="text-[#888]" style="text-transform: lowercase">{{publication.product.details.ingredient_1}}</ion-col>
+          </ion-row>
+        </ng-container>
+
+        <ion-row *ngIf="deliveryItem.covered_by_insurance" class="min-h-[2.5em] pl-3 pt-1">
+          <label class="container-check w-full mt-2 pointer-events-none"><span class="text-[#67aee2]">Con cobertura</span>
+            <input type="checkbox" disabled [(ngModel)]="deliveryItem.covered_by_insurance">
+            <span class="checkmark"></span>
+          </label>
+        </ion-row>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>
+
+<ion-footer class="force-white">
+  <div *ngIf="!deliveryItem?.id" class="flex flex-row justify-center items-center py-2 mx-2"> <!-- [disabled]="!(publication?.portalPriceText && deliveryItem?.frequency_id)" -->
+    <ion-button *ngIf="!saving" class="h-[2rem] w-[15rem]" fill="solid" color="tertiary" shape="round" (click)="addToList()">
+      <ion-icon class="mr-3" name="add-circle-outline"></ion-icon>
+      <ion-label class="normal-case text-md">Agregar medicamento</ion-label>
+    </ion-button>
+    <ion-spinner *ngIf="saving"></ion-spinner>
+  </div>
+  <div *ngIf="deliveryItem.id" class="flex flex-row flex-wrap justify-center items-center py-2 mx-2">
+    <ion-button *ngIf="!saving" class="h-[2rem] w-[15rem]" fill="solid" color="tertiary" shape="round" (click)="addToList()">
+      <ion-label class="normal-case text-md">Guardar cambios</ion-label>
+    </ion-button>
+    <ion-spinner *ngIf="saving"></ion-spinner>
+  </div>
+</ion-footer>

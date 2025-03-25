@@ -1,0 +1,19 @@
+<div *ngIf="!isAuthenticated">
+  <div *ngIf="(isDesktop$ | async) === false; else desktopVersion"
+       (click)="login()"
+       class="flex items-center rounded-full cursor-pointer relative trans-ease-out select-none py-1 pr-1 pl-1"
+       matRipple>
+    <div class="flex items-center justify-center">
+      <label class="font-bold text-[#2552A0] cursor-pointer text-lg">
+        Iniciar sesión
+      </label>
+    </div>
+  </div>
+
+  <ng-template #desktopVersion>
+    <button (click)="login()" class="text-[#2552A0] text-lg"
+      matRipple>
+      Iniciar sesión
+    </button>
+  </ng-template>
+</div>

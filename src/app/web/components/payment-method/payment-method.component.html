@@ -1,0 +1,229 @@
+<form id="cc-form" style="display: none;">
+  <div id="card-number"></div>
+  <div id="card-cvv"></div>
+</form>
+<ion-col size="12">
+  <div class="w-full" *ngIf="showUserEmail">
+    <div class="relative flex items-center inputBox" fxFlex="grow">
+      <input type="text" [(ngModel)]="personal.email" class="blue-input" placeholder="Ingresar dato" disabled>
+      <span class="absolute left-4 p-2 pointer-events-none text-sm text-[#8D8D8D] transition duration-150">Correo electrónico</span>
+    </div>
+  </div>
+
+  <div *ngIf="showTitle" class="mt-10 mb-10">
+    <h3 class="text-[#2A51A3] text-3xl">Método de pago</h3>
+    <p>Completa la siguiente información para agregar Visanet como método de pago</p>
+  </div>
+
+  <div fxLayout="row wrap" fxLayoutAlign="start center" class="my-4" fxLayoutGap="5px">
+    <div>Tipo válidos de tarjeta: &nbsp;</div>
+    <img [class.disabled]="cardType && cardType.type != 'visa'" class="w-[2em]"
+         src="assets/bluemeds/visa.png"  alt="VISA LOGO"/>
+    <img [class.disabled]="cardType && cardType.type != 'mastercard'" class="w-[2em]"
+         src="assets/bluemeds/master.png"  alt="MASTERCARD LOGO"/>
+    <img [class.disabled]="cardType && cardType.type != 'amex'" class="w-[2em]"
+         src="assets/bluemeds/amex.png"  alt="AMEX LOGO"/>
+  </div>
+  <div fxLayout="column">
+    Ingresa los datos de tu tarjeta:
+    <form
+      *ngIf="paymentMethodForm"
+      [formGroup]="paymentMethodForm"
+      (ngSubmit)="onSubmit(true)"
+      fxFlex="auto"
+      fxLayout="column"
+    >
+      <div
+        *ngIf="
+          (showDeliveryUser && layoutService.isMobile()) ||
+          !layoutService.isMobile()
+        "
+        [@expandHeight]
+        class="p-0"
+      >
+        <!-- Numero de tarjeta -->
+        <div fxLayout="row" fxLayout.lt-sm="column" fxLayoutGap="16px">
+          <div class="relative flex items-center my-4 inputBox" fxFlex="grow">
+            <input
+              type="text"
+              formControlName="cardNumber"
+              class="blue-input"
+              placeholder="Número de tarjeta"
+              [class]="
+                paymentMethodForm.get('cardNumber').invalid &&
+                paymentMethodForm.get('cardNumber').touched
+                  ? 'border-[#F44336]'
+                  : ''
+              "
+              (input)="validateCardNumber($event); checkCardType()"
+              (keydown)="validateNotSpaces($event)"
+              (blur)="isValidCardNumber($event)"
+              required
+            />
+            <span class="absolute left-4 p-2 pointer-events-none text-base text-[#8D8D8D] transition duration-150">Número de tarjeta</span>
+
+            <div
+              *ngIf="paymentMethodForm.get('cardNumber').invalid && paymentMethodForm.get('cardNumber').touched"
+              class="flex items-center input-alert"
+            >
+              <ion-icon
+                name="alert-circle"
+                class="text-[#621B16] font-bold text-base"
+              ></ion-icon>
+              <p class="text-[#621B16] font-bold ml-1">
+                {{ getErrorMessage('cardNumber') }}
+              </p>
+            </div>
+          </div>
+          <div class="relative flex items-center my-4 inputBox" fxFlex="grow">
+            <input
+              id="nameCard"
+              type="text"
+              class="blue-input"
+              placeholder="Ingresar dato"
+              formControlName="cardName"
+              [class]="
+                paymentMethodForm.get('cardName').invalid &&
+                paymentMethodForm.get('cardName').touched
+                  ? 'border-[#F44336]'
+                  : ''
+              "
+            />
+            <span
+              class="absolute left-4 p-2 pointer-events-none text-base text-[#8D8D8D] transition duration-150"
+              >Nombre de la tarjeta</span
+            >
+
+            <div
+              *ngIf="
+                paymentMethodForm.get('cardName').invalid &&
+                paymentMethodForm.get('cardName').touched
+              "
+              class="flex items-center input-alert"
+            >
+              <ion-icon
+                name="alert-circle"
+                class="text-[#621B16] font-bold text-base"
+              ></ion-icon>
+              <p class="text-[#621B16] font-bold ml-1">
+                {{ getErrorMessage("cardName") }}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Número de teléfono y teléfono opcional -->
+        <div fxLayout="row" fxLayout.lt-sm="column" fxLayoutGap="16px">
+          <div class="relative flex items-center my-4 inputBox" fxFlex="grow">
+            <input
+              type="text"
+              class="blue-input"
+              placeholder="Ingresar dato"
+              formControlName="cardMonth"
+              (input)="validateOnlyNumberDigits($event, 2); setFocus($event, 'cardYear')"
+              [class]="
+                paymentMethodForm.get('cardMonth').invalid &&
+                paymentMethodForm.get('cardMonth').touched
+                  ? 'border-[#F44336]'
+                  : ''
+              "
+            />
+            <span class="absolute left-4 p-2 pointer-events-none text-base text-[#8D8D8D] transition duration-150">Mes (MM)</span>
+
+            <div
+              *ngIf="
+                paymentMethodForm.get('cardMonth').invalid &&
+                paymentMethodForm.get('cardMonth').touched
+              "
+              class="flex items-center input-alert"
+            >
+              <ion-icon
+                name="alert-circle"
+                class="text-[#621B16] font-bold text-base"
+              ></ion-icon>
+              <p class="text-[#621B16] font-bold ml-1">
+                {{ getErrorMessage("cardMonth") }}
+              </p>
+            </div>
+          </div>
+          <div class="relative flex items-center my-4 inputBox" fxFlex="grow">
+            <input
+              id="cardYear"
+              type="text"
+              class="blue-input"
+              placeholder="Ingresar dato"
+              formControlName="cardYear"
+              (input)="validateOnlyNumberDigits($event, 2); setFocus($event, 'cardCVV')"
+              [class]="
+                paymentMethodForm.get('cardYear').invalid &&
+                paymentMethodForm.get('cardYear').touched
+                  ? 'border-[#F44336]'
+                  : ''
+              "
+            />
+            <span class="absolute left-4 p-2 pointer-events-none text-base text-[#8D8D8D] transition duration-150">Año</span>
+
+            <div
+              *ngIf="
+                paymentMethodForm.get('cardYear').invalid &&
+                paymentMethodForm.get('cardYear').touched
+              "
+              class="flex items-center input-alert"
+            >
+              <ion-icon
+                name="alert-circle"
+                class="text-[#621B16] font-bold text-base"
+              ></ion-icon>
+              <p class="text-[#621B16] font-bold ml-1">
+                {{ getErrorMessage("cardYear") }}
+              </p>
+            </div>
+          </div>
+          <div class="relative flex items-center my-4 inputBox" fxFlex="grow">
+            <input
+              id="cardCVV"
+              type="password"
+              class="blue-input"
+              placeholder="Ingresar dato"
+              formControlName="cvv"
+              (input)="onCVVInput($event)"
+              [ngClass]="{
+                'border-[#F44336]': isCVVInvalid()
+              }"
+            />
+            <span class="absolute left-4 p-2 pointer-events-none text-base text-[#8D8D8D] transition duration-150">CVV</span>
+
+            <div
+              *ngIf="
+                paymentMethodForm.get('cvv').invalid &&
+                paymentMethodForm.get('cvv').touched
+              "
+              class="flex items-center input-alert"
+            >
+              <ion-icon
+                name="alert-circle"
+                class="text-[#621B16] font-bold text-base"
+              ></ion-icon>
+              <p class="text-[#621B16] font-bold ml-1">
+                {{ getErrorMessage("cvv") }}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button
+        *ngIf="showSaveButton"
+        type="submit"
+        class="submitButton mt-2 text-xl rounded-[1rem] py-[0.60rem] w-auto sm:w-auto md:mx-[18rem]"
+        [disabled]="!changeDataFormService.getChangeData || saving"
+      >
+        <ion-spinner *ngIf="saving"></ion-spinner>
+        <span *ngIf="!saving">Guardar</span>
+      </button>
+    </form>
+    <div class="my-5 flex flex-wrap items-center justify-center">
+      <img class="w-14 h-14" src="https://badge.verygoodsecurity.io/badge/pci/vgs_zero_data.svg" alt="Logo VGS">
+      <span class="italic px-2">Security provided by VGS</span>
+    </div>
+  </div>
+</ion-col>

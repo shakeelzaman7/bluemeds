@@ -1,0 +1,6 @@
+{
+	"appId": "io.ionic.starter",
+	"appName": "vivolife",
+	"webDir": "www",
+	"bundledWebRuntime": false
+}

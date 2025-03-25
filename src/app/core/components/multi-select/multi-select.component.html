@@ -1,0 +1,29 @@
+<div class="multi-select-dropdown relative w-full">
+  <div class="relative dropdown-toggle blue-input flex justify-between items-center cursor-pointer pr-3" (click)="toggleDropdown()">
+    <span>{{ title }}</span>
+    <div class="absolute right-0 top-1.5 flex sm:space-x-2">
+      <ng-container *ngIf="selectedCount > 0">
+        <span class="flex items-center bg-[#d8ecff] text-[#007bff] rounded-[12px] py-[2px] px-2">
+          {{ selectedCount }}
+          <button class="text-[#007bff] text-[1rem] hover:text-[#0056b3] ml-[4px] cursor-pointer" (click)="clearSelection($event)">×</button>
+        </span>
+      </ng-container>
+      <mat-icon [class.rotated]="isOpen" class="flex items-center" svgIcon="chevron-down" aria-hidden="false" aria-label="Chevron down"></mat-icon>
+    </div>
+  </div>
+  <div class="w-[240px] absolute top-[100%] left-0 right-0 bg-white border border-[#ccc] rounded shadow max-h-[250px] overflow-y-auto z-50"
+       *ngIf="isOpen" [@expandHeight]
+  >
+    <div *ngFor="let product of products">
+      <label class="block p-3 cursor-pointer">
+        <input
+          type="checkbox"
+          class="mr-1"
+          [checked]="product.selected"
+          (change)="toggleSelection(product)"
+        />
+        {{ truncateText(product.product_name) }}
+      </label>
+    </div>
+  </div>
+</div>

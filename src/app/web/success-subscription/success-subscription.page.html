@@ -1,0 +1,141 @@
+<div class="container mx-auto success-page">
+  <ion-grid vexContainer>
+    <ion-row class="ion-justify-content-center">
+      <ion-col class="text-center success-page--print" size="12" size-md="8" size-lg="7">
+        <div class="sm:p-6 bg-[#E6EEF5] rounded-lg">
+          <h2 class="font-bold text-[#0038AE] text-4xl">¡Te damos la bienvenida a Bluemeds!</h2>
+          <div class="flex justify-center mt-4">
+            <h4 class="text-[#0038AE] text-xl">Vídeo de introducción</h4>
+          </div>
+          <div class="flex justify-center mt-2">
+            <ion-card class="relative block overflow-hidden shadow-none rounded-3xl w-[300px]">
+              <div class="relative w-full" style="padding-top: 56.25%;">
+                <iframe 
+                  class="absolute top-0 left-0 w-full h-full border-0"
+                  src="https://player.vimeo.com/video/925222920?h=426de23ade&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479"
+                  webkitallowfullscreen
+                  mozallowfullscreen
+                  allowfullscreen>
+                </iframe>
+              </div>
+            </ion-card>
+          </div>          
+          <div class="details border rounded-lg border-[#707070] mt-2"  *ngIf="list && profile">
+            <div class="detail--header grid grid-cols-1 sm:grid-cols-6 sm:gap-4 rounded-lg px-4 lg:px-8 py-3 place-items-stretch relative"
+                 [class]="customerClassifier[list?.category?.class] ?? 'bg-[#F0F9FD]'">
+
+              <div class="col-span-4 flex flex-col justify-between text-left">
+                <div class="client-id my-1 sm:my-0">
+                  <strong class="text-base text-[#2A51A3]">
+                    Nombre:
+                  </strong>
+                  <span class="ml-2">
+                    {{this.profile.profile.first_name}} {{this.profile.profile.last_name}}
+                  </span>
+                </div>
+                <div class="client-id my-1 sm:my-0">
+                  <strong class="text-base text-[#2A51A3]">
+                    Teléfono personal:
+                  </strong>
+                  <span class="ml-2">
+                    {{ this.profile.profile.emergency_phone }}
+                  </span>
+                </div>
+                <div *ngIf="list.insurance_agent?.name" class="client-id my-1 sm:my-0">
+                  <strong class="text-base text-[#2A51A3]">
+                    Aseguradora:
+                  </strong>
+                  <span class="ml-2">
+                    {{list.insurance_agent?.name}}
+                  </span>
+                </div>
+              </div>
+
+              <div class="col-span-2 flex flex-col justify-start text-left">
+                <div class="client-id my-1 sm:my-0">
+                  <strong class="text-base text-[#2A51A3]">
+                    Personal ID:
+                  </strong>
+                  <span class="ml-2">
+                    {{this.profile.vivo_id}}
+                  </span>
+                </div>
+                <div *ngIf="list?.category?.class" class="client-id my-1 sm:my-0">
+                  <strong class="text-base text-[#2A51A3]">
+                    Categoría:
+                  </strong>
+                  <span class="ml-2">
+                    {{list?.category?.class}}
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="detail--body" *ngIf="list">
+              <div class="hidden sm:block list px-5 py-4">
+                <table class="table-auto w-full">
+                  <thead>
+                    <tr>
+                      <th class="text-left pb-4 text-[#2A51A3] text-lg">Nombre del médicamento</th>
+                      <th class="pb-4 text-left text-[#2A51A3] text-lg">Día de entrega</th>
+                      <th class="pb-4 text-right text-[#2A51A3] font-extrabold text-lg">Precio Bluemeds</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let item of items">
+                      <td class="text-left">{{item.publication.product.name}}</td>
+                      <td class="text-left">{{item.delivery_date_text}}</td>
+                      <td class="text-right font-semibold">{{item.publication.portal_price_text}}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="block sm:hidden list px-6 py-4">
+                <h3 class="text-[#2A51A3] text-lg font-bold my-2">Nombre del medicamento</h3>
+                <div class="my-2" *ngFor="let item of items">
+                  <p class="inline-block align-middle flex justify-center items-center text-base"><span class="rounded-full w-3 h-3 mr-1 bg-[#1C9AD6] block"></span> {{item.publication.product.name}}</p>
+
+                  <div class="grid grid-cols-2 mt-3">
+                    <div>
+                      <p class="text-[#2A51A3] font-bold text-lg">Día de entrega</p>
+                      <p class="text-center text-[#707070] mt-1">{{item.delivery_date_text}}</p>
+                    </div>
+
+                    <div>
+                      <p class="text-[#2A51A3] font-bold text-lg">Precio Bluemeds</p>
+                      <p class="text-center font-semibold mt-1">{{item.publication.portal_price_text}}</p>
+                    </div>
+                  </div>
+                </div>
+                <br>
+              </div>
+              <div *ngIf="list.advisor_number.length > 1" class="payment px-6 py-4 pt-0">
+                <div class="flex justify-end text-[#707070]">
+                  <div>
+                    <p class="text-[#707070]">Código de asesor: 
+                      <span *ngFor="let code of list.advisor_number">
+                        <ng-container *ngIf="code.code && code.code !== '-'">
+                          {{ code.code }}
+                        </ng-container>
+                      </span>                      
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-4">
+            <p class="text-[#707070] text-left">*Precios sujetos a cambio</p>
+            <p class="text-[#707070] text-left">*Si tienes seguro, el descuento de tu aseguradora se calculará sobre el precio Bluemeds.</p>
+          </div>
+
+          <p class="pt-8">
+            <ion-button routerLink="/web/welcome" color="tertiary" shape="round">
+              Ir a mi cuenta
+            </ion-button>
+          </p>
+        </div>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</div>

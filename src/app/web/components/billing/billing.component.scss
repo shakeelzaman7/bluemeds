@@ -1,0 +1,37 @@
+.submitButton {
+    background-color: #2A51A3;
+    color: white;
+  }
+
+.submitButton:disabled {
+  background-color: #95A8D1;
+  color: white;
+}
+
+.mat-expansion-panel-header {
+  background-color: #F0F9FD;
+}
+
+.mat-expanded:focus {
+  background: #F0F9FD !important;
+}
+
+.example-headers-align .mat-expansion-panel-header-description {
+  justify-content: space-between;
+  align-items: center;
+}
+
+.mat-header-cell {
+  background-color: #36abe0;
+  color: #fff;
+}
+
+.header-columns-custom {
+  background-color: #36abe0;
+  color: #fff;
+}
+
+.needHelpOption {
+  --background: #C5DFF5;
+  --color: #5C84CC;
+}

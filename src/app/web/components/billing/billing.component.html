@@ -1,0 +1,258 @@
+<ion-col size="12">
+  <form id="cc-form" style="display: none;">
+    <div id="card-number"></div>
+    <div id="card-cvv"></div>
+  </form>
+  <h3 class="mt-10">
+    <ion-text class="text-[#2A51A3] text-3xl">Datos de facturación</ion-text>
+  </h3>
+  <br>
+  <div fxLayout="column">
+    <form *ngIf="billingForm" [formGroup]="billingForm" (ngSubmit)="onSubmit(true)" fxFlex="auto" fxLayout="column">
+      <div fxLayout="row" fxLayout.lt-sm="column" fxLayoutGap="16px" fxLayoutGap.lt-sm="0">
+        <!-- Numero de identificacion -->
+        <div class="flex flex-col" fxFlex="grow">
+          <div class="my-[0.95rem] relative flex items-center inputBox">
+            <input type="text" formControlName="personalIdentityNumber" class="blue-input" placeholder="Ingresar dato"
+                   [class]="billingForm.get('personalIdentityNumber').invalid && billingForm.get('personalIdentityNumber').touched ? 'border-[#F44336]' : ''">
+
+            <span class="absolute left-4 p-2 pointer-events-none text-base text-[#8D8D8D] transition duration-150">NIT ej: 86240587</span>
+
+            <div
+              *ngIf="billingForm.get('personalIdentityNumber').invalid && billingForm.get('personalIdentityNumber').touched"
+              class="flex items-center input-alert">
+              <ion-icon name="alert-circle" class="text-[#621B16] font-bold text-base"></ion-icon>
+              <p class="text-[#621B16] font-bold ml-1">{{ getErrorMessage('personalIdentityNumber') }}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Nombre de identificacion -->
+        <div class="flex flex-col pb-4" fxFlex="grow">
+          <div class="my-[0.95rem] relative flex items-center inputBox">
+            <input type="text" formControlName="name" class="blue-input" placeholder="Ingresar dato"
+                   [class]="billingForm.get('name').invalid && billingForm.get('name').touched ? 'border-[#F44336]' : ''">
+
+            <span class="absolute left-4 p-2 pointer-events-none text-base text-[#8D8D8D] transition duration-150">Nombre para factura</span>
+
+            <div *ngIf="billingForm.get('name').invalid && billingForm.get('name').touched"
+                 class="flex items-center input-alert">
+              <ion-icon name="alert-circle" class="text-[#621B16] font-bold text-base"></ion-icon>
+              <p class="text-[#621B16] font-bold ml-1">{{ getErrorMessage('name') }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div fxLayout="row" fxLayout.lt-sm="column" fxLayoutGap="16px" fxLayoutGap.lt-sm="0">
+        <div class="flex flex-col pb-4" fxFlex="grow">
+          <mat-radio-group (change)="selectAddressToUse()" formControlName="addressToUse"
+                           aria-label="Select an option" class="flex flex-col items-start gap-2">
+            <mat-radio-button [value]="'addressDelivery'" class="text-[#666666] flex-col">
+              Usar dirección de entrega para la factura
+            </mat-radio-button>
+
+            <div *ngIf="billingForm.get('addressToUse')?.value === 'addressDelivery'"
+                 class="mb-6 mt-[0.90rem] relative flex items-center inputBox w-full">
+              <input type="text" value="{{ addresToUseText ?? 'Obteniendo dirección...' }}" class="blue-input"
+                     placeholder="Datos de dirección de entrega..." disabled>
+              <span class="absolute left-4 p-2 pointer-events-none text-base text-[#8D8D8D] transition duration-150">Dirección</span>
+            </div>
+
+            <mat-radio-button [value]="'addressCustom'" class="text-[#666666] flex-col">
+              Cambiar dirección de facturación
+            </mat-radio-button>
+          </mat-radio-group>
+
+          <div *ngIf="billingForm.get('addressToUse').invalid && billingForm.get('addressToUse').touched"
+               class="flex items-center mt-1">
+            <ion-icon name="alert-circle" class="text-[#621B16] font-bold text-base"></ion-icon>
+            <p class="text-[#621B16] font-bold ml-1">Debes seleccionar una opción de dirección de
+              entrega</p>
+          </div>
+
+          <div *ngIf="billingForm.get('addressToUse')?.value === 'addressCustom'">
+            <div fxLayout="row" fxLayout.lt-sm="column" fxLayoutGap="16px" fxLayoutGap.lt-sm="0">
+              <div class="my-[0.95rem] relative flex items-center inputBoxSelect" fxFlex="grow">
+                <select formControlName="state_id" class="blue-input" placeholder="Ingresar dato"
+                        (change)="onStateChange($event)"
+                        [class]="billingForm.get('state_id').invalid && billingForm.get('state_id').touched ? 'border-[#F44336]' : ''">
+                  <option value="{{ state.id }}" *ngFor="let state of states">{{ state.name }}</option>
+                </select>
+
+                <span class="absolute left-4 p-2 pointer-events-none text-base text-[#8D8D8D] transition duration-150">Departamento</span>
+
+                <div *ngIf="billingForm.get('state_id').invalid && billingForm.get('state_id').touched"
+                     class="flex items-center input-alert">
+                  <ion-icon name="alert-circle" class="text-[#621B16] font-bold text-base"></ion-icon>
+                  <p class="text-[#621B16] font-bold ml-1">{{ getErrorMessage('state_id') }}</p>
+                </div>
+              </div>
+
+              <div class="my-[0.95rem] relative flex items-center inputBoxSelect" fxFlex="grow">
+                <select formControlName="city_id" class="blue-input" placeholder="Ingresar dato"
+                        (change)="onZipCodeChange($event)"
+                        [class]="billingForm.get('city_id').invalid && billingForm.get('city_id').touched ? 'border-[#F44336]' : ''">
+                  <option value="{{ city.id }}" *ngFor="let city of cities">{{ city.name }}</option>
+                </select>
+
+                <span class="absolute left-4 p-2 pointer-events-none text-base text-[#8D8D8D] transition duration-150">Municipio</span>
+
+                <div *ngIf="billingForm.get('city_id').invalid && billingForm.get('city_id').touched"
+                     class="flex items-center input-alert">
+                  <ion-icon name="alert-circle" class="text-[#621B16] font-bold text-base"></ion-icon>
+                  <p class="text-[#621B16] font-bold ml-1">{{ getErrorMessage('city_id') }}</p>
+                </div>
+              </div>
+            </div>
+            <div class="flex flex-wrap">
+              <div class="my-[0.95rem] relative flex items-center inputBox w-full sm:w-2/3 sm:mr-2 mr-0">
+                <input type="text" formControlName="address" class="blue-input" placeholder="Ingresar dato"
+                       [class]="billingForm.get('address').invalid && billingForm.get('address').touched ? 'border-[#F44336]' : ''">
+
+                <span class="absolute left-4 p-2 pointer-events-none text-base text-[#8D8D8D] transition duration-150">Dirección exacta</span>
+
+                <div *ngIf="billingForm.get('address').invalid && billingForm.get('address').touched"
+                     class="flex items-center input-alert">
+                  <ion-icon name="alert-circle" class="text-[#621B16] font-bold text-base"></ion-icon>
+                  <p class="text-[#621B16] font-bold ml-1">{{ getErrorMessage('address') }}</p>
+                </div>
+              </div>
+              <div *ngIf="zipcode" class="w-full sm:w-[32%]"> <!-- Zip code -->
+                <div *ngIf="zipcode && !zipcode.isList"
+                     class="my-[0.95rem] relative flex items-center inputBox">
+                  <input type="text" formControlName="zip_code" class="blue-input" placeholder="Ingresar dato"
+                         [class]="billingForm.get('zip_code').invalid && billingForm.get('zip_code').touched ? 'border-[#F44336]' : ''">
+
+                  <span class="absolute left-4 p-2 pointer-events-none text-base text-[#8D8D8D] transition duration-150">Código postal</span>
+
+                  <div *ngIf="billingForm.get('zip_code').invalid && billingForm.get('zip_code').touched"
+                       class="flex items-center input-alert">
+                    <ion-icon name="alert-circle" class="text-[#621B16] font-bold text-base"></ion-icon>
+                    <p class="text-[#621B16] font-bold ml-1">{{ getErrorMessage('zip_code') }}</p>
+                  </div>
+                </div>
+
+                <div *ngIf="zipcode && zipcode.isList"
+                     class="my-[0.95rem] relative flex items-center inputBoxSelect">
+                  <select formControlName="zip_code" class="blue-input"
+                          [class]="billingForm.get('zip_code').invalid && billingForm.get('zip_code').touched ? 'border-[#F44336]' : ''"
+                          [disabled]="cities.length === 0">
+                    <ng-container *ngIf="zipcode?.zone.length < 1">
+                      <option value="{{ zone.id }}" *ngFor="let zone of zipcode.zip_code">{{ zone.label }}</option>
+                    </ng-container>
+
+                    <ng-container *ngIf="zipcode?.zone.length > 0">
+                      <option value="{{ zone.zip_code }}" *ngFor="let zone of zipcode.zone">{{ zone.name }}</option>
+                    </ng-container>
+                  </select>
+                  <span class="absolute left-4 p-2 pointer-events-none text-base text-[#8D8D8D] transition duration-150">Código postal</span>
+                  <div *ngIf="billingForm.get('zip_code').invalid && billingForm.get('zip_code').touched"
+                       class="flex items-center input-alert">
+                    <ion-icon name="alert-circle" class="text-[#621B16] font-bold text-base"></ion-icon>
+                    <p class="text-[#621B16] font-bold ml-1">{{ getErrorMessage('zip_code') }}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div *ngIf="billing.zip_code && !zipcode"
+                   class="w-full sm:w-[32%] my-[0.95rem] relative flex items-center inputBox">
+                <input type="text" formControlName="zip_code" class="blue-input" placeholder="Ingresar dato"
+                       [class]="billingForm.get('zip_code').invalid && billingForm.get('zip_code').touched ? 'border-[#F44336]' : ''">
+                <span class="absolute left-4 p-2 pointer-events-none text-base text-[#8D8D8D] transition duration-150">Código postal</span>
+                <div *ngIf="billingForm.get('zip_code').invalid && billingForm.get('zip_code').touched"
+                     class="flex items-center input-alert">
+                  <ion-icon name="alert-circle" class="text-[#621B16] font-bold text-base"></ion-icon>
+                  <p class="text-[#621B16] font-bold ml-1">{{ getErrorMessage('zip_code') }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Método de pago -->
+      <div *ngIf="showPaymentMethod">
+        <form [formGroup]="paymentGroup" fxFlex="auto" fxLayout="column">
+          <ng-container *ngIf="!savedPaymentData">
+            <h3 class="mt-10">
+              <ion-text class="text-[#2A51A3] text-3xl">Método de pago</ion-text>
+            </h3>
+
+            <ion-button routerLink="/web/search" color="tertiary" shape="round" class="mt-6 w-[20rem]"
+                        (click)="toogleShowPaymentForm()">
+              <ion-label class="normal-case font-semibold flex items-center text-md">
+                <ion-icon name="add-circle-outline" class="mr-2" style="font-size: 23px"></ion-icon>
+                Agregar método de pago
+              </ion-label>
+            </ion-button>
+
+            <div *ngIf="showPaymentForm">
+              <app-component-payment-method
+                class="w-full" [showSaveButton]="false" [showExpansionPanels]="false"
+                [showTitle]="false" [isOnWizard]="true" [addMethod]="true"
+                [askDefaultPayment]="false"></app-component-payment-method>
+            </div>
+
+            <div class="w-[20rem] mt-5">
+              <mat-accordion class="link-headers-align">
+                <mat-expansion-panel (closed)="isLinkCopied = false; isPanelOpen = false"
+									  (opened)="isPanelOpen = true">
+                  <mat-expansion-panel-header (click)="getLinkPayment()" class="px-4">
+                    <mat-panel-title style="color: #0038AE">
+                      <div class="flex items-center">
+                        <p class="text-[#959595] text-base font-semibold">Generar enlace de pago</p>
+
+                        <mat-icon matTooltip="Comparte este enlace con el titular de la tarjeta"
+                                  (click)="tooltipLink.toggle()"
+                                  svgIcon="exclamation-info" aria-hidden="false" aria-label="Exclamation Info"
+                                  #tooltipLink="matTooltip"
+                                  class="w-4 h-4 ml-1 text-[#1C9AD6] mt-1">
+                        </mat-icon>
+                      </div>
+                    </mat-panel-title>
+                  </mat-expansion-panel-header>
+
+                  <div class="mt-3">
+                    <p class="text-[#666666]">
+                      Tu información ha sido guardada. Puedes agregar la tarjeta de otro titular compartiendo este
+                      enlace. Cuando haya sido agregada, actualiza esta página para confirmar tu método de pago.
+                    </p>
+
+                    <div class="mt-5">
+                      <input type="text" class="h-6 rounded-full px-3 outline-none border-[#2A51A3] border"
+                             #paymentLinkInput value="https://MetodoPagoBluemeds.com" readonly
+                             [ngStyle]="{ color: '#008AD8', background: 'white', 'font-weight': 'bold' }">
+                      <button type="button" class="text-white h-6 bg-[#008AD8] rounded-full px-2 ml-2"
+                              (click)="copyToClipBoard(paymentLinkInput)">{{ isLinkCopied ? "Copiado" : "Copiar" }}
+                      </button>
+                    </div>
+                  </div>
+                </mat-expansion-panel>
+              </mat-accordion>
+              <div *ngIf="isPanelOpen && confirmSubError" class="flex mt-2">
+                <ion-icon
+                  name="alert-circle"
+                  class="text-[#621B16] font-bold text-base text-base"
+                ></ion-icon>
+                <p class="text-[#621B16] ml-1 text-base">
+                  Agrega una tarjeta en el enlace generado y actualiza esta
+                  página para confirmar tu método de pago.
+                </p>
+              </div>
+            </div>
+          </ng-container>
+
+          <ng-container *ngIf="savedPaymentData">
+            <app-component-payment-method-list [showTitle]="false"></app-component-payment-method-list>
+          </ng-container>
+        </form>
+      </div>
+
+      <button *ngIf="showSaveButton" type="submit"
+              class="submitButton mt-2 text-xl rounded-[1rem] py-[0.60rem] w-auto sm:w-auto md:mx-[18rem]"
+              [disabled]="!changeDataFormService.getChangeData">Guardar
+      </button>
+    </form>
+  </div>
+</ion-col>

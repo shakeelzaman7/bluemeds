@@ -1,0 +1,95 @@
+ion-label.grey {
+    color: darkgray !important
+}
+
+.image_center {
+    margin: 0;
+    position: relative;
+    top: 50%;
+    left: 50%;
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+
+* {
+    font-family: SourceSansPro !important;
+}
+
+ion-item {
+    margin-bottom: -0.6rem;
+}
+
+.hasflag::after {
+    padding-top: 2px;
+    position: absolute;
+    content: "";
+    width: 0px;
+    height: 0px;
+    border-right: 13px solid transparent;
+    border-top: 9px solid #E45900;
+    border-left: 16px solid #E45900;
+    border-bottom: 10px solid #E45900;
+    margin-top: 1.2px;
+  }
+
+/* checkbox personalizado */
+.container-check {
+  display: block;
+  position: relative;
+  padding-left: 20px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  font-size: 15px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  opacity: 0.8;
+}
+
+.container-check input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.checkmark {
+  position: absolute;
+  top: 2px;
+  left: 0;
+  height: 15px;
+  width: 15px;
+  background-color: #ccc;
+}
+
+.container-check:hover input ~ .checkmark {
+  background-color: #ccc;
+}
+
+.container-check input:checked ~ .checkmark {
+  background-color: #80CDEF;
+}
+
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+.container-check input:checked ~ .checkmark:after {
+  display: block;
+}
+
+.container-check .checkmark:after {
+  left: 5px;
+  top: 2px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 3px 3px 0;
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
+}

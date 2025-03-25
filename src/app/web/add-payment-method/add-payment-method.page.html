@@ -1,0 +1,17 @@
+<div
+  class="rounded-lg shadow-8 bg-card mx-[1rem] md:mx-auto mb-16"
+  vexContainer
+>
+  <ion-row class="md:px-[12em] pb-6">
+    <app-component-payment-method
+      class="w-full"
+      [showSaveButton]="true"
+      [showExpansionPanels]="true"
+      [askDefaultPayment]="false"
+      [isOnWizard]="false"
+      [addMethod]="shouldAddMethod()"
+      [token]="token"
+      [deliveryId]="deliveryID"
+    ></app-component-payment-method>
+  </ion-row>
+</div>

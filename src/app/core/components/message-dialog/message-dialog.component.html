@@ -1,0 +1,19 @@
+<div mat-dialog-title>
+  <div class="w-full">
+    <img *ngIf="typeMessage == 'success'" class="w-10 mx-auto" src="/assets/icons/succesIcon.png" alt="Success Icon">
+    <img *ngIf="typeMessage == 'error'" class="w-10 mx-auto" src="/assets/icons/errorIcon.png" alt="Error Icon">
+    <img *ngIf="typeMessage == 'warning'" class="w-10 mx-auto" src="/assets/icons/warning-icon.png" alt="Warning Icon">
+  </div>
+
+  <h1 class="mt-1 text-center text-2xl" [class]="typeMessage != 'error' ? 'success-title' : 'error-title'">{{title}}</h1>
+</div>
+
+<div>
+  <p *ngIf="message" class="text-center" [class]="typeMessage != 'error' ? 'success-message' : 'error-message'">{{message}}</p>
+  <p *ngIf="secondMessage" class="text-center" style="color: #9d9fa6">{{secondMessage}}</p>
+</div>
+
+<div class="mx-auto flex flex-wrap sm:flex-nowrap justify-center space-x-0 sm:space-x-2 mt-5">
+  <button [class]="showButton2 ? 'cancel-button' : 'accept-button'" mat-button (click)="close(false)">{{textButton}}</button>
+  <button *ngIf="showButton2" class="accept-button sm:mt-0 mt-3" mat-button (click)="close(true)">{{textButton2}}</button>
+</div>

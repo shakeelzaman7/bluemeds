@@ -1,0 +1,56 @@
+<div class="container mx-auto">
+  <ion-grid vexContainer>
+    <ion-row>
+      <ion-card class="text-center mx-4 w-full bg-white-1 p-6 border-radius-20 shadow-sm">
+        <ion-text color="primary">
+          <h1 class="text-4xl">Centro de Ayuda</h1>
+        </ion-text>
+      </ion-card>    
+    </ion-row>          
+
+    <ion-row class="pb-4">
+        <ion-col *ngFor="let item of footerItems">
+          <ion-card class="shadow-sm bg-white-1 text-center border-radius-10  h-full -mb--px">
+            <ion-card-content>
+              <div class="flex items-center justify-center">
+                <ion-img class="w-12 py-2" src="/assets/icons/{{item.iconName}}.png" alt=""></ion-img>
+              </div>
+            <p>{{item.label}}</p>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+    </ion-row>
+    
+    <ion-row class="pb-4">
+      <ion-col>
+        <ion-card class="bg-white-1">
+          <ion-card-content>
+
+            <ng-container *ngFor="let faq of faqs">
+              <ion-card class="shadow-none border-radius-20" (click)="select(faq)">
+                <ion-card-content class="no-padding">
+                  <ion-item lines="full">
+                    <img class="my-0 mx-auto h-6 pr-10" src="/assets/icons/{{faq.iconName}}.png" alt="" >
+                    <ion-label>
+                      {{faq.question}}
+                    </ion-label>
+                  </ion-item>
+                </ion-card-content>
+              </ion-card>
+              <ion-card class="shadow-none border-radius-2" *ngIf="faq.selected">
+                <ion-card-content>
+                  <p class="text-base">
+                    {{faq.answer}}
+                  </p>
+                </ion-card-content>
+              </ion-card>
+            </ng-container>
+
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>              
+
+  </ion-grid>
+</div>
+

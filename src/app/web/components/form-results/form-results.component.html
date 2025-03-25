@@ -1,0 +1,59 @@
+<div class="my-10" *ngIf="!newSearchQuery()">
+  <app-validatable-form>
+  <form (submit)="save()">
+    
+    <div fxLayout="row" fxLayoutGap="16px">
+      <mat-form-field fxFlex="auto">
+        <mat-label>Nombre del medicamento</mat-label>
+        <input name="medicine_name"  matInput [(ngModel)]="medicineRequest.medicine_name">
+      </mat-form-field>
+      <mat-form-field fxFlex="auto">
+        <mat-label>Farmacia</mat-label>
+        <mat-select name="default_currency" [(ngModel)]="medicineRequest.pharmacy">
+          <ng-container *ngIf="pharmacies">
+            <mat-option [value]="pharmacy" *ngFor="let pharmacy of pharmacies"> {{pharmacy}}</mat-option>
+          </ng-container>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div fxLayout="row" fxLayoutGap="16px" *ngIf="medicineRequest.pharmacy == 'Otros'">
+      <mat-form-field fxFlex="auto">
+        <mat-label>Especifique la farmacia</mat-label>
+        <input matInput name="pharmacy">
+      </mat-form-field>
+    </div>
+    
+    <div class="flex justify-start mt-5 mb-2">
+      <label for="personal-data" class="text-lg">
+        Tus datos de contacto. Te indicaremos en las próximas 48 si conseguimos tu medicamento
+      </label>
+    </div>
+    <div fxLayout="row" fxLayoutGap="16px">
+      <mat-form-field fxFlex="auto">
+        <mat-label>Nombre</mat-label>
+        <input name="contact_name"  matInput [(ngModel)]="medicineRequest.contact_name" id="user-input-name">
+      </mat-form-field>
+      <mat-form-field fxFlex="auto">
+        <mat-label>Teléfono</mat-label>
+        <input name="contact_phone"  matInput [(ngModel)]="medicineRequest.contact_phone">
+      </mat-form-field>
+    </div>
+    <div fxLayout="row" fxLayoutGap="16px">
+      <mat-form-field fxFlex="auto">
+        <mat-label>Correo</mat-label>
+        <input name="contact_email"  matInput [(ngModel)]="medicineRequest.contact_email">
+      </mat-form-field>
+    </div>
+    <button [disabled]="saving"
+      type="submit" 
+      class="bg-[#3B5FAA] py-3 px-10 rounded-full text-white font-bold text-md mt-5">
+      <span *ngIf="!saving">Enviar Solicitud</span>
+      <ion-spinner *ngIf="saving" color="primary" name="dots"></ion-spinner>
+    </button>
+
+  </form>
+
+    
+  </app-validatable-form>
+</div>

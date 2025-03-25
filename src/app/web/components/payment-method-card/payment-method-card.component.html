@@ -1,0 +1,35 @@
+<ion-card class="card-default-payment vertical-align-content">
+  <ion-card-content class="text-lg bg-[#EEEEEE]">
+    <ion-row class="ion-align-items-center">
+      <ion-col size="auto">
+        <input type="radio" name="select_payment" [(ngModel)]="selectedPaymentMethod" [value]="paymentMethod" (click)="selectPaymentMethod(paymentMethod)">
+      </ion-col>
+      <ion-col size="auto">
+        <ion-text class="font-semibold text-[#313638]">
+            {{ paymentMethod?.card_holder_name }}
+        </ion-text>
+      </ion-col>
+      <ion-col size="auto">
+        {{ paymentMethod?.card_type?.toUpperCase() + paymentMethod?.card_number_hint }}
+      </ion-col>
+      <ion-col size="auto">
+        {{ paymentMethod?.expiration_date }}
+      </ion-col>
+      <ion-col class="flex-grow"></ion-col> <!-- Espacio extra para empujar el ícono a la derecha -->
+      <ion-col class="cursor-pointer" size="auto" offset="1">
+        <button (click)="updatePaymentMethod(paymentMethod)">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 19V24H4.99931L19.7439 9.25333L14.7446 4.25333L0 19ZM3.89279 21.3333H2.6663V20.1067L14.7446 8.02667L15.9711 9.25333L3.89279 21.3333ZM23.6101 3.50667L20.4905 0.386667C20.2239 0.12 19.8906 0 19.544 0C19.1973 0 18.864 0.133333 18.6107 0.386667L16.1711 2.82667L21.1704 7.82667L23.6101 5.38667C24.13 4.86667 24.13 4.02667 23.6101 3.50667Z" fill="#0047BB"/>
+          </svg>
+        </button>
+      </ion-col>
+      <ion-col size="auto" *ngIf="canDelete">
+        <ion-icon
+          class="ion-align-self-end cursor-pointer"
+          matTooltip="Eliminar tarjeta."
+          [style.color]="'#0047BB'" name="trash-outline"
+          (click)="deletePaymentMethod(paymentMethod)"></ion-icon>
+      </ion-col>
+    </ion-row>
+  </ion-card-content>
+</ion-card>

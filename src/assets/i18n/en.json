@@ -1,0 +1,11 @@
+{
+    "general": {
+        "ok": "Ok",
+        "cancel": "Cancel"
+    },
+    "items_per_page": "Items per page:",
+    "next_page": "Next page",
+    "previous_page": "Previous page",
+    "first_page": "First page",
+    "last_page": "Last page"
+}

@@ -1,0 +1,44 @@
+@media print {
+  html, body {
+    overflow: initial !important;
+  }
+
+  .vex-toolbar, .sidenav, .footer{
+    display: none !important;
+  }
+
+  .content {
+    margin-top: 0 !important;
+  }
+
+  .mat-drawer-container {
+    overflow: visible !important;
+  }
+
+  .mat-drawer-side {
+    border-right: none !important;
+  }
+
+  .sidenav-content {
+    margin-left: 0 !important;
+    @apply bg-card;
+  }
+
+  .vex-footer {
+    display: none !important;
+  }
+
+  .config-panel-toggle {
+    display: none !important;
+  }
+
+  app-sub-success {
+    display: block;
+  }
+
+  .success-page--print {
+    flex: 0 0 calc(calc(12 / var(--ion-grid-columns, 12)) * 100%) !important;
+    width: calc(calc(12 / var(--ion-grid-columns, 12)) * 100%) !important;
+    max-width: calc(calc(12 / var(--ion-grid-columns, 12)) * 100%) !important;
+  }
+}

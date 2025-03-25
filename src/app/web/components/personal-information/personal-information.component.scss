@@ -1,0 +1,19 @@
+.submitButton {
+  background-color: #2A51A3;
+  color: white;
+}
+
+.submitButton:disabled {
+  background-color: #95A8D1;
+  color: white;
+}
+
+.rotate-chevron {
+  transition: transform 0.3s ease;
+  transform: rotate(180deg); /* Rotación de 180 grados cuando se muestra */
+}
+
+.reset-chevron {
+  transition: transform 0.3s ease;
+  transform: rotate(0deg); /* Rotación de 0 grados cuando se oculta */
+}

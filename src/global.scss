@@ -1,0 +1,318 @@
+/*
+ * App Global CSS
+ * ----------------------------------------------------------------------------
+ * Put style rules here that you want to apply globally. These styles are for
+ * the entire app and not just one component. Additionally, this file can be
+ * used as an entry point to import other CSS/Sass files to be included in the
+ * output CSS.
+ * For more information on global stylesheets, visit the documentation:
+ * https://ionicframework.com/docs/layout/global-stylesheets
+ */
+
+/* Core CSS required for Ionic components to work properly */
+@import "~@ionic/angular/css/core.css";
+
+/* Basic CSS for apps built with Ionic */
+@import "~@ionic/angular/css/normalize.css";
+@import "~@ionic/angular/css/structure.css";
+//@import "~@ionic/angular/css/typography.css";
+@import '~@ionic/angular/css/display.css';
+
+/* Optional CSS utils that can be commented out */
+@import "~@ionic/angular/css/padding.css";
+@import "~@ionic/angular/css/float-elements.css";
+@import "~@ionic/angular/css/text-alignment.css";
+@import "~@ionic/angular/css/text-transformation.css";
+@import "~@ionic/angular/css/flex-utils.css";
+@import "./app/@vex/styles/core";
+
+body {
+  font-size: 16px;
+}
+
+.mat-simple-snack-bar-content {
+  font-size: 16px;
+}
+
+ion-content.bg-white {
+    --background: white
+}
+
+.big-thumb {
+    width: 64px;
+}
+
+.mini-thumb {
+    width: 32px;
+}
+
+.hide {
+    display: none;
+}
+
+.force-white
+{
+
+    box-shadow: none;
+    --background:white;
+
+    ::after {
+        background-image: none  !important;
+        border:none !important
+    }
+}
+
+@media screen and (min-width : 320px) and (max-width : 500px) {
+    .img-search {
+        img {
+            width: 100%;
+            border-radius: 1em;
+            border: 1px solid lightgrey;
+        }
+    }
+}
+
+.search-table {
+  font-size: 16px;
+}
+
+.disabled {
+    opacity: .3;
+}
+
+ion-button {
+    text-transform: initial;
+}
+
+.publication-modal-mobile {
+    align-items: center;
+    justify-content: center;
+
+    &::part(content){
+        margin:1em;
+        height: calc(100% - 2em);
+        border-radius: 1em;
+      }
+}
+
+.publication-modal {
+    align-items: center;
+    justify-content: center;
+
+    &::part(content){
+        width: 70%;
+        max-width: 50rem;
+        /*max-height: 29rem;*/
+        border-radius: 1em;
+        border: 1px solid grey
+    }
+
+  @media screen and (min-width : 1025px) {
+    &::part(content){
+      width: 60%;
+    }
+  }
+
+  @media screen and (min-width : 1280px) {
+    &::part(content){
+      width: 50%;
+    }
+  }
+}
+
+.upload-file-modal {
+  align-items: center;
+  justify-content: center;
+
+  &::part(content){
+    width: 45%;
+    max-width: 50rem;
+    height: auto;
+    border-radius: 1em;
+    border: 1px solid grey
+  }
+
+  /* En vista de escritorio un width del 25% */
+  @media screen and (min-width : 1280px) {
+    &::part(content){
+      width: 35%;
+    }
+  }
+  @media screen and (min-width: 1536px) {
+    &::part(content){
+      width: 25%;
+    }
+  }
+}
+
+.upload-file-modal-mobile {
+  align-items: center;
+  justify-content: center;
+
+  &::part(content){
+    margin:1em;
+    height: auto;
+    border-radius: 1em;
+  }
+}
+
+.account-verification-modal {
+  align-items: center;
+  justify-content: center;
+
+  &::part(content){
+    width: 100%;
+    max-width: 600px;
+    height: auto;
+    border-radius: 1em;
+    border: 1px solid grey
+  }
+
+  /* En vista de escritorio un width del 25% */
+  @media screen and (min-width : 1280px) {
+    &::part(content){
+      width: 100%;
+    }
+  }
+  @media screen and (min-width: 1536px) {
+    &::part(content){
+      width: 100%;
+    }
+  }
+}
+
+.account-verification-mobile {
+  align-items: center;
+  justify-content: center;
+
+  &::part(content){
+    margin:1em;
+    height: auto;
+    border-radius: 1em;
+  }
+}
+
+
+.bluemeds-offer-price-text {
+    color:var(--ion-color-tertiary) !important;
+    font-weight: bold;
+}
+
+.pull-right {
+    float:right
+}
+
+.full-width {
+    width: 100%;
+}
+
+.truncate-cell {
+    max-width: 200px; /* feel free to include any other value */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.bg-success {
+    background: var(--ion-color-success-tint);
+}
+
+.bg-danger {
+    background: var(--ion-color-danger-tint);
+}
+
+.input-alert {
+    position: absolute;
+    top: 38px;
+    left: 10px;
+    font-size: 16px;
+}
+
+.input-alert-items {
+    position: absolute;
+    bottom: -15px;
+    left: 5px;
+    font-size: 16px;
+}
+
+.pointer {
+    cursor: pointer;
+}
+
+* {
+    font-family: SourceSansPro !important;
+  }
+
+.mat-simple-snackbar {
+  color:white;
+  justify-content: center !important;
+}
+
+
+.alert-wrapper
+{
+    button[aria-checked="true"] {
+        background: lightgray !important;
+    }
+
+    .alert-button-group {
+        padding: 0 !important;
+        display: flex !important;
+        flex-wrap: wrap !important;
+        height: 4em !important;
+        align-content: space-between !important;
+
+        button {
+            height: 100% !important;
+            -webkit-margin-end: 0px !important;
+            margin-inline-end: 0px !important;
+            width: 50% !important;
+            text-transform: none;
+        }
+
+        .alert-button-inner.sc-ion-alert-md {
+            justify-content:center !important;
+        }
+
+        button:last-child{
+
+            background-color: #2a51a3;
+            color: white;
+        }
+    }
+
+}
+
+.tooltip-add-meds {
+  font-size: 16px;
+}
+
+.custom-padding-class-dialog mat-dialog-container {
+    padding: 5px 20px 20px 20px !important;
+}
+
+.flag-search::after {
+  top: -3px;
+  position: absolute;
+  content: "";
+  width: 0px;
+  height: 0px;
+  border-right: 10px solid transparent;
+  border-top: 13px solid #E45900;
+  border-left: 11px solid #E45900;
+  border-bottom: 13px solid #E45900;
+}
+
+.modal-warning-days{
+  --height: auto;
+  --border-radius: 16px;
+  --box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+.mat-expansion-indicator::after {
+  border-color: #B5B5B5;
+}
+
+.multiline-tooltip {
+  white-space: pre-line !important;
+}

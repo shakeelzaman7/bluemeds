@@ -1,0 +1,34 @@
+.blue-input {
+    @apply w-full p-2 border rounded-full outline-none text-[#666666] text-sm pl-5 border-primary;
+  }
+  
+  /*diseño para el blue-input disabled*/
+  .blue-input:disabled {
+    @apply w-full p-2 border rounded-full outline-none text-[#666666] text-sm pl-5 border-[#666666] bg-[#f2f2f2];
+  }
+  
+  .disbled-style-custom {
+    @apply w-full p-2 border rounded-full outline-none text-[#666666] text-sm pl-5 border-[#666666] bg-[#f2f2f2];
+  }
+  
+  .blue-input-select {
+    @apply w-full p-2 rounded-full text-[#666666] text-sm pl-4;
+  }
+  
+  .blue-input-select-error {
+    outline: 1px solid #F44336 !important;
+  }
+
+  /* Clase para los formularios del wizard */
+.inputBox input:focus ~ span,
+.inputBox input:not(:placeholder-shown) ~ span
+{
+  transform: translateX(0px) translateY(-20px);
+  font-size: 16px;
+  padding: 0 5px;
+  background: #fff;
+}
+
+.inputBox input::placeholder {
+  color: transparent;
+}

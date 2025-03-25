@@ -1,0 +1,19 @@
+.mobile-tr {
+    strong {
+        display: block;
+        color: rgb(175, 175, 175);
+        font-size: 16px;
+    }
+
+    display: block;
+    white-space: normal;
+    max-width: 100%;
+}
+
+
+
+.mobile {
+    .mat-header-row {
+        display: none  !important;
+    }
+}

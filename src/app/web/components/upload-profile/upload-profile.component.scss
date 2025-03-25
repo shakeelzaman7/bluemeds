@@ -1,0 +1,212 @@
+.container-upload-files {
+  text-align: center;
+  width: 100%;
+  max-width: 500px;
+  margin: 20px auto;
+  background-color: white;
+}
+
+.drop-section {
+  min-height: 150px;
+  border: 1px dashed #A8A9AB;
+  background-color: #EAEAEA;
+  margin: 5px 35px 10px 35px;
+  border-radius: 12px;
+  position: relative;
+}
+
+.drop-section div.col-drop:first-child {
+  opacity: 1;
+  visibility: visible;
+  transition-duration: 0.2s;
+  transform: scale(1);
+  width: 200px;
+  margin: auto;
+}
+
+.drop-section div.col-drop:last-child {
+  font-size: 40px;
+  font-weight: 700;
+  color: #333333;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+  width: 200px;
+  height: 55px;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transform: scale(0.6);
+  transition-duration: 0.2s;
+}
+
+/* usaremos "drag-over-effect" en nuestros js */
+.drag-over-effect div.col-drop:first-child {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: scale(1.1);
+}
+
+.drag-over-effect div.col-drop:last-child {
+  opacity: 1;
+  visibility: visible;
+  transform: scale(1);
+}
+
+.drop-section .cloud-icon {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.drop-section span, .drop-section button {
+  display: block;
+  margin: auto;
+  color: #333333;
+  margin-bottom: 10px;
+}
+
+.drop-section button {
+  background-color: #1C9AD6;
+  border-radius: 9999px;
+  padding: 13px 17px;
+  font-size: 16px;
+  cursor: pointer;
+  color: white;
+}
+
+.list-section {
+  text-align: left;
+  margin: 0 35px;
+  padding-bottom: 10px;
+}
+
+.list-section .list-title {
+  font-size: 16px;
+  line-height: normal;
+  color: #666666;
+}
+
+.list-section li {
+  display: flex;
+  margin: 15px 0;
+  padding-top: 4px;
+  padding-bottom: 2px;
+  border-radius: 8px;
+  transition-duration: 0.2s;
+  border: 1.5px solid #A8A9AB;
+
+}
+
+.list-section li:hover {
+  box-shadow: #E3EAf9 0 0 4px 0, #E3EAF9 0 12px 17px 0;
+}
+
+.list-section li .col-drop {
+  flex: .1;
+}
+
+.list-section li .col-drop:nth-child(1) {
+  flex: .15;
+  text-align: center;
+}
+
+.list-section li .col-drop:nth-child(2) {
+  flex: .75;
+  text-align: left;
+  font-size: 16px;
+  color: #3e4046;
+  padding: 8px 10px;
+}
+
+.list-section li .col-drop:nth-child(2) div.name {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  max-width: 250px;
+  display: inline-block;
+  line-height: normal;
+}
+
+.list-section li .col-drop .file-name span {
+  color: #333333;
+  float: right;
+}
+
+.list-section li .file-progress {
+  width: 100%;
+  height: 5px;
+  border-radius: 8px;
+  background-color: #DEE6FD;
+}
+
+.list-section li .file-progress span {
+  display: block;
+  width: 0;
+  height: 100%;
+  border-radius: 8px;
+  background-color: #1C9AD6;
+  transition-duration: 0.4s
+}
+
+.list-section li .col-drop .file-size {
+  font-size: 16px;
+  color: #666666;
+  line-height: normal;
+}
+
+.list-section li .col-drop svg.cross, .list-section li .col-drop svg.tick {
+  width: 20px;
+  height: 20px;
+  margin: auto;
+  cursor: pointer;
+  transition-duration: 0.2s;
+}
+
+.success-file,
+.remove-file{
+  display: block;
+  position: relative;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.success-file {
+  color: #2dd36f;
+}
+
+.remove-file:hover {
+  color: #ff4d4d;
+}
+
+.list-section li.complete span,
+.list-section li.complete .file-progress,
+.list-section li.complete .remove-file {
+  display: none;
+}
+
+.list-section li.still span,
+.list-section li.still .file-progress {
+  display: none;
+}
+
+.list-section li.in-prog .success-file {
+  display: none;
+}
+
+.list-section li.still .success-file {
+  display: none;
+}
+
+.hide-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.hide-scroll {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

@@ -1,0 +1,27 @@
+.button {
+
+  &.active {
+    background: var(--background-hover);
+  }
+
+  .mat-icon {
+    color: var(--toolbar-icon-color);
+  }
+
+}
+
+.hide {
+  display: none;
+}
+
+.myListButton {
+  background: white;
+  color: #2a51a3;
+  border: 1.5px solid #2a51a3;
+  padding: 0.5rem 1rem;
+  border-radius: 30px;
+}
+
+.myListButton:hover {
+  background: #f6f3f3;
+}

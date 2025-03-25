@@ -1,0 +1,59 @@
+<div class="rounded-lg shadow-8 bg-card mx-[1rem] md:mx-auto mb-16" vexContainer>
+  <ion-row class="md:px-[12em] pb-6">
+    <ion-col size="12">
+      <div fxLayout="column">
+        <h3 class="mt-10">
+          <ion-text class="text-[#2A51A3] text-3xl">Confirmación de suscripción</ion-text>
+        </h3>
+
+        <app-component-payment-method
+          class="w-full" [showSaveButton]="false" [showExpansionPanels]="false"
+          [isOnWizard]="false" [addMethod]="true" [showUserEmail]="true"
+          [askDefaultPayment]="false" [token]="token" [deliveryId]="deliveryID"></app-component-payment-method>
+
+        <div>
+          <ion-item lines="none">
+            <ion-checkbox [checked]="true" [(ngModel)]="paymentData.complies" slot="start"></ion-checkbox>
+
+            <div class="flex items-center mb-2">
+              <div class="">
+                Acepto los términos y condiciones
+              </div>
+              <span class="text-bluemedsBlue cursor-pointer z-50 ml-2"
+                    (click)="showTermsAndConditions = !showTermsAndConditions">(ver términos y condiciones)</span>
+            </div>
+          </ion-item>
+          <ion-item lines="none">
+            <ion-checkbox [checked]="true" [(ngModel)]="paymentData.complies_bluemeds_service" slot="start"></ion-checkbox>
+            <div class="mb-2">
+              Acepto que Bluemeds convierta la bonificación del canje del plan de salud en un ahorro inmediato.
+            </div>
+          </ion-item>
+          <ion-item lines="none">
+            <ion-checkbox [checked]="true" [(ngModel)]="paymentData.complies_min_time" slot="start"></ion-checkbox>
+            <div class="mb-2">
+              Acepto un periodo mínimo de suscripción de 3 meses.
+            </div>
+          </ion-item>
+        </div>
+
+        <div *ngIf="showTermsAndConditions">
+          <h2 class="my-2">
+            <ion-text color="medium">Términos y condiciones</ion-text>
+          </h2>
+          <div class="max-h-[18em] overflow-auto p-6 bg-white text-justify">
+            <app-terms-conditions></app-terms-conditions>
+          </div>
+        </div>
+
+        <div class="mt-5 mx-auto">
+          <ion-button *ngIf="!saving" color="tertiary" shape="round" (click)="confirmSubscription()"
+                      [disabled]="!paymentData.complies || !paymentData.complies_bluemeds_service || !paymentData.complies_min_time">
+            Confirmar suscripci&oacute;n
+          </ion-button>
+          <ion-spinner *ngIf="saving"></ion-spinner>
+        </div>
+      </div>
+    </ion-col>
+  </ion-row>
+</div>

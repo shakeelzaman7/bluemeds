@@ -1,0 +1,19 @@
+version: '3'
+services:
+  app:
+    build:
+      context: ./
+      dockerfile: docker/dev/Dockerfile
+    image: bluemedical/bluemeds-portal:dev
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    ports:
+      - '${APP_PORT:-4200}:${APP_PORT:-4200}'
+      - '${HOT_PORT:-49153}:${HOT_PORT:-49153}'
+    volumes:
+      - './src:/app/src'
+    networks:
+      - bluemeds-portal
+networks:
+    bluemeds-portal:
+        driver: bridge

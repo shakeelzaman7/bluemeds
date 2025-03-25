@@ -1,0 +1,11 @@
+<div fxLayout="column">
+  <mat-form-field fxFlex="grow">
+    <mat-label>{{label}}</mat-label>
+      <input [(ngModel)]="model"
+      [required]="required" (dateChange)="emitChange()"
+      name="{{name}}" (focus)="picker.open()" matInput [matDatepicker]="picker" [matDatepickerFilter]="myDateFilter">
+    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker [startAt]="maxDate ? maxDate : today" #picker></mat-datepicker>
+
+  </mat-form-field>
+</div>

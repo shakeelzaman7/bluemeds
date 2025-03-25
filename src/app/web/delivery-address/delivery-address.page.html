@@ -1,0 +1,12 @@
+<ion-row vex-container class="container md hydrated">
+  <div class="p-5" vexContainer>
+    <!-- utilizamos el componente breadcrumbs -->
+    <app-breadcrumbs [directionList]="directionList"></app-breadcrumbs>
+  </div>
+</ion-row>
+
+<div class="rounded-lg shadow-8 bg-card mx-[1rem] md:mx-auto mb-16" vexContainer>
+  <ion-row class="md:px-[12em] pb-6">
+    <app-component-delivery-address class="w-full" [showSaveButton]="true" [showExpansionPanels]="true"></app-component-delivery-address>
+  </ion-row>
+</div>

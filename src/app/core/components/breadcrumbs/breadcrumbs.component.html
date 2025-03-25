@@ -1,0 +1,6 @@
+<div>
+  <a class="text-[#333333]" *ngFor="let item of directionList; let i = index" [routerLink]="item.route">
+    <label class="pointer" [class]="i < directionList.length - 1 ? 'underline' : ''">{{ item.text }}</label>
+    <span *ngIf="i < directionList.length - 1"> > </span>
+  </a>
+</div>

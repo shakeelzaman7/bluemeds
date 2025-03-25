@@ -1,0 +1,11 @@
+{
+    "general": {
+        "ok": "Ok",
+        "cancel": "Cancelar"
+    },
+    "items_per_page": "Artículos por página:",
+    "next_page": "Página siguiente",
+    "previous_page": "Página anterior",
+    "first_page": "Primera página",
+    "last_page": "Última página"
+}

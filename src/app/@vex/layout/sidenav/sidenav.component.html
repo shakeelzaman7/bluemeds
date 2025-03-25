@@ -1,0 +1,47 @@
+<div (mouseenter)="onMouseEnter()"
+     (mouseleave)="onMouseLeave()"
+     [class.open]="collapsed && collapsedOpen$ | async"
+     class="flex flex-col" [class]="!(isDesktop$ | async) ? 'sidenav' : 'w-[80%] mx-auto'">
+  <div class="sidenav-toolbar flex-none flex items-center">
+    <img [src]="imageUrl$ | async" class="w-40 select-none flex-none">
+    <h2 class="title ltr:pl-4 rtl:pr-4 select-none flex-auto">{{ title$ | async }}</h2>
+    <button (click)="toggleCollapse()"
+            *ngIf="showCollapsePin$ | async"
+            class="w-8 h-8 -mr-2 leading-none flex-none hidden lg:block"
+            mat-icon-button
+            type="button">
+      <mat-icon *ngIf="!collapsed" [icIcon]="icRadioButtonChecked" size="14px"></mat-icon>
+      <mat-icon *ngIf="collapsed" [icIcon]="icRadioButtonUnchecked" size="14px"></mat-icon>
+    </button>
+  </div>
+
+  <vex-scrollbar class="flex-auto">
+    <div *ngIf="!(isDesktop$ | async) && !isAuthenticated || isAuthenticated" class="flex justify-center">
+      <button routerLink="/web/search" class="w-[80%] h-[2.7em] bg-[#2A51A3] rounded-full text-white">
+        <ion-label class="normal-case text-base">
+          Buscar medicamentos
+        </ion-label>
+      </button>
+    </div>
+    <div class="flex justify-center my-2">
+      <button *ngIf="!isAuthenticated" routerLink="/web/budget" class="w-[80%] h-[2.7em] bg-[#2A51A3] rounded-full text-white">
+        <ion-label class="normal-case text-base">
+          Cotizar medicamentos
+        </ion-label>
+      </button>
+    </div>
+    <div class="flex justify-center">
+      <button *ngIf="!isAuthenticated" routerLink="/web/register" class="w-[80%] h-[2.7em] bg-white text-[#2A51A3] rounded-full" style="border: 2px solid #2A51A3">
+        <ion-label class="normal-case text-base">
+          Crear cuenta
+        </ion-label>
+      </button>
+    </div>
+    <div class="sidenav-items">
+      <ng-container *ngFor="let item of items">
+        <vex-sidenav-item [item]="item" *ngIf="(item.isLogged === isAuthenticated && item.label !== 'Cotizar medicamentos')"></vex-sidenav-item >
+      </ng-container>
+    </div>
+  </vex-scrollbar>
+
+</div>

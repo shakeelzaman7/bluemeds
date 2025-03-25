@@ -1,0 +1,498 @@
+<form id="cc-form" style="display: none;">
+  <div id="card-number"></div>
+  <div id="card-cvv"></div>
+</form>
+<div class="p-5" vexContainer>
+  <!-- para está parte de la página tendremos un breadcrumbs personalizado -->
+  <div>
+    <a class="text-[#333333]" *ngFor="let item of directionList; let i = index" (click)="breadcrumbsWizard(item)">
+      <label class="pointer" [class]="i < directionList.length - 1 ? 'underline' : ''">{{ item.text }}</label>
+      <span *ngIf="i < directionList.length - 1"> > </span>
+    </a>
+  </div>
+</div>
+<div class="rounded-lg shadow-8 bg-card" vexContainer>
+  <!-- Modal de de validación de fecha menor a la de hoy y hora de corte by_recipe -->
+  <ion-modal class="modal-warning-days px-3 sm:px-0" [isOpen]="openWarningDateModal">
+    <ng-template>
+      <div class="p-5">
+        <div>
+          <h1 class="text-[#0047BB] text-center text-2xl">Información importante</h1>
+        </div>
+
+        <div class="my-3">
+          <p class="text-center text-base text-[#7B868C]">
+            Por la hora del día, <span *ngIf="itemsWarningByDate.length > 1">los</span><span *ngIf="itemsWarningByDate.length == 1">el</span> medicamento<span *ngIf="itemsWarningByDate.length > 1">s</span>
+          </p>
+
+          <div [class]="itemsWarningByDate.length > 4 ? 'h-24': 'h-auto'" class="overflow-x-auto">
+            <p *ngFor="let item of itemsWarningByDate" class="text-center text-[#7B868C] font-bold my-1">{{ item.name }}</p>
+          </div>
+
+          <p class="text-center text-base text-[#7B868C]"><span *ngIf="itemsWarningByDate.length > 1">serán</span><span *ngIf="itemsWarningByDate.length == 1">será</span> entregado<span *ngIf="itemsWarningByDate.length > 1">s</span> mañana.</p>
+
+          <p class="text-center text-base text-[#7B868C] mt-4 px-3">Si te urge, por favor comunícate al <a href="https://api.whatsapp.com/send/?phone=50224272000&text&type=phone_number&app_absent=0" target="_blank" class="font-bold text-[#009ADE] underline ">WhatsApp +502 2427-2000</a> o llama al <a href="tel:1750" class="font-bold text-[#009ADE] underline ">1750, opción 5.</a></p>
+        </div>
+
+        <div class="text-center mx-auto flex flex-wrap-reverse sm:flex-nowrap justify-center mt-5" style="width: 100%">
+          <button mat-button class="border-2 rounded-full border-[#2A51A3] sm:w-64 bg-[#2A51A3] text-white px-5 m-1 py-[0.6rem]" (click)="updateDeliveryDate()">Entendido</button>
+        </div>
+      </div>
+    </ng-template>
+  </ion-modal>
+
+  <ion-grid>
+    <ion-row class="relative mt-5 sm:px-[8em]">
+      <ion-col class="z-10" size="4" *ngFor="let s of [1,2,3]">
+        <a (click)="breadcrumbsWizardIcon(s)">
+          <div style="text-align: center;">
+            <div class="number">
+              <span [class.selected]="step >= s">{{s}}</span>
+            </div>
+            <h1 [class.selectedText]="step >= s" style="line-height: normal" class="text-base sm:text-lg text-[#8D8D8D]">
+              {{s === 1 ? 'Información personal' : s === 2 ? 'Dirección de entrega' : 'Método de pago'}}</h1>
+          </div>
+        </a>
+      </ion-col>
+      <div class="w-1/2 h-[0.15rem] bg-[#A8A9AB]"
+        style="position: absolute; top: 33%; left: 50%; transform: translate(-50%, -50%);"></div>
+    </ion-row>
+  </ion-grid>
+
+  <ion-grid>
+    <ion-row @fadeInUp *ngIf="step == 1" class="md:px-[12em]">
+      <app-personal-information class="w-full" [showExpansionPanels]="false"></app-personal-information>
+    </ion-row>
+
+    <ion-row @fadeInUp *ngIf="step == 2" class="md:px-[12em]">
+      <app-component-delivery-address class="w-full"></app-component-delivery-address>
+    </ion-row>
+
+    <div *ngIf="meInfo; else showStep3" class="flex justify-center">
+      <div *ngIf="meInfo.email_verified_at == null && meInfo.wizard_done == false && step == 3; else showStep3">
+        <ion-row class="justify-center my-5">
+          <h1 class="text-[#2A51A3] font-bold text-center">Verificación de cuenta Bluemeds</h1>
+        </ion-row>
+        <ion-row class="justify-center">
+          <p class="text-lg text-[#2A51A3] text-center">
+            Para completar el último paso, verifica tu cuenta validando tu número de teléfono.
+          </p>
+        </ion-row>
+        <ion-row class="justify-center mt-5">
+          <ion-button (click)="openAccountVerificationModal()" class="normal-case font-bold text-lg h-10 w-[180px]" color="tertiary"
+            shape="round">
+            Verificar cuenta
+          </ion-button>
+        </ion-row>
+      </div>
+    </div>
+
+    <ng-template #showStep3>
+      <ion-row @fadeInUp *ngIf="step == 3" class="md:px-[12em]">
+        <app-component-billing class="w-full" [showPaymentMethod]="true"  [confirmSubError]="wizardConfirmationError"></app-component-billing>
+        <ion-col size="12">
+          <div fxLayout="column">
+            <div id="form-step-3" fxFlex="auto" fxLayout="column">
+              <h2 class="mt-8 mb-3">
+                <ion-text class="text-[#2A51A3] text-3xl">Tu lista Bluemeds</ion-text>
+              </h2>
+              <div class="card border-2 overflow-x-auto">
+                <!-- Tabla para by_date -->
+                <table *ngIf="list && list.delivery_method == 'by_date'" class="w-full">
+                  <thead>
+                    <tr class="text-[#2A51A3] border-b-2">
+                      <th class="text-left p-3">Medicamento</th>
+                      <th class="text-center p-3">Cantidad</th>
+                      <th class="text-center p-3">Cada</th>
+                      <th class="text-center p-3">Duración</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr class="text-base" [class]="!isLast ? 'border-b-2' : ''" *ngFor="let element of items; let i = index; let isLast = last">
+                      <td class="text-left p-3">{{ element.publication.product.name }}</td>
+                      <td class="text-center p-3">{{ element.quantity }}</td>
+                      <td class="text-center p-3">{{ getEachName(element.each) }}</td>
+                      <td *ngIf="element.duration != 'undefined'" class="text-center p-3">
+                        {{ getDurationItem(element.each, element.duration) }}
+                      </td>
+                      <td *ngIf="element.duration == 'undefined'" class="text-center p-3">
+                        indefinido
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+                <!-- Tabla para by_recipe -->
+                <table *ngIf="list && list.delivery_method == 'by_recipe'" class="w-full">
+                  <thead>
+                    <tr class="text-[#2A51A3] border-b-2">
+                      <th class="text-left p-3">Medicamento</th>
+                      <th class="text-center p-3">Dosis</th>
+                      <th class="text-center p-3">Frecuencia</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr class="text-base" [class]="!isLast ? 'border-b-2' : ''" *ngFor="let element of items; let i = index; let isLast = last">
+                      <td class="text-left p-3">{{ element.publication.product.name }}</td>
+                      <td class="text-center p-3">{{ element.dose }} {{ element.dose > 1 ?
+                        dosageSemantics[element.publication.product.presentation].plural :
+                        dosageSemantics[element.publication.product.presentation].singular }}</td>
+                      <td class="text-center p-3">{{ element.frequency.name }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <br>
+              <div>
+                <mat-accordion class="example-headers-align">
+                  <mat-expansion-panel (opened)="panelOpenState = true"
+                                      (closed)="panelOpenState = false" hideToggle [disabled]="list?.wizard_done || list?.referred_by || list?.has_promo_code">
+                    <mat-expansion-panel-header>
+                      <mat-panel-title style="color: #0038AE">
+                        <div *ngIf="list?.wizard_done === true">
+                          <p *ngIf="!list?.referred_by && !list?.has_promo_code" class="font-bold ml-3">Código de referido o cupón - Sin código</p>
+                          <p *ngIf="list?.referred_by !== null" class="font-bold ml-3">Código de referido - {{ list?.referred_by }}</p>
+                          <p *ngIf="list?.has_promo_code !== null" class="font-bold ml-3">Código de promoción - {{ list?.has_promo_code }}</p>
+                        </div>
+
+                        <div *ngIf="list?.wizard_done === false">
+                          <p *ngIf="!list?.referred_by && !list?.has_promo_code" class="font-bold ml-3">Código de referido o cupón</p>
+                          <p *ngIf="list?.referred_by !== null" class="font-bold ml-3">Código de referido - {{ list?.referred_by }}</p>
+                          <p *ngIf="list?.has_promo_code !== null" class="font-bold ml-3">Código de promoción - {{ list?.has_promo_code }}</p>
+                        </div>
+                      </mat-panel-title>
+                      <mat-panel-description *ngIf="!list?.wizard_done && !list?.referred_by && !list?.has_promo_code">
+                        <p style="color: #f0f9fd">.</p>
+                        <div class="flex" *ngIf="!panelOpenState">
+                          <p style="color: #0038AE">Mostrar</p>
+                          <mat-icon class="ml-2" svgIcon="chevron-down" aria-hidden="false"
+                            aria-label="Chevron down"></mat-icon>
+                        </div>
+                        <div class="flex" *ngIf="panelOpenState">
+                          <p style="color: #0038AE">Ocultar</p>
+                          <mat-icon class="ml-2" svgIcon="chevron-up" aria-hidden="false"
+                            aria-label="Chevron down"></mat-icon>
+                        </div>
+                      </mat-panel-description>
+                    </mat-expansion-panel-header>
+                    <div class="mt-3">
+                      <div class="flex flex-wrap justify-center sm:space-x-4 mx-auto sm:w-2/3">
+                        <p style="color: #0038AE" class="font-bold text-md sm:mt-6">Ingresa tu código de referido o cupón promocional</p>
+                        <mat-form-field appearance="outline" class="mt-3 sm:mt-0">
+                          <mat-label>Ingresa tu código</mat-label>
+                          <input [(ngModel)]="reference_code" [disabled]="blockReferenceCode" name="reference_code"
+                            matInput>
+                          <mat-hint *ngIf="false">Hint</mat-hint>
+                        </mat-form-field>
+                        <ion-button (click)="applyReferralCode()" class="sm:mt-3" color="tertiary" shape="round">
+                          Aplicar
+                        </ion-button>
+                      </div>
+                      <p class="text-center sm:mt-0 mt-5" style="color: #9d9fa6">Si tienes un código de referido o cupón promocional ingrésalo aquí. O puedes dejar el espacio en blanco</p>
+                    </div>
+                  </mat-expansion-panel>
+                </mat-accordion>
+              </div>
+              <br>
+            </div>
+            <div fxLayout="row wrap" fxLayoutAlign="start center" class="">
+              <div class="w-full sm:w-8/12">
+                <ion-item lines="none">
+                  <ion-checkbox [checked]="true" [(ngModel)]="paymentData.complies" slot="start"></ion-checkbox>
+
+                  <div *ngIf="layoutService.isMobile()" class="mb-2">
+                    Acepto los términos y condiciones<br>
+                    <a class="underline text-bluemedsBlue cursor-pointer"
+                      (click)="showTermsAndConditions = !showTermsAndConditions">(ver términos y condiciones)</a>
+                  </div>
+                  <div *ngIf="!layoutService.isMobile()">
+                    <ion-label>
+                      Acepto los términos y condiciones
+                      <a class="underline text-bluemedsBlue cursor-pointer"
+                        (click)="showTermsAndConditions = !showTermsAndConditions">(ver términos y condiciones)</a>
+                    </ion-label>
+                  </div>
+                </ion-item>
+                <ion-item lines="none">
+                  <ion-checkbox [checked]="true" [(ngModel)]="paymentData.complies_bluemeds_service"
+                    slot="start"></ion-checkbox>
+                  <div class="mb-2">
+                    Acepto que Bluemeds convierta la bonificación del canje del plan de salud en un ahorro inmediato.
+                  </div>
+                </ion-item>
+                <ion-item lines="none">
+                  <ion-checkbox [checked]="true" [(ngModel)]="paymentData.complies_min_time" slot="start"></ion-checkbox>
+                  <div class="mb-2">
+                    Acepto un periodo mínimo de suscripción de 3 meses.
+                  </div>
+                </ion-item>
+              </div>
+              <!-- <div *ngIf="!layoutService.isMobile() && !list?.wizard_done" class="w-4/12 text-right pr-2" fxLayout="column" fxLayoutAlign="end end">
+                <a (click)="showAdvisorInput=!showAdvisorInput" class="opacity-50 cursor-pointer">Código de Asesor Blue</a>
+                <div *ngIf="showAdvisorInput" class="w-[9em] bg-white text-center"><input (input)="checkCAB($event)" [(ngModel)]="list.advisor_number" maxlength="10" size="18"></div>
+              </div> -->
+              <div *ngIf="layoutService.isMobile() && !list?.wizard_done" class="text-center w-full" fxLayout="row wrap" fxLayoutAlign="center center">
+                <a (click)="showAdvisorInput=!showAdvisorInput" class="opacity-50 w-full">Código de Asesor Blue</a>
+                <div *ngIf="showAdvisorInput" class="w-[9em] bg-white text-center">
+                  <input (input)="checkCAB($event)" class="w-[9em]" [(ngModel)]="list.advisor_number" maxlength="10" size="18">
+                </div>
+              </div>
+              <div *ngIf="!layoutService.isMobile() && !list?.wizard_done" class="w-full sm:w-4/12 flex justify-end">
+                <div>
+                  <a (click)="showAdvisorInput=!showAdvisorInput" class="opacity-50 cursor-pointer">Código de Asesor Blue</a>
+                  <div *ngIf="showAdvisorInput" class="flex items-end space-x-1 text-center" style="margin-top: 10px;">
+                    <div class="flex flex-col">
+                      <div *ngFor="let item of inputAdvisorNumbers" class="relative">
+                        <input (input)="checkCAB($event)"
+                              [(ngModel)]="item.value"
+                              [id]="item.id"
+                              [type]="item.type"
+                              class="validate-advisor-number rounded border border-[#808080] outline-none py-[0.10rem] px-1 mt-2"
+                              maxlength="10" size="18">
+                        <button (click)="clearInput(item)" class="absolute right-1 top-[0.60rem] text-[#F44336] hover:bg-[#f4c8c2] rounded-full flex items-center w-5 h-5 text-xl"><p class="mx-auto">-</p></button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div *ngIf="showTermsAndConditions">
+              <h2 class="my-2">
+                <ion-text color="medium">Términos y condiciones</ion-text>
+              </h2>
+              <div class="max-h-[18em] overflow-auto p-6 bg-white text-justify">
+                Términos y condiciones<br /><br />
+                1. GENERALIDADES<br />
+                El ingreso y uso de este sitio de internet, de ahora en adelante llamado el "WEBSITE", el cual es una
+                pasarela de pagos de BRINDA, de ahora en adelante llamado la "SOCIEDAD", por parte de cualquiera persona
+                que acceda al mismo, de ahora en adelante llamada el "USUARIO", implica la aceptación incondicional e
+                irrevocable por parte del USUARIO de que toda la información ingresada y las actividades realizadas en el
+                WEBSITE se encuentran regidas por estos Términos y Condiciones.
+                Estos Términos y Condiciones podrán ser cambiados por la SOCIEDAD en cualquier momento y a exclusivo
+                criterio de ésta, razón por la cual el USUARIO se obliga a revisar estos Términos y Condiciones cada vez
+                que visite el WEBSITE.
+                La SOCIEDAD igualmente se reserva el derecho de interrumpir el servicio ofrecido mediante el WEBSITE, ya
+                sea en forma permanente o transitoria, sin aviso previo y sin requerir el consentimiento del USUARIO, en
+                cualquier momento, a exclusivo criterio de la SOCIEDAD.<br /><br />
+                2. CONDICIONES DE USO DEL WEBSITE<br />
+                Mediante el acceso y utilización del WEBSITE el USUARIO manifiesta su acuerdo, de forma expresa, plena y
+                sin reservas del contenido de estos Términos y Condiciones.
+                El uso de determinados servicios a través del WEBSITE puede requerir la identificación del USUARIO en el
+                WEBSITE y la previa aceptación de ciertas condiciones generales. El USUARIO deberá conocer el contenido de
+                dichas condiciones generales u otros avisos que aparecen en el WEBSITE.
+                Si el USUARIO no estuviere de acuerdo con el contenido de estos Términos y Condiciones, deberá abstenerse
+                de acceder al el WEBSITE y de operar a través del mismo.
+                El USUARIO debe asegurarse de que todas las instrucciones y datos proporcionados en el WEBSITE sean
+                exactos, completos y verdaderos.
+                Cuando sea necesario o requerido el escribir el número de Tarjeta para realizar una transacción, el mismo
+                debe ser identificado correctamente. Todas las instrucciones y datos se considerarán definitivos y
+                vinculantes para el USUARIO, razón por la cual la SOCIEDAD ni sus proveedores de servicio asumirán
+                responsabilidad alguna que pueda derivarse del suministro de información incorrecta, inexacta o falsa por
+                parte del USUARIO. Queda convenido que el USUARIO es el único responsable de cualquier consecuencia
+                relacionada con el hecho de no proporcionar información correcta, exacta y verdadera o por el hecho de no
+                corregir dicha información antes de su confirmación final en el WEBSITE.
+                Todas las personas están autorizadas a utilizar el WEBSITE. Ninguna parte de este sitio puede ser
+                redistribuida, copiada o reproducida sin el consentimiento previo y por escrito de la
+                SOCIEDAD.<br /><br />
+                Sin la expresa autorización previa por escrito de la SOCIEDAD, usted no puede:<br />
+                Usar ningún robot de extracción de datos ("bots"), módulos de hardware o software que agreguen una
+                característica o un servicio específico al conectarse a un sistema mayor existente ("plug-ins"), ni otros
+                métodos o herramientas de extracción y recopilación de datos, archivos de comando, aplicaciones o métodos
+                en este sitio.
+                Usar ningún dispositivo, software o hardware para desviar algún elemento operativo o para interferir, o
+                intentar interferir, con el funcionamiento adecuado de este sitio, del servidor o de las actividades que
+                se realizan en el mismo.
+                Tomar cualquier medida que imponga una carga excesiva o desproporcionada a este sitio o a la
+                infraestructura de su red, o que tenga consecuencias negativas para nuestra red o para otros clientes.
+                Descompilar, hacer ingeniería inversa, modificar ni desensamblar ningún tipo de software que se encuentre
+                en la red y/o el servidor o que esté relacionado con alguno de ellos.<br /><br />
+                Exceder de algún otro modo su acceso limitado al sitio conforme a lo autorizado por la SOCIEDAD.<br />
+                Usar la información y contenidos en el WEBSITE de forma personal y no comercial, por lo que el USUARIO no
+                podrá vender, ceder, copiar, transmitir, transferir a cualquier título, publicar, referenciar, reproducir
+                o conceder su uso en forma total o parcial del material, elementos, productos o servicios del
+                WEBSITE.<br /><br />
+                3. CONTENIDO DEL WEBSITE<br />
+                El USUARIO del WEBSITE asume, conoce y acepta, por el hecho mismo de visitarlo, que los datos e
+                informaciones sobre productos, y cualesquiera otros datos e informaciones del mismo, única y
+                exclusivamente para efectos informativos, contiene información de carácter preliminar puesta a disposición
+                del USUARIO, y que en un momento dado pueden contener errores, imprecisiones o no estar actualizadas.
+                Los servicios que se ofrecen por la SOCIEDAD mediante el WEBSITE al USUARIO son de carácter general y de
+                forma gratuita. No obstante, algunos servicios pueden conllevar el pago de una comisión o cargo por parte
+                del Banco o entidad financiera que preste dichos servicios.<br /><br />
+                4. INTERRUPCIÓN POTENCIAL DEL SERVICIO<br />
+                De vez en cuando, el acceso al sitio WEBSITE podría no estar disponible, retrasarse, limitarse o estar
+                lento debido, por diversas causas.<br /><br />
+                5. REGISTRO PERSONAL<br />
+                El uso de los servicios ofrecidos por la SOCIEDAD a través del WEBSITE le permitirá al USUARIO registrarse
+                de manera opcional.
+                En el caso que el USUARIO se registre, se obliga bajo su responsabilidad a que los datos que aporte en el
+                formulario de identificación sean veraces y correctos.<br /><br />
+                6. TRATAMIENTO DE DATOS PERSONALES Y SENSIBLES<br />
+                El USUARIO se compromete y obliga a comunicar de forma inmediata a la SOCIEDAD cualquier modificación de
+                sus datos de carácter personal.
+                Se pone en conocimiento del USUARIO de la existencia de "Cookies", esto es, pequeños archivos de texto que
+                almacena el navegador en el disco duro del ordenador del USUARIO. Al visitar el WEBSITE.
+                La SOCIEDAD se compromete a tratar de forma absolutamente confidencial los datos de carácter personal y/o
+                sensible del USUARIO.
+                La SOCIEDAD le informa que tiene implantadas las medidas de seguridad de índole técnica y organizativas
+                necesarias para la seguridad de sus datos.<br /><br />
+                7. GARANTÍAS GENERALES<br />
+                La SOCIEDAD manifiesta y garantiza que a la fecha el WEBSITE dispone de la tecnología (software y
+                hardware) necesaria para permitir el acceso y utilización del mismo. Sin embargo, la SOCIEDAD no se
+                responsabiliza por la eventual existencia de virus u otros elementos nocivos, introducidos por cualquier
+                medio o por cualquier tercero, que puedan producir alteraciones en los sistemas informáticos del USUARIO,
+                ni por las consecuencias perjudiciales que las mismas puedan producir en los sistemas informáticos del
+                USUARIO.
+                El USUARIO acepta plenamente lo anterior y se compromete, de su parte, a desplegar la máxima diligencia y
+                prudencia cuando acceda y utilice los Servicios que se ofrecen a través del WEBSITE.
+                El USUARIO exonera a la SOCIEDAD de cualquier responsabilidad en relación con la fiabilidad, utilidad o
+                falsas expectativas que el WEBSITE pudiera producirle o generarle durante su navegación por el mismo.
+                El USUARIO garantiza que cualesquiera actividades por él desarrolladas a través del WEBSITE se adecuarán a
+                la ley, la moral, las buenas costumbres aceptadas generalmente y al orden público, y que en ningún caso
+                resultarán ofensivas para el buen nombre e imagen comercial de la SOCIEDAD, para el resto de los usuarios
+                del WEBSITE o para los terceros proveedores de servicios.
+                En particular, el USUARIO se compromete a utilizar los servicios ofrecidos en el WEBSITE de forma correcta
+                y diligente, así como abstenerse de utilizarlos con fines o efectos ilícitos o prohibidos por estos
+                Términos y Condiciones y por la ley, de forma que sean lesivos a los derechos e intereses de terceros, o
+                que de cualquier forma puedan dañar, inutilizar, sobrecargar o deteriorar dichos servicios, los equipos
+                informáticos de terceros, así como los documentos, archivos, y toda clase de contenidos almacenados en sus
+                equipos informáticos o impedir la normal utilización o disfrute de los servicios por parte de
+                terceros.<br /><br />
+                8. TRANSACCIONES<br />
+                La SOCIEDAD ha definido este WEBSITE como el único portal autorizado para realizar transacciones vía
+                Tarjeta de Crédito o Débito.
+                Al momento de afiliarse usted queda registrado a la recurrencia mensual el cual le aplicara un pago
+                puntual desde su afiliacion y los pagos mensuales seran aplicados en la misma fecha de su afiliacion.
+                Los pagos son finales y por lo tanto no se permitirán devoluciones ni cancelaciones mediante el WEBSITE.
+                El USUARIO debe salvaguardar el comprobante electrónico que será enviado a su correo electrónico una vez
+                finalizado el proceso transaccional, ya que con este podrá realizar reclamos en los Centros te Atención de
+                la SOCIEDAD.<br /><br />
+                9. CONDICIONES DE PAGO<br />
+                Los pagos de un Producto, Servicio, o de las afiliaciones automáticas si aplican a los mismos, se
+                realizarán de forma inmediata o programada en caso de las afiliaciones a través de cualquier Tarjeta de
+                Crédito o débito del USUARIO.
+                El comprobante de pago será enviado al correo electrónico registrado por el USUARIO.<br /><br />
+                10. SUGERENCIAS Y COMUNICACIONES<br />
+                Usted acepta que toda sugerencia, intercambio de ideas y comunicaciones que realice con la SOCIEDAD a
+                través del WEBSITE u otros medios, es propiedad de la SOCIEDAD, por lo que ésta podrá publicarla u hacer
+                uso de ella en mejoras, medios y otros, a título gratuito.<br /><br />
+                11. TERMINACIÓN DEL ACCESO<br />
+                La SOCIEDAD podrá, en cualquier momento, terminar o suspender el acceso que el USUARIO tenga a todo o
+                parte de este sitio sin aviso previo y sin responsabilidad alguna hacia el USUARIO, por cualquier conducta
+                de aquél que la SOCIEDAD conforme su exclusivo y excluyente criterio, considere que ha violado estos
+                Términos y Condiciones. Sin perjuicio de ello, la SOCIEDAD en cualquier momento, sin invocación de causa y
+                sin previo aviso, podrá suspender o terminar el acceso que el USUARIO tenga a todo o parte de este sitio;
+                sin que ello genere derecho a reclamo o indemnización alguna. Ni la terminación o suspensión del acceso,
+                ni cualquier acción o inacción del USUARIO, terminará las disposiciones de estos Términos y Condiciones,
+                los que permanecerán en plena fuerza y vigor de forma indefinida, sujetas sólo a cualquier cambio que la
+                SOCIEDAD efectúe.<br /><br />
+                12. ATENCIÓN AL CLIENTE<br />
+                Ante cualquier duda o sugerencias, la SOCIEDAD dispone de centros de atención al cliente y/o canales de
+                comunicación para atenderlo personalmente.<br /><br />
+                13. LEY APLICABLE Y RESPONSABILIDAD<br />
+                Este WEBSITE se regirá por las leyes de la República de Guatemala y mediante su uso o acceso el USUARIO
+                acepta que cualquier información contenida en el WEBSITE y toda transacción, también se regirá por las
+                leyes de la Republica de Guatemala. El USUARIO acepta que cualquier demanda o disputa que surja del uso
+                del WEBSITE o cualquier información que el mismo contenga será de competencia exclusiva de los tribunales
+                de la República de Guatemala.
+                El USUARIO se obliga en forma expresa e irrevocable a mantener absolutamente indemne a la SOCIEDAD,
+                respecto a cualquier reclamo y/o demanda y/o sanción extrajudicial, administrativo o judicial, de
+                cualquier tercero, derivada de su uso del WEBSITE, o en caso de verificarse la existencia de multas y/o
+                deudas de cualquier tipo generadas por el USUARIO o la actividad del mismo realizada en o mediante el
+                WEBSITE.<br /><br />
+                14. CONDICIONES DE SERVICIO BLUEMEDS<br />
+                Si adquiere un Servicio, usted debe ser mayor de edad y acepta las Condiciones Específicas de dicho
+                servicio, las cuales acepta que se especificaron y entendió a cabalidad, así mismo autoriza a la entidad
+                INNOVACIONES MÉDICAS INTERNACIONALES SOCIEDAD ANÓNIMA para que haga uso de la información proporcionada
+                por su persona según considere conveniente, autorización que cesará por medio de una solicitud de su parte
+                por escrito.
+                Para abonar los cargos de un Servicio, se le pedirá que proporcione un método de pago en el momento de
+                suscribirse a dicho Servicio, ya sea para pagos en modalidad mensual o trimestral. Usted acepta permitir a
+                INNOVACIONES MÉDICAS INTERNACIONALES SOCIEDAD ANÓNIMA el uso de la información de su cuenta actualizada
+                respecto del método de pago seleccionado. Usted es el único responsable de la autenticidad y propiedad
+                del medio de pago a utilizar. Usted acepta mantener al día la información de contacto y de la cuenta de
+                facturación en todo momento. Si nos da instrucciones para que dejemos de utilizar su método de pago,
+                pero no nos proporciona otro método de pago después de que le notifiquemos que debe hacerlo dentro de un
+                período razonable, podremos suspender o cancelar su Servicio de afiliacion por causa justificada.
+                INNOVACIONES MÉDICAS INTERNACIONALES SOCIEDAD ANÓNIMA intentará garantizar una alta disponibilidad de los
+                medicamentos que se muestran en el portal web, a menos que la carencia del mismo sea a nivel nacional, en
+                cuyo caso le propondremos un sustituto equivalente o producto parecido.
+                Los beneficios que están vinculados a planes de salud están sujetos a un periodo mínimo de suscripción de
+                3 meses. Si usted suspende su suscripción antes de que transcurran los primeros 3 meses, la penalización
+                es del 15% del valor total de sus medicamentos. Si suspende sus medicamentos después de 3 meses no hay
+                ninguna penalización.
+                En el caso de que un medicamento requiera receta médica, usted se compromete a cargar una receta legítima
+                y válida emitida por un médico colegiado, librando de toda responsabilidad civil, penal y administrativa a
+                INNOVACIONES MÉDICAS INTERNACIONALES SOCIEDAD ANÓNIMA de lo relativo a la autenticidad de la receta médica
+                o alteraciones que esta haya tenido.
+                El cobro de los medicamentos se realiza de forma anticipada a la fecha de despacho. En el caso de que el
+                cobro no sea exitoso en el método de pago asociado, no será posible realizar la entrega.
+                El cobro se realizará periódicamente durante el tiempo de suscripción de manera automática. La
+                periodicidad del cobro dependerá del contenido del medicamento, de la dosis y frecuencia de consumo. Para
+                lo cual debe brindar los datos de facturación y un correo electrónico válido para el envío de la factura
+                electrónica.
+                Al suscribirse acepta que, durante el periodo de suscripción, nosotros administremos los canjes de sus
+                planes de salud dados por laboratorios a través de sus plataformas y/u otros métodos.
+                Si el pago de sus medicamentos será gestionado con aseguradoras, usted acepta que Bluemeds haga consultas
+                a dichas aseguradoras acerca de dichas autorizaciones con el fin de brindarle el servicio óptimo.
+                La renovación de la suscripción es de forma automática a menos que usted suspenda sus medicamentos.
+                Será motivo de cancelación si se realiza un canje del medicamento en otra farmacia ajena a las cadenas de
+                Blue Medical y se penalizará por medio de la cláusula 3 de los términos y condiciones.
+              </div>
+            </div>
+
+            <br>
+            <p class="text-secondary text-center">Para validar tu tarjeta, se intentará un cobro de <span
+                class="font-bold">Q 0.10</span> que será devuelto inmediatamente.</p>
+            <p class="text-secondary text-center">Tu suscripción será cobrada 3 o 4 días antes de tu fecha de entrega</p>
+          </div>
+          <div class="my-5 flex flex-wrap items-center justify-center">
+            <img class="w-14 h-14" src="https://badge.verygoodsecurity.io/badge/pci/vgs_zero_data.svg" alt="Logo VGS">
+            <span class="italic px-2">Security provided by VGS</span>
+          </div>
+        </ion-col>
+      </ion-row>
+    </ng-template>
+
+    <ion-row class="w-full flex justify-center mb-4">
+      <div>
+
+      </div>
+    </ion-row>
+  </ion-grid>
+</div>
+
+<div class="mb-3 mt-3 flex justify-center">
+  <ion-row class="flex flex-col justify-center">
+    <div *ngIf="showGeneralErrorMessage" class="mt-2 p-4">
+      <div class="flex items-stretch sm:items-center justify-center sm:justify-start mb-4 text-center">
+        <ion-icon name="alert-circle" class="text-[#621B16] font-bold text-2xl mr-1 sm:text-base"></ion-icon>
+        <ion-text class="text-[#621B16] font-bold text-base">Verifica que tu información esté correcta y que tu celular no esté en uso en otra cuenta</ion-text>
+      </div>
+    </div>
+    <div class="flex justify-center">
+      <ion-button *ngIf="!saving && step == 1" (click)="saveAndGoToStep(2)" class="sm:mt-0 sm:mb-4 normal-case font-bold text-lg h-10 w-[180px]" color="tertiary"
+        shape="round">
+        Continuar
+      </ion-button>
+      <ion-button *ngIf="!saving && step == 2" (click)="saveAndGoToStep(3)" class="sm:mt-0 normal-case font-bold text-lg h-10 w-[180px]" color="tertiary"
+        shape="round">
+        Continuar
+      </ion-button>
+
+      <!-- Botón se muestra cuando savedPaymentData no es null -->
+      <ion-button *ngIf="meInfo && meInfo.email_verified_at !== null && meInfo.wizard_done == false && !saving && step == 3" (click)="saveAndGoToStep(4)"
+        class="mt-3 sm:mt-0 normal-case font-bold text-lg h-10 w-[212px]" color="tertiary" shape="round">
+        Confirmar suscripci&oacute;n
+      </ion-button>
+      <ion-spinner *ngIf="saving"></ion-spinner>
+    </div>
+  </ion-row>
+</div>
+
+<div class="mb-3 flex justify-center">
+  <ion-button class="normal-case font-bold text-lg h-10 w-[180px] needHelpOption" shape="round" [ngClass]="{ 'w-[180px]': step != 3, 'w-[212px]': step == 3 }"
+    (click)="openWindowsWhatsApp()">
+    ¿Necesitas ayuda?
+  </ion-button>
+</div>

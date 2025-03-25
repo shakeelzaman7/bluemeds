@@ -1,0 +1,263 @@
+<div id="bluemeds-slider">
+  <div id="box" class="bg-[#C9E1F6]">
+    <ng-container *ngFor="let img of slider_images">
+      <a routerLink="{{ isAuthenticated ? img.goToWithLogin : img.goToWithoutLogin }}">
+        <img [src]="!layoutService.isMobile() ? img.image : img.responsiveImage" [class]="img.show ? 'block' : 'hidden'" class="fade-in-image mx-auto">
+      </a>
+    </ng-container>
+  </div>
+
+  <!-- buttons for controls slider -->
+  <button class="prew fa fa-chevron-left" (click)="prevImage()">
+    <ion-icon name="chevron-back-outline"></ion-icon>
+  </button>
+  <button class="next fa fa-chevron-right" (click)="nextImage()">
+    <ion-icon slot="icon-only" name="chevron-forward-outline"></ion-icon>
+  </button>
+</div>
+
+<ion-grid vexContainer>
+  <ion-row *ngIf="medsToShowCarousel.data.length > 0 && showMedsCarousel" id="medicaments">
+    <ion-col>
+      <ion-card class="card-white-1">
+        <ion-card-content>
+          <ion-text color="tertiary">
+            <h1 class="text-4xl py-3 text-center">Medicamentos</h1>
+          </ion-text>
+          <div class="flex items-center justify-center py-4 px-5">
+            <div class="wrapper">
+              <button class="prev-meds" (click)="nextPrevImageButton('prev')">
+                <ion-icon name="chevron-back-outline"></ion-icon>
+              </button>
+              <ul class="carousel" (mousemove)="dragging($event)" (mousedown)="dragStart($event)" (mouseup)="dragStop()">
+                <li *ngFor="let med of medsToShowCarousel.data" class="card-meds p-3 flex flex-col justify-between">
+                  <div>
+                    <div class="img-meds bg-white rounded-lg py-2">
+                      <img (error)="showImageDefault(med.id)" [id]="'med-img-carousel' + med.id" (click)="publicationSelected(med)"
+                           [src]="'https://blue-production-s3-public-media.s3.amazonaws.com/productos/' + med.product.product_code + '_'  + 1 + '.jpg'"
+                           alt="Meds" draggable="false" class="cursor-pointer">
+                    </div>
+                    <h2 class="text-center font-bold text-[#333333] text-lg mt-2 cursor-pointer"
+                        style="line-height: normal" (click)="publicationSelected(med)">{{ med.product.name }}
+                    </h2>
+                    <p class="text-base text-center">{{med.product.details.concentration ? med.product.details.concentration.split('/')[0] : ''}}</p>
+                  </div>
+
+                  <div>
+                    <p class="mt-3 text-[#269ED7] text-center font-bold" style="font-size: 18px">{{ med.portal_price_text }}</p>
+                    <p class="line-through text-center">{{ med.price_text }}</p>
+
+                    <div class="flex justify-center my-3">
+                      <button (click)="publicationSelected(med)" class="bg-[#2A51A3] text-white py-2 px-8 rounded-full mx-auto">Agregar</button>
+                    </div>
+                  </div>
+                </li>
+              </ul>
+              <button class="next-meds" (click)="nextPrevImageButton('next')">
+                <ion-icon slot="icon-only" name="chevron-forward-outline"></ion-icon>
+              </button>
+            </div>
+          </div>
+        </ion-card-content>
+        <div  class="flex justify-center my-5 w-full">
+          <button routerLink="/web/search" class="bg-[#2A51A3] text-lg text-white py-3 px-10 rounded-full mx-auto">Buscar medicamentos</button>
+        </div>
+      </ion-card>
+    </ion-col>
+  </ion-row>
+
+  <ion-row id="benefits">
+    <ion-col>
+      <ion-card class="card-white-1">
+        <ion-card-content>
+          <div class="spacer"></div>
+          <ion-text color="tertiary">
+            <h1 class="text-4xl pb-2 text-center">Nuestros Beneficios</h1>
+          </ion-text>
+          <ion-grid>
+            <ion-row class="same-height">
+              <ion-col  size-xs="12" size-sm="4" size-md="4" size-lg="2.4" *ngFor="let item of (layoutService.isMobile() ? benefitMobileItems : benefitItems)">
+                <ion-card class="card-secondary-light no-shadow content-center cursor-pointer" [ngStyle]="{'border-radius' : '1.5rem'}" (click)="redirectTo('web/search')">
+                  <!-- Card content -->
+                  <ion-card-content
+                    class="card-container justify-center"
+                    [ngClass]="{'mb-4 mt-4': !layoutService.isMobile(), 'm-0': layoutService.isMobile()}"
+                    [ngStyle]="{'gap': layoutService.isMobile() ? '20px' : '0px', 'padding': layoutService.isMobile() ? '10px 30px' : '0px'}">
+
+                    <div fxLayout="row" fxLayoutAlign="center center">
+                      <img [ngStyle]="{'height': layoutService.isMobile() ? '50px' : '75px'}"
+                          src="/assets/icons/{{item.iconName}}.svg"
+                          [alt]="item.iconName">
+                    </div>
+
+                    <ion-col [ngClass]="{'m-0 p-0': layoutService.isMobile(), 'size-5': !layoutService.isMobile()}">
+                      <p [innerHtml]="item.label"
+                        class="text-center text-base ml-2 sm:ml-0"
+                        [ngStyle]="{'word-wrap':'normal', 'margin': layoutService.isMobile() ? '0' : '', 'padding': layoutService.isMobile() ? '0' : ''}">
+                      </p>
+                    </ion-col>
+                  </ion-card-content>
+                </ion-card>
+              </ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col>
+                <div>
+                  <ion-card class="video-responsive shadow-none rounded-3xl">
+                    <iframe class="video-responsive-item" src="https://player.vimeo.com/video/925222920?h=426de23ade&autoplay=0&loop=0&muted=0&autopause=0&title=0&byline=0&controls=1&portrait=0&color=1c9ad6" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+                  </ion-card>
+                </div>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-card-content>
+      </ion-card>
+    </ion-col>
+  </ion-row>
+
+  <ion-row id="how">
+    <ion-col>
+      <ion-card class="card-white-1">
+        <ion-card-content>
+          <ion-text color="tertiary">
+            <h1 class="text-4xl pt-2 text-center">¿Cómo me suscribo?</h1>
+          </ion-text>
+          <ion-grid>
+            <ion-row>
+              <ion-col size-xs="12" size-sm="12" size-lg="6">
+                <ion-card class="video-responsive-square shadow-none h-full">
+                  <iframe class="video-responsive-item-square" src="https://player.vimeo.com/video/741248793?autoplay=0&loop=0&muted=0&autopause=0&title=0&byline=0&controls=1&portrait=0&color=1c9ad6" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+                </ion-card>
+              </ion-col>
+              <ion-col size-xs="12" size-sm="12" size-lg="6">
+               <div class="flex flex-col h-full justify-center">
+                <ion-card class="card-secondary-round card-background-{{(i + 1) % 2 ? 'grey' : 'cyan'}}" [ngStyle]="{'border-radius' : '1.5em'}"  [ngClass]="{'m-0 mt-6': layoutService.isMobile()}"
+                *ngFor="let item of howItWorksItems; let i = index">
+                <ion-card-content
+                  [ngClass]="{'m-0': layoutService.isMobile()}"
+                  [ngStyle]="{'padding': layoutService.isMobile() ? '10px 30px' : '0px'}"
+                >
+                  <ion-grid class="p-0">
+                    <ion-row class="ion-justify-content-center ion-align-items-center p-0" [ngStyle]="{'gap': layoutService.isMobile() ? '20px' : '0px'}">
+                      <ion-col size="2" sizeMd="2" class="text-center" [ngClass]="{'p-0': layoutService.isMobile()}">
+                        <ion-text  color="{{i % 2 ? 'light' : 'secondary'}}" class="route-link-cont" [ngClass]="{'route-link-cont-deactivated' : i > 0}" routerLink="/web/search">
+                          <strong class="text-5xl sm:text-4xl  ion-text-nowrap">0{{i + 1}}</strong>
+                        </ion-text>
+                      </ion-col>
+                      <ion-col size="8" sizeMd="8" [ngClass]="{'p-0': layoutService.isMobile()}">
+                        <div  class="ion-text-wrap font-medium text-base sm:text-lg" [class.text-center]="layoutService.isMobile()" [ngClass]="{'m-0': layoutService.isMobile(), 'ml-10': !layoutService.isMobile(), 'w-full': layoutService.isMobile(), 'w-[64%]': !layoutService.isMobile()}">
+                          <ion-text  color="{{i % 2 ? 'light' : 'medium'}}" class="route-link-cont" [ngClass]="{'route-link-cont-deactivated' : i > 0}" routerLink="/web/search">
+                            {{item.label}}
+                          </ion-text>
+                        </div>
+                      </ion-col>
+                      <ion-col size="12" sizeMd="2"  *ngIf="!layoutService.isMobile()">
+                        <img  src="/assets/icons/{{item.iconName}}.svg" style="width:45px" [alt]="item.iconName" class="route-link-cont" [ngClass]="{'route-link-cont-deactivated' : i > 0}" routerLink="/web/search">
+                      </ion-col>
+                    </ion-row>
+                  </ion-grid>
+                </ion-card-content>
+              </ion-card>
+              </div>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-card-content>
+      </ion-card>
+    </ion-col>
+  </ion-row>
+
+  <ion-row id="experiency">
+    <ion-col>
+      <ion-card class="card-white-1">
+        <ion-card-content>
+          <div class="spacer"></div>
+          <ion-text color="tertiary">
+            <h1 class="text-4xl pb-2 text-center">Mi experiencia con Bluemeds</h1>
+          </ion-text>
+          <ion-grid>
+            <ion-row>
+              <ion-col>
+                <div class="relative">
+                  <ion-card class="video-responsive shadow-none rounded-3xl">
+                    <ion-slides class="video-responsive-item" [options]="{initialSlide: 0,speed: 400, loop: true}" #slidesVideo>
+                      <ion-slide *ngFor="let item of testimonialVideos; let i = index">
+                        <iframe id="{{ item.id }}" class="w-full h-full pause-testimonial-video" [src]="item.src"
+                                webkitallowfullscreen mozallowfullscreen allowfullscreen>
+                        </iframe>
+                      </ion-slide>
+                    </ion-slides>
+                  </ion-card>
+                  <button (click)="nextPrevVideoSlide('prev')" class="absolute inset-y-0 left-[-1.4rem]">
+                    <ion-icon name="chevron-back-outline" class="py-3 px-[0.15rem] text-[#282627] bg-[#E3F5FF]"></ion-icon>
+                  </button>
+                  <button (click)="nextPrevVideoSlide('next')" class="absolute inset-y-0 right-[-1.4rem]">
+                    <ion-icon name="chevron-forward-outline" class="py-3 px-[0.15rem] text-[#282627] bg-[#E3F5FF]"></ion-icon>
+                  </button>
+                </div>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-card-content>
+      </ion-card>
+    </ion-col>
+  </ion-row>
+
+  <ion-row id="faq">
+    <ion-col>
+      <ion-card class="card-white-1" id="faq">
+        <ion-card-content>
+          <ion-text color="tertiary">
+            <h1 class="text-4xl py-2 text-center">Preguntas Frecuentes</h1>
+          </ion-text>
+          <ion-grid>
+            <ion-row>
+              <ion-col size="12">
+                <ng-container *ngFor="let faq of faqs">
+                  <ion-card class="no-shadow border-radious-2" (click)="select(faq)"
+                    color="{{faq.selected ? 'secondary' : ''}}">
+                    <ion-card-content class="no-padding">
+                      <ion-item lines="none" color="{{faq.selected ? 'secondary' : 'light'}}">
+                        <ion-label [class.no-wrap]="layoutService.isMobile()">
+                          {{faq.question}}
+                        </ion-label>
+                      </ion-item>
+                    </ion-card-content>
+                  </ion-card>
+                  <ion-card class="border-radius-2" *ngIf="faq.selected">
+                    <ion-card-content>
+                      <p class="text-base">
+                        {{faq.answer}}
+                      </p>
+                    </ion-card-content>
+                  </ion-card>
+                </ng-container>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-card-content>
+      </ion-card>
+    </ion-col>
+  </ion-row>
+
+  <ion-row>
+    <div class="flex justify-center my-5 w-full">
+      <button routerLink="/web/search" class="bg-[#2A51A3] text-lg text-white py-3 px-10 rounded-full mx-auto">Buscar medicamentos</button>
+    </div>
+  </ion-row>
+</ion-grid>
+
+<div *ngIf="(layoutService.isMobile$ | async)" style="position:fixed;bottom:0;width:100%;background:white;box-shadow: -2px 0 7px #00000036; z-index: 900 !important;">
+  <div class="flex">
+    <a routerLink="/web/search" class="text-center border-2 bg-[#264D99] text-white font-semibold flex items-center justify-center flex-grow text-base">
+      Buscar medicamentos
+    </a>
+    <a class="border-2 bg-[#BBD2E6]">
+      <img class="h-14 p-4" style="margin:0 auto" src="/assets/icons/whatsapp.png" alt="WhatsApp Icon" (click)="openWindowsWhatsApp()">
+    </a>
+    <a href="tel:1750" class="border-2 bg-[#0090D1]">
+      <img class="h-14 p-4" style="margin:0 auto" src="/assets/icons/phone-call-white.png" alt="Phone Icon">
+    </a>
+  </div>
+</div>
+

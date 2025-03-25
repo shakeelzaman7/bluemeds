@@ -1,0 +1,64 @@
+<div class="p-8 relative">
+  <div class="float-right">
+    <button (click)="close()" [disabled]="disabledButtons">
+      <ion-icon slot="icon-only" name="close-circle-outline" style="font-size: 20px"></ion-icon>
+    </button>
+  </div>
+  <div class="header-section">
+    <h1 class="text-lg text-[#2A51A3] font-bold" style="line-height: normal">Adjuntar una fotografía para tu perfil</h1>
+  </div>
+  <div class="container-upload-files">
+    <section class="drop-section" (dragover)="dragOver($event)" (dragleave)="dragLeave($event)" (drop)="drop($event)">
+      <div class="col-drop">
+        <div class="cloud-icon">
+          <img src="/assets/icons/cloud_upload.png" alt="Cloud image" class="mx-auto">
+        </div>
+        <span *ngIf="!(layoutService.isMobile$ | async)">Arrastra y suelta tus archivos aquí.</span>
+        <button (click)="openFileSelector()" class="file-selector">Cargar archivo</button>
+        <p class="text-[#2C2C2C] text-base text-left mx-auto" style="text-align: center; margin: 0 0 10px 0;">Máximo 1MB
+        </p>
+        <input type="file" class="file-selector-input" (change)="changeFile($event)" multiple hidden>
+      </div>
+      <div class="col-drop">
+        <div class="drop-here">Soltar aquí</div>
+      </div>
+    </section>
+    <p class="text-[#2C2C2C] text-base text-left mx-auto" style="text-align: left; margin: 0 35px;">Extensiones
+      permitidas: JPG, PNG</p>
+    <p class="text-[#2C2C2C] text-base text-left mx-auto" style="text-align: left; margin: 0 35px;">Resolución mínima: 400x400 px</p>
+    <section *ngIf="files.length > 0" class="list-section">
+      <div class="list-title">Archivos seleccionados:</div>
+      <div class="list-files overflow-y-auto hide-scroll" [class]="files.length > 2 ? 'h-48' : 'h-auto'">
+        <li *ngFor="let item of files; let i = index" [id]="'item-' + i" class="still">
+          <div class="col-drop flex items-center justify-center">
+            <img class="w-8 h-8" src="/assets/icons/pdf-icon.png" alt="File Icon">
+          </div>
+          <div class="col-drop">
+            <div class="file-name">
+              <!-- si el texto es muy largo, mostramos puntos suspensivos -->
+              <div *ngIf="item.name.length > 20" class="name">{{ item.name.substring(0, 20) }}...</div>
+              <div *ngIf="item.name.length <= 20" class="name">{{ item.name }}</div>
+              <span>0%</span>
+            </div>
+            <div class="file-progress">
+              <span></span>
+            </div>
+            <div class="file-size">{{ (item.size / (1024 * 1024)).toFixed(2) }} MB</div>
+          </div>
+          <div class="col-drop">
+            <ion-icon (click)="removeDocument(item)" class="remove-file" slot="icon-only" name="close-circle-outline"
+              style="font-size: 20px"></ion-icon>
+            <ion-icon class="success-file" slot="icon-only" name="checkmark-circle-outline"
+              style="font-size: 20px"></ion-icon>
+          </div>
+        </li>
+      </div>
+    </section>
+  </div>
+  <div class="footer-button flex justify-between">
+    <button class="rounded-full bg-white text-[#2A51A3] border border-solid border-[#2A51A3] px-8 py-3 hover:border-red hover:bg-red hover:text-white text-lg"
+      [disabled]="disabledButtons" (click)="close()">Cancelar</button>
+    <button class="rounded-full bg-[#2A51A3] text-white hover:bg-[#19397DFF] px-8 py-3 text-lg"
+      [disabled]="disabledButtons" (click)="uploadFiles()">Guardar</button>
+  </div>
+</div>

@@ -1,0 +1,11 @@
+::ng-deep .mat-radio-checked .mat-radio-outer-circle {
+  border-color: #1C9AD6 !important;
+}
+
+::ng-deep .mat-radio-checked .mat-radio-inner-circle {
+  background-color: #1C9AD6 !important;
+}
+
+::ng-deep .mat-radio-button.mat-accent .mat-radio-ripple .mat-ripple-element {
+  background-color: transparent !important;
+}

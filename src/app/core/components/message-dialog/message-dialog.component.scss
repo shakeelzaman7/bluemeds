@@ -1,0 +1,40 @@
+.success-title {
+  color: #0038AE;
+  line-height: 1.6rem;
+}
+
+.error-title {
+  color: red;
+}
+
+.success-message {
+  color: #728B73;
+}
+
+.error-message {
+  color: gray;
+}
+
+.accept-button {
+  background-color: #0038AE;
+  color: white;
+  border: 1.5px solid #2a51a3;
+  padding: 0.7rem 5rem;
+  border-radius: 30px;
+}
+
+.accept-button:hover {
+  background-color: #023292;
+}
+
+.cancel-button {
+  background-color: white;
+  color: #0038AE;
+  border: 1.5px solid #0038AE;
+  padding: 0.7rem 5rem;
+  border-radius: 30px;
+}
+
+.cancel-button:hover {
+  background-color: #f2f2f2;
+}

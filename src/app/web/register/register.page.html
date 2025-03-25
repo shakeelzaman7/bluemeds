@@ -1,0 +1,133 @@
+<div class="my-10">
+
+  <div class="w-full h-full" fxLayout="column" fxLayoutAlign="center center">
+    <div @fadeInUp class="card overflow-hidden w-full max-w-lg my-4 p-5">
+      <div class="mx-4 sm:mx-8">
+        <div [ngClass]="{'pointer-events-none opacity-50': emailOptionActive}">
+          <h1 class="text-center text-3xl font-bold text-primary mt-6 mb-4">Crea tu cuenta</h1>
+          <p class="text-center text-base text-secondary m-0">Regístrate con un correo electrónico.</p>
+        </div>
+
+        <div class="p-6 flex flex-col gap-4">
+          <button
+            (click)="loginProvider('google')"
+            [ngClass]="{'pointer-events-none opacity-50': emailOptionActive}"
+            class="w-full max-w-xs px-1 py-1 rounded-full outline-none bg-[#E8E6E7] text-base font-semibold flex items-center justify-between mx-auto"
+          >
+            <div class="rounded-full bg-white p-1">
+              <mat-icon svgIcon="google_svg" aria-hidden="false" aria-label="Google SVG"></mat-icon>
+            </div>
+            <span>Usar Google</span>
+            <span></span>
+          </button>
+
+          <button
+            (click)="toggleEmailOption()"
+            class="w-full max-w-xs px-1 py-1 rounded-full outline-none bg-[#E8E6E7] text-base font-semibold flex items-center justify-between mx-auto"
+          >
+            <div class="rounded-full bg-white p-1">
+              <mat-icon [icIcon]="icEmail" aria-hidden="false" aria-label="Email Icon" class="text-[#A0A0A0]"></mat-icon>
+            </div>
+            <span>Usar un correo electrónico</span>
+            <span></span>
+          </button>
+
+          <div *ngIf="emailOptionActive" [@expandHeight]>
+            <div class="flex items-center justify-center"><mat-icon svgIcon="chevron-down" aria-hidden="false" aria-label="Chevron Down"></mat-icon></div>
+            <form [formGroup]="form" class="flex flex-col gap-4">
+              <div fxFlex="auto" fxLayout="column">
+                <div class="m-2" fxFlex="grow">
+                  <div class="relative inputBoxRegister">
+                    <input type="text"
+                           class="blue-input border-primary" style="box-sizing: border-box;"
+                           placeholder="Ingresar dato" name="email"
+                           formControlName="email" (focusout)="validateEmailField()"
+                           required>
+                    <span class="absolute left-4 top-0 p-2 pointer-events-none text-base text-[#8D8D8D] transition duration-150">Correo electrónico</span>
+                    <div *ngIf="messagesValidationInputs.email" class="flex items-center mt-1">
+                      <ion-icon name="alert-circle" class="text-[#621B16] font-bold text-base"></ion-icon>
+                      <ion-text class="text-[#621B16] font-bold text-base ml-1">{{ messagesValidationInputs.email }}</ion-text>
+                    </div>
+                  </div>
+                </div>
+    
+                <div class="my-3" fxLayout="column" fxLayoutGap="16px" fxLayoutGap.lt-sm="8px">
+                  <div class="m-2 flex flex-col" fxFlex="auto">
+                    <div class="relative inputBoxRegister">
+                      <app-password-input
+                       name="password"
+                       [control]="passwordFormControl"
+                       [passChecks]="passChecks"
+                       message="Establecer contraseña"
+                       placeHolder="Ingresar dato"
+                       (allValidChecks)="allChecksValid = $event"
+                       (hasSub)="hasSubmitted = $event">
+                      </app-password-input>
+                      <div *ngIf="messagesValidationInputs.password" class="flex items-start mt-1" >
+                        <ion-icon name="alert-circle" class="text-[#621B16] font-bold text-base mt-[0.15rem]" style="min-width: 1rem;"></ion-icon>
+                        <ion-text class="text-[#621B16] font-bold text-base ml-1">{{ messagesValidationInputs.password }}</ion-text>
+                      </div>
+                    </div>
+                  </div>
+    
+                  <div class="m-2 flex flex-col" fxFlex="auto">
+                    <div class="relative inputBoxRegister">
+                      <app-password-input
+                       [control]="confirmPasswordFormControl"
+                       message="Confirmar contraseña"
+                       placeHolder="Ingresar dato"
+                       (loseFocus)="validateConfirmPasswordField()">
+                      </app-password-input>
+    
+                      <div *ngIf="messagesValidationInputs.password_confirmation" class="flex items-start mt-1" style="max-width: 10rem;">
+                        <ion-icon name="alert-circle" class="text-[#621B16] font-bold text-base mt-[0.15rem]" style="min-width: 1rem;"></ion-icon>
+                        <ion-text class="text-[#621B16] font-bold text-base ml-1">{{ messagesValidationInputs.password_confirmation }}</ion-text>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+    
+              <div fxLayout="row wrap" fxLayoutAlign="center center" class="">
+                <div fxLayout="column" fxLayoutAlign="center center" class="w-full mb-2">
+                  <ion-button (click)="register()" color="primary" shape="round" type="button" class="normal-case font-bold text-lg w-1/2 h-10">
+                    Crear cuenta
+                  </ion-button>
+                  <div *ngIf="hasSubmitted && !allChecksValid" class="flex items-start mt-1 ml-6" style="max-width: 14rem;">
+                    <ion-icon name="alert-circle" class="text-[#621B16] font-bold text-sm mt-[0.15rem]" style="min-width: 1rem;"></ion-icon>
+                    <ion-text class="text-[#621B16] font-bold text-xs ml-1">La contraseña no cumple con los criterios de seguridad solicitados</ion-text>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <hr class="w-full bg-[#E8E6E7]">
+
+      <div class="mx-4 sm:mx-8" [ngClass]="{'pointer-events-none opacity-50': emailOptionActive}">
+        <div class="p-6 flex flex-col gap-4">
+          <span class="text-base text-center text-secondary">¿Ya tienes una cuenta?</span>
+          <button routerLink="/web/login" class="w-full max-w-xs p-2 rounded-full bg-white text-base font-semibold mx-auto text-primary" style="border: 1px solid #2A51A3">
+            Iniciar sesión
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div *ngIf="!(layoutService.isMobile$ | async)" class="mt-6 flex justify-end">
+    <ion-button class="font-bold h-10 mr-5 needHelpOption" shape="round" (click)="openWindowsWhatsApp()">
+      ¿Necesitas ayuda?
+    </ion-button>
+  </div>
+
+  <div class="py-2" *ngIf="(layoutService.isMobile$ | async)" style="position:fixed;bottom:0;width:100%;background:transparent; z-index: 900 !important;">
+    <div class="text-center">
+      <ion-button class="normal-case font-bold text-lg h-10 needHelpOption" shape="round" (click)="openWindowsWhatsApp()">
+        ¿Necesitas ayuda?
+      </ion-button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,79 @@
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+.submitButton {
+  background-color: #2A51A3;
+  color: white;
+}
+
+.submitButton:disabled {
+  background-color: #95A8D1;
+  color: white;
+}
+
+.rotate-chevron {
+  transition: transform 0.3s ease;
+  transform: rotate(180deg); /* Rotación de 180 grados cuando se muestra */
+}
+
+.reset-chevron {
+  transition: transform 0.3s ease;
+  transform: rotate(0deg); /* Rotación de 0 grados cuando se oculta */
+}
+/* Para input#mat-input-1 */
+input#mat-input-1::placeholder {
+  color: #d3d3d3; /* Cambia este color al que desees */
+  opacity: 1; /* Ajusta la opacidad si es necesario */
+}
+
+/* Para input#mat-input-0 */
+input#mat-input-0::placeholder {
+  color: #d3d3d3; /* Cambia este color al que desees */
+  opacity: 1; /* Ajusta la opacidad si es necesario */
+}
+
+/* Para navegadores webkit (Chrome, Safari) */
+input#mat-input-1::-webkit-input-placeholder {
+  color: #d3d3d3; /* Cambia este color al que desees */
+}
+
+input#mat-input-0::-webkit-input-placeholder {
+  color: #d3d3d3; /* Cambia este color al que desees */
+}
+
+/* Para Firefox */
+input#mat-input-1::-moz-placeholder {
+  color: #d3d3d3; /* Cambia este color al que desees */
+}
+
+input#mat-input-0::-moz-placeholder {
+  color: #d3d3d3; /* Cambia este color al que desees */
+}
+
+/* Para Internet Explorer 10+ */
+input#mat-input-1:-ms-input-placeholder {
+  color: #d3d3d3; /* Cambia este color al que desees */
+}
+
+input#mat-input-0:-ms-input-placeholder {
+  color: #d3d3d3; /* Cambia este color al que desees */
+}
+
+/* Para Microsoft Edge */
+input#mat-input-1::-ms-input-placeholder {
+  color: #d3d3d3; /* Cambia este color al que desees */
+}
+
+input#mat-input-0::-ms-input-placeholder {
+  color: #d3d3d3; /* Cambia este color al que desees */
+}
+

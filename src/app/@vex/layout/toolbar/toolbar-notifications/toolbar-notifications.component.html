@@ -1,0 +1,22 @@
+<!--
+<button #originRef  routerLink="/web/list" [class.active]="dropdownOpen" class="button" mat-icon-button type="button">
+  <img class="h-9 inline" src="/assets/icons/list-dark.png" alt="Image">
+</button>
+-->
+<div>
+  <div *ngIf="isAuthenticated" routerLink="/web/list"
+       class="flex items-center rounded-full cursor-pointer relative trans-ease-out select-none py-1 pr-1 pl-1 hover:bg-hover"
+       matRipple matTooltip="Lista de medicamentos">
+    <div  class="rounded-full h-[1.7rem] w-[1.7rem] flex items-center justify-center text-primary">
+      <img class="h-[1.7rem] w-[1.7rem] inline" src="/assets/icons/list-blue.png" alt="Image">
+    </div>
+  </div>
+
+  <!--div *ngIf="!isAuthenticated && (layoutService.isDesktop$ | async)" routerLink="/web/budget"
+       class="flex items-center rounded-full cursor-pointer relative trans-ease-out select-none py-1 pr-1 pl-1 hover:bg-hover"
+       matRipple matTooltip="Lista de medicamentos">
+    <div  class="rounded-full h-[1.7rem] w-[1.7rem] flex items-center justify-center text-primary">
+      <img class="h-[1.7rem] w-[1.7rem] inline" src="/assets/icons/list-blue.png" alt="Image">
+    </div>
+  </div-->
+</div>

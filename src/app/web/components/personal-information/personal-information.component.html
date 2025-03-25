@@ -1,0 +1,289 @@
+<ion-col size="12">
+  <h3 class="mt-10">
+    <ion-text class="text-[#2A51A3] text-3xl">Información personal</ion-text>
+  </h3>
+  <br>
+  <div fxLayout="column">
+    <div *ngIf="showUploadImage" fxLayout="column" class="items-center">
+      <div *ngIf="authService.meInfo; else showSVG" class="transition-all duration-500 ease-in-out">
+        <button (click)="openUploadFileModal()">
+          <img *ngIf="authService.meInfo.profile_picture; else showSVG" [src]="authService.meInfo.profile_picture.url" alt="" class="flex border-2 border-[#2A51A3] w-[112px] h-[112px] items-center justify-center rounded-full">
+        </button>
+      </div>
+      <ng-template #showSVG>
+        <div class="flex border-2 border-[#2A51A3] w-[112px] h-[112px] items-center justify-center rounded-full">
+          <button (click)="openUploadFileModal()">
+            <svg width="64" height="61" viewBox="0 0 64 61" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M0.820312 57.3932C0.876363 56.9951 0.922404 56.5946 0.96849 56.1938C1.06003 55.3975 1.15176 54.5996 1.32247 53.8162C3.7998 42.0821 10.8635 34.2302 22.3797 30.1625C22.5363 30.109 22.6929 30.0608 22.8688 30.0066C22.9436 29.9836 23.0218 29.9595 23.1051 29.9335C13.9881 24.3718 13.0842 11.9615 20.2037 4.90574C26.7095 -1.53932 37.3329 -1.61565 43.8499 4.88393C47.4989 8.52632 49.0946 12.9539 48.5255 18.014C47.9564 23.0741 45.3229 26.9782 41.0043 29.879C41.3405 30.0031 41.6717 30.1187 41.9984 30.2327C42.6474 30.4591 43.2784 30.6793 43.8945 30.9477C54.451 35.4952 60.8229 43.3035 62.8761 54.4051C63.1039 55.6295 63.1241 56.8946 63.1443 58.1579C63.1518 58.6273 63.1593 59.0965 63.1774 59.5633C63.1971 60.1787 62.7223 60.5144 62.2731 60.8318C62.2129 60.8744 62.1531 60.9167 62.095 60.9592H2.04782C1.84692 60.7411 1.64323 60.5229 1.43955 60.3048C1.23592 60.0867 1.0323 59.8687 0.831472 59.6506C0.820312 58.909 0.820312 58.1456 0.820312 57.3932ZM59.2383 57.2296C58.1112 47.4693 53.4913 39.9228 44.5417 35.4843C34.4762 30.5006 24.5781 31.3948 15.5057 37.9926C8.99994 42.7255 5.66337 49.3123 4.89339 57.2296H59.2383ZM44.7426 16.3345C44.843 9.62776 39.23 3.95698 32.3671 3.84793C25.2365 3.72797 19.4672 9.14792 19.3556 16.0619C19.244 22.9323 24.8236 28.5158 31.8761 28.6249C38.9398 28.7339 44.631 23.2922 44.7426 16.3345Z" fill="#2A51A3"/>
+              <path d="M0.820312 57.3932C0.876363 56.9951 0.922404 56.5946 0.96849 56.1938C1.06003 55.3975 1.15176 54.5996 1.32247 53.8162C3.7998 42.0821 10.8635 34.2302 22.3797 30.1625C22.5363 30.109 22.6929 30.0608 22.8688 30.0066C22.9436 29.9836 23.0218 29.9595 23.1051 29.9335C13.9881 24.3718 13.0842 11.9615 20.2037 4.90574C26.7095 -1.53932 37.3329 -1.61565 43.8499 4.88393C47.4989 8.52632 49.0946 12.9539 48.5255 18.014C47.9564 23.0741 45.3229 26.9782 41.0043 29.879C41.3405 30.0031 41.6717 30.1187 41.9984 30.2327C42.6474 30.4591 43.2784 30.6793 43.8945 30.9477C54.451 35.4952 60.8229 43.3035 62.8761 54.4051C63.1039 55.6295 63.1241 56.8946 63.1443 58.1579C63.1518 58.6273 63.1593 59.0965 63.1774 59.5633C63.1971 60.1787 62.7223 60.5144 62.2731 60.8318C62.2129 60.8744 62.1531 60.9167 62.095 60.9592H2.04782C1.84692 60.7411 1.64323 60.5229 1.43955 60.3048C1.23592 60.0867 1.0323 59.8687 0.831472 59.6506C0.820312 58.909 0.820312 58.1456 0.820312 57.3932ZM59.2383 57.2296C58.1112 47.4693 53.4913 39.9228 44.5417 35.4843C34.4762 30.5006 24.5781 31.3948 15.5057 37.9926C8.99994 42.7255 5.66337 49.3123 4.89339 57.2296H59.2383ZM44.7426 16.3345C44.843 9.62776 39.23 3.95698 32.3671 3.84793C25.2365 3.72797 19.4672 9.14792 19.3556 16.0619C19.244 22.9323 24.8236 28.5158 31.8761 28.6249C38.9398 28.7339 44.631 23.2922 44.7426 16.3345Z" stroke="#2A51A3"/>
+            </svg>
+          </button>
+        </div>
+      </ng-template>
+
+      <div class="relative bottom-[30px] right-[-45px] cursor-pointer" (click)="openUploadFileModal()">
+        <svg width="25" height="25" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <g clip-path="url(#clip0_601_1207)">
+            <circle cx="12.0123" cy="12.0123" r="12.0123" fill="#008AD8"/>
+            <path d="M15.6286 12.3925H12.3525V15.6686H11.2605V12.3925H7.98438V11.3005H11.2605V8.02441H12.3525V11.3005H15.6286V12.3925Z" fill="white"/>
+          </g>
+          <defs>
+            <clipPath id="clip0_601_1207">
+              <rect width="24.02" height="24.02" fill="white"/>
+            </clipPath>
+          </defs>
+        </svg>
+      </div>
+    </div>
+    <div *ngIf="showUploadImage" fxLayout="column" class="items-center">
+      <div class="text-[28px] font-semibold text-[#2A51A3] mb-3">
+        {{ capitalizeWords(personal.profile.first_name) }} {{ capitalizeWords(personal.profile.last_name) }}
+      </div>
+    </div>
+
+    <form *ngIf="personalInformationForm" [formGroup]="personalInformationForm" (ngSubmit)="onSubmit(true)" fxFlex="auto" fxLayout="column">
+      <h3 *ngIf="!layoutService.isMobile()" class="text-[#333333] text-xl">Datos personales</h3>
+      <h3 *ngIf="layoutService.isMobile() && !showExpansionPanels" class="text-[#333333] text-xl">Datos personales</h3>
+
+      <div *ngIf="layoutService.isMobile() && showExpansionPanels" (click)="showPersonalInformation = !showPersonalInformation" class="rounded-lg bg-[#F2F3F2] text-[#2A51A3] flex justify-between p-4">
+        <p class="text-lg">Datos personales</p>
+
+        <div class="flex">
+          <p class="text-lg">{{ showPersonalInformation ? 'Ocultar' : 'Mostrar' }}</p>
+          <mat-icon class="ml-2 text-[#2A51A3] font-bold text-lg flex items-center" [ngClass]="{ 'rotate-chevron': showPersonalInformation, 'reset-chevron': !showPersonalInformation }" svgIcon="chevron-down" aria-hidden="false" aria-label="Chevron down"></mat-icon>
+        </div>
+      </div>
+
+      <div *ngIf="(showPersonalInformation && layoutService.isMobile()) || !layoutService.isMobile()" [@expandHeight] class="p-0">
+        <!-- Nombre y apellido -->
+        <div fxLayout="row" fxLayout.lt-sm="column" fxLayoutGap="16px">
+          <div class="my-4 relative flex items-center inputBox" fxFlex="grow">
+            <input type="text" formControlName="names" class="blue-input" placeholder="Ingresar dato" (focusout)="capitalizeWordsInput('names')"
+                   [class]="personalInformationForm.get('names').invalid && personalInformationForm.get('names').touched ? 'border-[#F44336]' : ''">
+            <span class="absolute left-4 p-2 pointer-events-none text-base text-[#8D8D8D] transition duration-150">Nombres</span>
+
+            <div *ngIf="personalInformationForm.get('names').invalid && personalInformationForm.get('names').touched" class="flex items-center input-alert">
+              <ion-icon name="alert-circle" class="text-[#621B16] font-bold text-base"></ion-icon>
+              <p class="text-[#621B16] font-bold ml-1">{{ getErrorMessage('names') }}</p>
+            </div>
+          </div>
+
+          <div class="my-4 relative flex items-center inputBox" fxFlex="grow">
+            <input type="text" formControlName="lastNames" class="blue-input" placeholder="Ingresar dato" (focusout)="capitalizeWordsInput('lastNames')"
+                   [class]="personalInformationForm.get('lastNames').invalid && personalInformationForm.get('lastNames').touched ? 'border-[#F44336]' : ''">
+            <span class="absolute left-4 p-2 pointer-events-none text-base text-[#8D8D8D] transition duration-150">Apellidos</span>
+
+            <div *ngIf="personalInformationForm.get('lastNames').invalid && personalInformationForm.get('lastNames').touched" class="flex items-center input-alert">
+              <ion-icon name="alert-circle" class="text-[#621B16] font-bold text-base"></ion-icon>
+              <p class="text-[#621B16] font-bold ml-1">{{ getErrorMessage('lastNames') }}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- email y número de teléfono -->
+        <div fxLayout="row" fxLayout.lt-sm="column" fxLayoutGap="16px">
+          <div class="my-4 relative flex items-center inputBox" fxFlex="grow">
+            <input (click)="tooltipMessage.toggle()" type="text" class="blue-input disbled-style-custom" formControlName="email"
+                   placeholder="Ingresar dato" readonly
+                   matTooltip="Aquí te mostramos el correo con el que creaste tu cuenta. Por ello no puedes modificarlo"
+                   #tooltipMessage="matTooltip">
+            <span class="absolute left-4 p-2 pointer-events-none text-base text-[#8D8D8D] transition duration-150">Correo electrónico</span>
+          </div>
+
+          <div class="my-4 relative flex items-center inputBox" fxFlex="grow">
+            <ngx-mat-intl-tel-input
+              class="w-full p-2 border rounded-full outline-none text-[#666666] text-base"
+              [class]="phoneBorderError()"
+              [preferredCountries]="['gt', 'cr']"
+              [enablePlaceholder]="true"
+              customPlaceholder="0000 0000"
+              format="national"
+              name="firstPhone"
+              formControlName="firstPhone"
+              describedBy="firstPhone"
+              (input)="validatingMaskingPhone(phone.value, phone.selectedCountry.placeHolder, $event)"
+              #phone
+            >
+            </ngx-mat-intl-tel-input>
+
+            <div *ngIf="personalInformationForm.get('firstPhone')?.hasError('required') && (personalInformationForm.get('firstPhone')?.dirty || personalInformationForm.get('firstPhone')?.touched)"
+                 class="flex items-center input-alert">
+              <ion-icon name="alert-circle" class="text-[#621B16] font-bold text-base"></ion-icon>
+              <p class="text-[#621B16] font-bold ml-1">Campo requerido</p>
+            </div>
+            <div *ngIf="personalInformationForm.get('firstPhone')?.hasError('validatePhoneNumber') && (personalInformationForm.get('firstPhone')?.dirty || personalInformationForm.get('firstPhone')?.touched)"
+                 class="flex items-center input-alert">
+              <ion-icon name="alert-circle" class="text-[#621B16] font-bold text-base"></ion-icon>
+              <p class="text-[#621B16] font-bold ml-1">Número inválido</p>
+            </div>
+
+            <span class="absolute left-4 top-[-10px] pointer-events-none text-base bg-white text-[#8D8D8D] px-1">Teléfono</span>
+            <span *ngIf="phone.empty" class="absolute left-[6.1rem] pointer-events-none text-base text-[#989898]">{{formatInputPhonePlaceHolder(phone.selectedCountry.placeHolder, phone.selectedCountry.dialCode)}}</span>
+          </div>
+        </div>
+
+        <!-- Nacionalidad y Género -->
+        <div fxLayout="row" fxLayout.lt-sm="column" fxLayoutGap="16px">
+          <div class="my-4 relative flex items-center inputBoxSelect" fxFlex="grow">
+            <select class="blue-input-select" formControlName="nationality" style="border-right: 14px solid transparent;" required
+                    [style]="personalInformationForm.get('nationality').invalid && personalInformationForm.get('nationality').touched ? 'outline: 1px solid #F44336;' : 'outline: 1px solid #0038AE;'">
+              <option [value]="country.code" *ngFor="let country of countries">{{ country.name }}</option>
+            </select>
+            <span class="absolute left-4 p-2 pointer-events-none text-base text-[#8D8D8D] transition duration-150">Nacionalidad</span>
+
+            <div *ngIf="personalInformationForm.get('nationality').invalid && personalInformationForm.get('nationality').touched" class="flex items-center input-alert">
+              <ion-icon name="alert-circle" class="text-[#621B16] font-bold text-base"></ion-icon>
+              <p class="text-[#621B16] font-bold ml-1">{{ getErrorMessage('nationality') }}</p>
+            </div>
+          </div>
+
+          <div class="my-4 relative flex items-center inputBoxSelect" fxFlex="grow">
+            <select class="blue-input-select" formControlName="gender" style="border-right: 14px solid transparent;outline: 1px solid #0038AE;" required
+                    [style]="personalInformationForm.get('gender').invalid && personalInformationForm.get('gender').touched ? 'outline: 1px solid #F44336;' : 'outline: 1px solid #0038AE;'">
+              <option value="Male">Masculino</option>
+              <option value="Female">Femenino</option>
+            </select>
+            <span class="absolute left-3 p-2 pointer-events-none text-base text-[#8D8D8D] transition duration-150">Género</span>
+
+            <div *ngIf="personalInformationForm.get('gender').invalid && personalInformationForm.get('gender').touched" class="flex items-center input-alert">
+              <ion-icon name="alert-circle" class="text-[#621B16] font-bold text-base"></ion-icon>
+              <p class="text-[#621B16] font-bold ml-1">{{ getErrorMessage('gender') }}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tipo de documento y número de documento -->
+        <div fxLayout="row" fxLayout.lt-sm="column" fxLayoutGap="16px">
+          <div class="my-4 relative flex items-center inputBoxSelect" fxFlex="grow">
+            <select class="blue-input-select" formControlName="documentType" style="border-right: 14px solid transparent;outline: 1px solid #0038AE;" required
+                    [style]="personalInformationForm.get('documentType').invalid && personalInformationForm.get('documentType').touched ? 'outline: 1px solid #F44336;' : 'outline: 1px solid #0038AE;'">
+              <option value="DPI">DPI</option>
+              <option value="Pasaporte">Pasaporte</option>
+            </select>
+            <span class="absolute left-4 p-2 pointer-events-none text-base text-[#8D8D8D] transition duration-150">Tipo de documento</span>
+
+            <div *ngIf="personalInformationForm.get('documentType').invalid && personalInformationForm.get('documentType').touched" class="flex items-center input-alert">
+              <ion-icon name="alert-circle" class="text-[#621B16] font-bold text-base"></ion-icon>
+              <p class="text-[#621B16] font-bold ml-1">{{ getErrorMessage('documentType') }}</p>
+            </div>
+          </div>
+
+          <div class="my-4 relative flex items-center inputBox" fxFlex="grow">
+            <input type="text" class="blue-input" placeholder="Ingresar dato" formControlName="documentNumber" (input)="validateOnlyNumbersDPI($event)"
+                   [class]="personalInformationForm.get('documentNumber').invalid && personalInformationForm.get('documentNumber').touched ? 'border-[#F44336]' : ''">
+            <span class="absolute left-4 p-2 pointer-events-none text-base text-[#8D8D8D] transition duration-150">Número de documento</span>
+
+            <div *ngIf="personalInformationForm.get('documentNumber').invalid && personalInformationForm.get('documentNumber').touched" class="flex items-center input-alert">
+              <ion-icon name="alert-circle" class="text-[#621B16] font-bold text-base"></ion-icon>
+              <p class="text-[#621B16] font-bold ml-1">{{ getErrorMessage('documentNumber') }}</p>
+            </div>
+
+            <div *ngIf="showVivoIdError" class="flex items-center input-alert">
+              <ion-icon name="alert-circle" class="text-[#621B16] font-bold text-base"></ion-icon>
+              <p class="text-[#621B16] font-bold ml-1">{{ vivoIdErrorMessage }}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- País de emisión de documento y fecha de nacimiento -->
+        <div fxLayout="row" fxLayout.lt-sm="column" fxLayoutGap="16px">
+          <div class="my-4 relative flex items-center inputBoxSelect" fxFlex="grow">
+            <select class="blue-input-select" formControlName="country" style="border-right: 14px solid transparent;" required
+                    [style]="personalInformationForm.get('country').invalid && personalInformationForm.get('country').touched ? 'outline: 1px solid #F44336;' : 'outline: 1px solid #0038AE;'">
+              <option [value]="country.code" *ngFor="let country of countries">{{ country.name }}</option>
+            </select>
+            <span class="absolute left-4 p-2 pointer-events-none text-base text-[#8D8D8D] transition duration-150">País de emisión de documento</span>
+
+            <div *ngIf="personalInformationForm.get('country').invalid && personalInformationForm.get('country').touched" class="flex items-center input-alert">
+              <ion-icon name="alert-circle" class="text-[#621B16] font-bold text-base"></ion-icon>
+              <p class="text-[#621B16] font-bold ml-1">{{ getErrorMessage('country') }}</p>
+            </div>
+          </div>
+
+          <div class="my-4 relative" fxFlex="grow">
+            <div class="grid grid-cols-3 rounded-full border-primary border h-full text-[#666666]">
+              <div class="col-span-1 h-full">
+                <select class="pl-2 py-2 sm:py-0 outline-none focus:outline-none" formControlName="birthDay" style="width: 100%; height: 100%; background: transparent; border-right: 1px solid #0038AE">
+                  <option *ngFor="let day of days" value="{{ day }}">{{ day.toString().length < 2 ? '0' + day : day }}</option>
+                </select>
+              </div>
+
+              <div class="col-span-1 h-full">
+                <select class="py-2 sm:py-0 outline-none focus:outline-none" formControlName="birthMonth" style="width: 100%; height: 100%; background: white;">
+                  <option *ngFor="let month of months" value="{{ month.value }}">{{ month.name }}</option>
+                </select>
+              </div>
+
+              <div class="col-span-1 h-full">
+                <select class="py-2 sm:py-0 outline-none focus:outline-none" formControlName="birthYear" style="width: 100%; height: 100%; background: transparent; border-left: 1px solid #0038AE">
+                  <option *ngFor="let year of rangeYears" value="{{ year }}">{{ year }}</option>
+                </select>
+              </div>
+            </div>
+            <span class="absolute left-4 top-[-13px] pointer-events-none text-base bg-white text-[#8D8D8D] px-1">Fecha de nacimiento</span>
+          </div>
+        </div>
+      </div>
+
+      <h3 *ngIf="!layoutService.isMobile()" class="text-[#333333] text-xl mt-3">¿Tienes seguro?</h3>
+      <h3 *ngIf="layoutService.isMobile() && !showExpansionPanels" class="text-[#333333] text-xl">¿Tienes seguro?</h3>
+
+      <div *ngIf="layoutService.isMobile() && showExpansionPanels" (click)="showInsuranceInformation = !showInsuranceInformation" class="rounded-lg bg-[#F2F3F2] text-[#2A51A3] flex justify-between p-4 mt-5">
+        <p class="text-lg">¿Tienes seguro?</p>
+
+        <div class="flex">
+          <p class="text-lg">{{ showInsuranceInformation ? 'Ocultar' : 'Mostrar' }}</p>
+          <mat-icon class="ml-2 text-[#2A51A3] font-bold text-lg flex items-center" [ngClass]="{ 'rotate-chevron': showInsuranceInformation, 'reset-chevron': !showInsuranceInformation }" svgIcon="chevron-down" aria-hidden="false" aria-label="Chevron down"></mat-icon>
+        </div>
+      </div>
+
+      <div id="insurerSection" *ngIf="(showInsuranceInformation && layoutService.isMobile()) || !layoutService.isMobile()" [@expandHeight] class="p-0">
+        <!-- Cuentas con seguro médigo y aseguradora -->
+        <div fxLayout="row" fxLayout.lt-sm="column" fxLayoutGap="16px">
+          <div class="my-4 flex flex-wrap items-center" fxFlex="grow">
+            <label class="text-[#666666] text-base">¿Cuentas con seguro médico?</label>
+            <mat-radio-group aria-label="Select an option" class="flex flex-wrap items-center ml-3" (change)="onInsuranceQuestionChange($event)" formControlName="haveInsurance">
+              <mat-radio-button [value]="true" class="text-[#666666]">Sí</mat-radio-button>
+              <div class="mx-3"></div>
+              <mat-radio-button [value]="false" class="text-[#666666]">No</mat-radio-button>
+            </mat-radio-group>
+          </div>
+
+          <div *ngIf="personalInformationForm.get('haveInsurance').value" class="my-4 flex flex-col" fxFlex="grow">
+            <div class="relative flex items-center inputBoxSelect">
+              <select formControlName="insuranceAgent" class="blue-input-select" (change)="changeInsuranceAgent($event)"
+                      style="border-right: 14px solid transparent;outline: 1px solid #0038AE;" required
+                      [style]="personalInformationForm.get('insuranceAgent').invalid && personalInformationForm.get('insuranceAgent').touched ? 'outline: 1px solid #F44336;' : 'outline: 1px solid #0038AE;'">
+                <option *ngFor="let item of insuranceAgents" [value]="item.id">{{ item.name }}</option>
+              </select>
+              <span class="absolute left-4 p-2 pointer-events-none text-base text-[#8D8D8D] transition duration-150">Nombre de la aseguradora</span>
+
+              <div *ngIf="personalInformationForm.get('insuranceAgent').invalid && personalInformationForm.get('insuranceAgent').touched" class="flex items-center input-alert">
+                <ion-icon name="alert-circle" class="text-[#621B16] font-bold text-base"></ion-icon>
+                <p class="text-[#621B16] font-bold ml-1">{{ getErrorMessage('insuranceAgent') }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cuentas con vivolife -->
+        <div fxLayout="row" fxLayout.lt-sm="column" fxLayoutGap="16px">
+          <div class="my-4 flex flex-wrap items-center" fxFlex="grow">
+            <label class="text-[#666666] text-base">¿Cuentas con Vivolife?</label>
+            <mat-radio-group aria-label="Select an option" class="flex flex-wrap items-center ml-3" formControlName="haveVivoLife">
+              <mat-radio-button [value]="true" class="text-[#666666]">Sí</mat-radio-button>
+              <div class="mx-3"></div>
+              <mat-radio-button [value]="false" class="text-[#666666]">No</mat-radio-button>
+            </mat-radio-group>
+          </div>
+        </div>
+      </div>
+
+      <button *ngIf="showSaveButton" type="submit" class="submitButton mt-2 text-xl rounded-[1rem] py-[0.60rem] w-auto sm:w-auto md:mx-[18rem]"
+              [disabled]="!changeDataFormService.getChangeData || saving">
+        <ion-spinner *ngIf="saving"></ion-spinner>
+        <span *ngIf="!saving">Guardar</span>
+      </button>
+    </form>
+  </div>
+</ion-col>

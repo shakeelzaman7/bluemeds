@@ -1,0 +1,20 @@
+:host {
+  bottom: 0;
+  display: block;
+  width: 100%;
+  z-index: var(--footer-z-index);
+  background-color: #dbdbdb;
+}
+
+.footer {
+  color: var(--footer-color);
+  height: 56px;
+  padding-left: var(--padding);
+  padding-right: var(--padding);
+  position: relative;
+  z-index: var(--footer-z-index);
+}
+
+* {
+  font-family: SourceSansPro !important;
+}

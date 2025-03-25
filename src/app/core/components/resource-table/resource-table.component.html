@@ -1,0 +1,193 @@
+<div class="card overflow-auto {{displaceTop ? '-mt-16' : ''}} {{customClass}}">
+  <div class="bg-app-bar px-6 h-16 border-b sticky left-0" fxLayout="row" fxLayoutAlign="start center"
+    *ngIf="showHeader">
+    <h2 class="title my-0 ltr:pr-4 rtl:pl-4 ltr:mr-4 rtl:ml-4 ltr:border-r rtl:border-l" fxFlex="none" fxHide.xs>
+      <span *ngIf="!title">Listado de {{texts.resourceNamePlural}}</span>
+      <span *ngIf="title">{{title}}</span>
+    </h2>
+
+    <div class="bg-card rounded-full border px-4" fxFlex="400px" fxFlex.lt-md="auto" fxHide.xs fxLayout="row"
+      fxLayoutAlign="start center">
+      <ic-icon [icIcon]="icSearch" size="20px"></ic-icon>
+      <input [formControl]="searchCtrl" class="px-4 py-3 border-0 outline-none w-full bg-transparent"
+        placeholder="Buscar..." type="search">
+    </div>
+
+    <span fxFlex></span>
+
+    <button class="ml-4" fxFlex="none" fxHide.gt-xs mat-icon-button type="button">
+      <mat-icon [icIcon]="icSearch"></mat-icon>
+    </button>
+
+
+
+    <button *ngIf="managementRoute" routerLink="{{managementRoute}}" class="ml-4" color="primary" fxFlex="none"
+      mat-mini-fab type="button">
+      <mat-icon [icIcon]="icAdd"></mat-icon>
+    </button>
+
+
+  </div>
+
+  <div #tableContainer class="table-container">
+    <table [class.mobile]="layoutService.isMobile()" @stagger [dataSource]="dataSource" class="w-full"  mat-table matSort id="dataTable ">
+      <ng-container *ngIf="layoutService.isMobile()">
+        <ng-container>
+          <ng-container matColumnDef="thumb">
+            <th *matHeaderCellDef class="uppercase" mat-header-cell></th>
+            <td *ngFor="let column of columnsForced;">
+              <ng-container *ngIf="column.type === 'image'" [matColumnDef]="column.property.toString()">
+                <td *matCellDef="let row" class="truncate-cell" [ngClass]="column.cssClasses" mat-cell>
+                  <img class="big-thumb" [attr.id]="'row-' + row.id" default="/assets/bluemeds/placeholder.png" [src]="column.transform(row)" alt="">
+                </td>
+              </ng-container>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="mobile">
+            <ng-container>
+              <th *matHeaderCellDef class="uppercase" mat-header-cell></th>
+            </ng-container>
+
+            <td style="padding:1em" *matCellDef="let row" mat-cell>
+
+              <ng-container *ngFor="let column of columnsForced;">
+
+                <ng-container *ngIf="column.type === 'text'">
+                  <div class="mobile-tr text-[#2A51A3] my-1">
+                    <span class="font-bold">{{column.label}}:</span> <div></div> <span class="text-[#666666]" [ngClass]="column.cssClasses">{{ this.getObjectPropertyByString(row, column.property) }}</span>
+                  </div>
+                </ng-container>
+                <ng-container *ngIf="column.type === 'date'">
+                  <div class="mobile-tr text-[#2A51A3] my-1">
+                    <span class="font-bold">{{column.label}}:</span> <div></div> <span class="text-[#666666]" [ngClass]="column.cssClasses">{{dateFormat(this.getObjectPropertyByString(row, column.property), column.dateFormat)}}</span>
+                  </div>
+                </ng-container>
+                <ng-container *ngIf="column.type === 'transform'">
+                  <div class="mobile-tr text-[#2A51A3] my-1">
+                    <span class="font-bold">{{column.label}}:</span> <div></div> <span class="text-[#666666]" [ngClass]="column.cssClasses">{{column.transform(row) }}</span>
+                  </div>
+                </ng-container>
+                <ng-container *ngIf="column.type === 'checkbox'">
+                  <span [ngClass]="column.cssClasses" class="mobile-tr text-secondary">
+                    {{column.label}}:
+                    <ion-icon [color]="!this.getObjectPropertyByString(row, column.property) ? 'danger' : 'success'"
+                      name="ellipse"></ion-icon>
+                  </span>
+                </ng-container>
+                <ng-container *ngIf="column.type === 'html'">
+                  <div class="mobile-tr text-[#2A51A3] my-1">
+                    <span class="font-bold">{{column.label}}:</span> <div></div> <span class="text-[#666666]" [ngClass]="column.cssClasses" [innerHtml]="column.transform(row)"></span>
+                  </div>
+                </ng-container>
+                <!-- type button -->
+                <ng-container *ngIf="column.type === 'button'">
+                  <button mat-raised-button class="rounded-full text-white mt-2" [class]="compareMeds(row) ? 'bg-[#71B654]' : 'bg-[#1C9AD6]'" (click)="buttonAction($event, row)">
+                    <mat-icon *ngIf="!compareMeds(row)" [icIcon]="circleAdd" class="mr-1"></mat-icon>
+                    <mat-icon *ngIf="compareMeds(row)" [icIcon]="circleCheck" class="mr-1"></mat-icon>
+                    {{ compareMeds(row) ? 'Agregado' : 'Agregar' }}
+                  </button>
+                </ng-container>
+              </ng-container>
+            </td>
+          </ng-container>
+        </ng-container>
+      </ng-container>
+
+      <!-- Text Columns -->
+      <ng-container *ngIf="!layoutService.isMobile()">
+        <ng-container *ngFor="let column of columns; trackBy: trackByProperty">
+          <ng-container *ngIf="column.type === 'text'" [matColumnDef]="column.property.toString()">
+            <th *matHeaderCellDef class="uppercase text-[#2A51A3FF] font-bold" [ngClass]="column.cssClasses" mat-header-cell mat-sort-header
+              [disabled]="!isSortable(column.property)"> {{ column.label }}</th>
+            <td [matTooltip]="column.tooltip ? this.getObjectPropertyByString(row, column.property) : null"
+              *matCellDef="let row" class="truncate-cell" [ngClass]="column.cssClasses" mat-cell>{{
+              this.getObjectPropertyByString(row, column.property) }}</td>
+          </ng-container>
+
+          <ng-container *ngIf="column.type === 'date'" [matColumnDef]="column.property.toString()">
+            <th *matHeaderCellDef class="uppercase" [ngClass]="column.cssClasses" mat-header-cell mat-sort-header
+              [disabled]="!isSortable(column.property)"> {{ column.label }}</th>
+            <td *matCellDef="let row" class="truncate-cell" [ngClass]="column.cssClasses" mat-cell>{{
+              dateFormat(this.getObjectPropertyByString(row, column.property), column.dateFormat)}}</td>
+          </ng-container>
+
+          <ng-container *ngIf="column.type === 'transform'" [matColumnDef]="column.property.toString()">
+            <th *matHeaderCellDef class="uppercase" [ngClass]="column.cssClasses" mat-header-cell mat-sort-header
+              [disabled]="!isSortable(column.property)"> {{ column.label }}</th>
+            <td *matCellDef="let row" class="truncate-cell" [ngClass]="column.cssClasses" mat-cell>{{
+              column.transform(row) }}</td>
+          </ng-container>
+
+          <ng-container *ngIf="column.type === 'checkbox'" [matColumnDef]="column.property.toString()">
+            <th *matHeaderCellDef class="uppercase" [ngClass]="column.cssClasses" mat-header-cell mat-sort-header
+              [disabled]="!isSortable(column.property)"> {{ column.label }}</th>
+            <td *matCellDef="let row" mat-cell [ngClass]="column.cssClasses">
+              <ion-icon [color]="!row.active ? 'danger' : 'success'" name="ellipse"></ion-icon>
+            </td>
+          </ng-container>
+
+          <ng-container *ngIf="column.type === 'image'" [matColumnDef]="column.property.toString()">
+            <th *matHeaderCellDef class="uppercase" [ngClass]="column.cssClasses" mat-header-cell mat-sort-header
+              [disabled]="!isSortable(column.property)"> {{ column.label }}</th>
+            <td *matCellDef="let row" class="truncate-cell" [ngClass]="column.cssClasses" mat-cell>
+              <img class="big-thumb" [attr.id]="'row-' + row.id" default="/assets/bluemeds/placeholder.png" [src]="column.transform(row)" alt="">
+            </td>
+          </ng-container>
+
+          <ng-container *ngIf="column.type === 'html'" [matColumnDef]="column.property.toString()">
+            <th *matHeaderCellDef class="uppercase text-[#2A51A3FF] font-bold" [ngClass]="column.cssClasses" mat-header-cell mat-sort-header
+              [disabled]="!isSortable(column.property)"> {{ column.label }}</th>
+            <td *matCellDef="let row" class="truncate-cell" [ngClass]="column.cssClasses" mat-cell [innerHtml]="column.transform(row)">
+            </td>
+          </ng-container>
+
+          <ng-container *ngIf="column.type === 'button'" [matColumnDef]="column.property.toString()">
+            <th *matHeaderCellDef class="uppercase" [ngClass]="column.cssClasses" mat-header-cell mat-sort-header
+                [disabled]="!isSortable(column.property)"> {{ column.label }}</th>
+            <td *matCellDef="let row" class="truncate-cell" [ngClass]="column.cssClasses" mat-cell>
+              <button mat-raised-button class="rounded-full text-white" [class]="compareMeds(row) ? 'bg-[#71B654]' : 'bg-[#1C9AD6]'" (click)="buttonAction($event, row)">
+                <mat-icon *ngIf="!compareMeds(row)" [icIcon]="circleAdd" class="mr-1"></mat-icon>
+                <mat-icon *ngIf="compareMeds(row)" [icIcon]="circleCheck" class="mr-1"></mat-icon>
+                {{ compareMeds(row) ? 'Agregado' : 'Agregar' }}
+              </button>
+            </td>
+          </ng-container>
+        </ng-container>
+
+
+
+      </ng-container>
+
+      <!-- Action Column -->
+      <ng-container matColumnDef="actions">
+        <th *matHeaderCellDef mat-header-cell></th>
+        <td *matCellDef="let row" class="w-10 text-secondary" mat-cell>
+          <button (click)="$event.stopPropagation()" [matMenuTriggerData]="{ role: row }"
+            [matMenuTriggerFor]="actionsMenu" mat-icon-button type="button">
+            <mat-icon [icIcon]="icMoreHoriz"></mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr *matHeaderRowDef="visibleColumns" mat-header-row></tr>
+      <tr (click)="rowAction($event, row)" *matRowDef="let row; columns: visibleColumns;" @fadeInUp
+        class="hover:bg-[#C9E1F6] trans-ease-out cursor-pointer" mat-row></tr>
+    </table>
+  </div>
+
+  <mat-paginator [length]="totalElements" [pageSizeOptions]="pageSizeOptions" [pageIndex]="currentPage"
+    [pageSize]="pageSize" class="sticky left-0"></mat-paginator>
+
+</div>
+
+<mat-menu #actionsMenu="matMenu" xPosition="before" yPosition="below">
+  <ng-template let-role="role" matMenuContent>
+    <ng-container *ngFor="let action of availableActions">
+      <button (click)="action.click.onClick(role)" mat-menu-item>
+        <mat-icon [icIcon]="action.icIcon"></mat-icon>
+        <span>{{action.label}}</span>
+      </button>
+    </ng-container>
+  </ng-template>
+</mat-menu>

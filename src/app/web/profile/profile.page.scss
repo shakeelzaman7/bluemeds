@@ -1,0 +1,69 @@
+ion-card.home-card.md.hydrated {
+    border: none;
+    box-shadow: none;
+    border-radius: 1rem;
+    padding: 50px 100px;
+    width: 100%;
+}
+
+.title-card-link {
+    font-size: 52px;
+    font-weight: 400;
+    line-height: 52px;
+    color: hsl(221, 59%, 40%);
+}
+
+::ng-deep .mat-radio-checked .mat-radio-outer-circle {
+    border-color: #1C9AD6 !important;
+}
+
+::ng-deep .mat-radio-checked .mat-radio-inner-circle {
+    background-color: #1C9AD6 !important;
+}
+
+::ng-deep .mat-radio-button.mat-accent .mat-radio-ripple .mat-ripple-element {
+    background-color: transparent !important;
+}
+
+.sub-title-form {
+    font-size: 26px;
+    font-weight: 400;
+    line-height: 12.68px;
+    color: #000000;
+    margin: 12px 0 0;
+}
+
+.icon-add {
+    position: relative;
+    bottom: 42px;
+    right: -36px;
+}
+
+button.btn-save {
+    background: #2A51A3;
+    line-height: 28px;
+    color: white;
+    font-size: 24px;
+    font-weight: 400;
+    width: 426px;
+    height: 56px;
+    border-radius: 40px;
+}
+
+.circle {
+    display: flex;
+    border: 5px solid #2A51A3;
+    width: 112px;
+    height: 112px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.name {
+    font-size: 28px;
+    font-weight: 400;
+    line-height: 18px;
+    color: #2A51A3;
+    margin: 24px;
+}

@@ -1,0 +1,7 @@
+.dropdown-toggle span {
+  transition: transform 0.3s ease;
+}
+
+.dropdown-toggle span.rotated {
+  transform: rotate(180deg);
+}

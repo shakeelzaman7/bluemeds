@@ -1,0 +1,19 @@
+<div vexContainer>
+  <div class="rounded-lg shadow-8 bg-card p-5 my-10">
+    <h1 class="text-center text-[#2A51A3] my-5" style="text-wrap: balance;">¡Felicidades has creado tu cuenta!</h1>
+
+    <div [ngClass]="{'flex-col' : layoutService.isMobile() }"
+      class="flex mx-2 sm:mx-20 my-8 sm:my-16 flex-wrap text-[#2A51A3] gap-[16px] justify-between" >
+      <div *ngFor="let menuItem of welcomeMenu"
+        class="flex flex-col items-center justify-center max-w-xs w-full">
+        <span class="text-5xl font-extrabold">{{menuItem.step}}</span>
+        <span class="text-center sm:whitespace-pre-wrap text-[14px] sm:text-[20px] mb-1 sm:mb-6 flex-grow">{{menuItem.label}}</span>
+        <button class="flex items-center gap-2 sm:mt-4 py-2 px-4 border border-solid border-[#2A51A3] rounded-[20px]"
+             (click)="navigateToRoute(menuItem.route)">
+          <ion-icon [name]="menuItem.icon"></ion-icon>
+          <span class="font-bold text-[14px] sm:text-[16px]">{{menuItem.buttonLabel}}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,24 @@
+.myLoginButton {
+  background: #2A51A3;
+  color: white;
+  border: 1.5px solid #2a51a3;
+  padding: 0.5rem 1rem;
+  border-radius: 30px;
+}
+
+.myLoginButton:hover {
+  background: #1a3e8d;
+}
+
+label, ion-icon{
+  font-size: 20px;
+}
+
+::ng-deep ion-button {
+  box-shadow: none !important;
+}
+
+
+
+
+

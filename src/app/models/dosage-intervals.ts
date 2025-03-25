@@ -1,0 +1,152 @@
+// This model should be replaced with a model instance
+
+export const Intervals = {
+        "GOTAS": [
+            {value: 1, name: "1"},
+            {value: 2, name: "2"},
+            {value: 4, name: "4"},
+            {value: 6, name: "6"},
+        ],
+        "VIAL UI": [
+            {value: 20, name: "20"},
+            {value: 30, name: "30"},
+            {value: 35, name: "35"},
+            {value: 50, name: "50"},
+        ],
+        "INYECTABLE UI": [
+            {value: 5, name: "5"},
+            {value: 20, name: "20"},
+            {value: 30, name: "30"},
+            {value: 40, name: "40"},
+        ],
+        "GEL": [
+            {value: 0.25, name: "1/4"},
+            {value: 0.5, name: "1/2"},
+            {value: 1, name: "1"},
+            {value: 2, name: "2"},
+            {value: 3, name: "3"},
+        ],
+        "CÁPSULAS": [
+            {value: 1, name: "1"},
+            {value: 2, name: "2"},
+            {value: 3, name: "3"},
+        ],
+        "INHALADOR - INHALACIONES": [
+            {value: 1, name: "1"},
+            {value: 2, name: "2"},
+            {value: 3, name: "3"},
+            {value: 6, name: "6"},
+        ],
+        "TABLETAS": [
+            {value: 0.5, name: "1/2"},
+            {value: 1, name: "1"},
+            {value: 2, name: "2"},
+            {value: 3, name: "3"},
+        ],
+        "SOBRES": [
+            {value: 1, name: "1"},
+            {value: 2, name: "2"},
+            {value: 3, name: "3"},
+        ],
+        "COMPRIMIDOS": [
+            {value: 0.5, name: "1/2"},
+            {value: 1, name: "1"},
+            {value: 2, name: "2"},
+            {value: 3, name: "3"},
+        ],
+        "PARCHES": [
+            {value: 1, name: "1"},
+            {value: 2, name: "2"},
+            {value: 3, name: "3"},
+        ],
+        "SUSPENSIÓN ML": [
+            {value: 5, name: "5"},
+            {value: 15, name: "15"},
+        ],
+        "JARABE ML": [
+            {value: 5, name: "5"},
+            {value: 10, name: "10"},
+            {value: 15, name: "15"},
+        ],
+        "AMPOLLAS": [
+            {value: 1, name: "1"},
+            {value: 2, name: "2"},
+            {value: 3, name: "3"},
+        ],
+        "FRASCO": [
+            {value: 0.25, name: "1/4"},
+            {value: 0.5, name: "1/2"},
+            {value: 1, name: "1"},
+            {value: 2, name: "2"},
+            {value: 3, name: "3"},
+        ],
+        "BOTE": [
+            {value: 0.25, name: "1/4"},
+            {value: 0.5, name: "1/2"},
+            {value: 1, name: "1"},
+            {value: 2, name: "2"},
+            {value: 3, name: "3"},
+        ],
+        "EMULSIÓN ML": [
+            {value: 5, name: "5"},
+            {value: 10, name: "10"},
+            {value: 15, name: "15"},
+        ],
+        "ENJUAGUE BUCAL ML": [
+            {value: 5, name: "5"},
+            {value: 10, name: "10"},
+            {value: 15, name: "15"},
+        ],
+        "ENJUAGUE BUCAL": [
+            {value: 1, name: "1"},
+            {value: 2, name: "2"},
+            {value: 3, name: "3"},
+        ],
+        "ÓVULOS": [
+            {value: 1, name: "1"},
+            {value: 2, name: "2"},
+            {value: 3, name: "3"},
+        ],
+        "SACHETS": [
+            {value: 1, name: "1"},
+            {value: 2, name: "2"},
+            {value: 3, name: "3"},
+        ],
+        "ENVASE": [
+            {value: 0.25, name: "1/4"},
+            {value: 1, name: "1"},
+            {value: 2, name: "2"},
+            {value: 3, name: "3"},
+        ],
+        "SUPOSITORIOS": [
+            {value: 1, name: "1"},
+            {value: 2, name: "2"},
+            {value: 3, name: "3"},
+        ],
+};
+
+export const Semantics = {
+    "GOTAS": { singular:"gota", plural:"gotas",},
+    "VIAL UI": { singular:"unidad", plural:"unidades",},
+    "INYECTABLE UI": { singular:"unidad", plural:"unidades",},
+    "GEL": { singular:"aplicación", plural:"aplicaciones",},
+    "CÁPSULAS": { singular:"cápsula", plural:"cápsulas",},
+    "INHALADOR": { singular:"inhalación", plural:"inhalaciones",},
+    "TABLETAS": { singular:"tableta", plural:"tabletas",},
+    "SOBRES": { singular:"sobre", plural:"sobres",},
+    "COMPRIMIDOS": { singular:"comprimido", plural:"comprimidos",},
+    "PARCHES": { singular:"parche", plural:"parches",},
+    "SUSPENSIÓN ML": { singular:"unidad", plural:"unidades",},
+    "JARABE ML": { singular:"unidade", plural:"unidades",},
+    "INHALADOR - INHALACIONES": { singular:"inhalación", plural:"inhalaciones",},
+    "AMPOLLAS": { singular:"ampolla", plural:"ampollas",},
+    "FRASCO": { singular:"frasco", plural:"frascos",},
+    "BOTE": { singular:"bote", plural:"botes",},
+    "EMULSIÓN ML": { singular:"mililitro", plural:"mililitros",},
+    "ENJUAGUE BUCAL ML": { singular:"enjuague bucal", plural:"enjuague bucal",},
+    "ENJUAGUE BUCAL": { singular:"enjuague bucal", plural:"enjuague bucal",},
+    "ÓVULOS": { singular:"óvulo", plural:"óvulos",},
+    "SACHETS": { singular:"sachet", plural:"sachets",},
+    "ENVASE": { singular:"envase", plural:"envases",},
+    "SUPOSITORIOS": { singular:"supositorio", plural:"supositorios",},
+}

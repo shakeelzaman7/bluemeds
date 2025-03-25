@@ -1,0 +1,274 @@
+<div class="p-5" vexContainer>
+  <!-- utilizamos el componente breadcrumbs -->
+  <app-breadcrumbs [directionList]="directionList"></app-breadcrumbs>
+</div>
+<ion-grid class="rounded-lg shadow-8 bg-card h-full p-5 sm:p-10 mb-6" vexContainer>
+  <ion-row class="h-full ion-align-items-center ion-justify-content-center">
+    <ion-col>
+      <br>
+      <div class="text-center">
+        <h2>
+          <ion-text class="text-[#2A51A3] text-3xl">Buscar medicamentos</ion-text>
+        </h2>
+        <p>
+          <ion-text color="medium" class="text-base">Busca tu medicamento por nombre, marca o principio activo.</ion-text>
+        </p>
+      </div>
+      <br>
+      
+      <!-- Search form -->
+      <form [formGroup]="searchForm">
+        <div class="py-4" fxLayout="column">
+          <div fxLayout="row" fxLayout.lt-sm="column" fxLayoutGap="16px" fxLayoutGap.lt-sm="0">
+            <div class="search-input-container rounded-full px-5 border border-solid border-[#2A51A3] border-1 relative" 
+                 fxFlex="auto" fxFlex.lt-md="auto" fxLayout="row" fxLayoutAlign="end center">
+              <ic-icon [icIcon]="icSearch" size="23px" class="mr-1 text-[#2A51A3]" (click)="focusSearchInput()" 
+                      #tooltipMessage="matTooltip" 
+                      matTooltip="Escribe en la barra de búsqueda al menos 4 letras para buscar por nombre, marca o principio activo">
+              </ic-icon>
+              
+              <input #searchInput [formControl]="searchCtrl" class="py-3 text-[#2A51A3] outline-none w-full bg-[#E8F5FF]"
+                    placeholder="Escribe al menos 4 letras para buscar..." type="search">
+              
+              <ion-icon *ngIf="searchCtrl.value !== null && searchCtrl.value !== ''" 
+                        name="close-circle" class="text-2xl text-[#2A51A3] cursor-pointer" 
+                        (click)="resetSearch()">
+              </ion-icon>
+              
+              <!-- Filter button -->
+              <div class="ml-2 cursor-pointer" (click)="toggleFilters()">
+                <ic-icon [icIcon]="icFilter" size="23px" class="text-[#2A51A3]"></ic-icon>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Autocomplete suggestions -->
+          <div *ngIf="showSuggestions && suggestionsList.length > 0" 
+               class="suggestions-container w-full bg-white mt-1 rounded-lg shadow-lg border border-gray-200 absolute z-50">
+            <div *ngFor="let suggestion of suggestionsList; trackBy: trackSuggestions" 
+                class="p-3 border-b border-gray-100 hover:bg-blue-50 cursor-pointer"
+                (click)="selectSuggestion(suggestion)">
+              <div class="font-medium">{{ suggestion.name }}</div>
+              <div *ngIf="suggestion.ingredient" class="text-sm text-gray-600">{{ suggestion.ingredient }}</div>
+              <div *ngIf="suggestion.laboratory" class="text-xs text-gray-500">{{ suggestion.laboratory }}</div>
+            </div>
+          </div>
+          
+          <!-- Filters panel -->
+          <div *ngIf="showFilters" class="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200 animate-fade-in">
+            <div class="flex justify-between items-center mb-3">
+              <h3 class="text-[#2A51A3] text-lg font-semibold">Filtros de búsqueda</h3>
+              <ion-icon name="close" class="text-[#2A51A3] cursor-pointer" (click)="toggleFilters()"></ion-icon>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <!-- Laboratory filter -->
+              <div class="mb-3">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Laboratorio</label>
+                <select formControlName="laboratory" class="w-full p-2 border border-gray-300 rounded-md">
+                  <option value="">Todos los laboratorios</option>
+                  <option *ngFor="let lab of laboratories" [value]="lab">{{ lab }}</option>
+                </select>
+              </div>
+              
+              <!-- Therapeutic area filter -->
+              <div class="mb-3">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Área terapéutica</label>
+                <select formControlName="therapeuticArea" class="w-full p-2 border border-gray-300 rounded-md">
+                  <option value="">Todas las áreas</option>
+                  <option *ngFor="let area of therapeuticAreas" [value]="area">{{ area }}</option>
+                </select>
+              </div>
+              
+              <!-- Sort options -->
+              <div class="mb-3">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Ordenar por</label>
+                <select formControlName="sortBy" class="w-full p-2 border border-gray-300 rounded-md">
+                  <option *ngFor="let option of sortOptions" [value]="option.value">{{ option.label }}</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+
+      <!-- Search error message -->
+      <div *ngIf="searchError" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative my-4">
+        <strong class="font-bold">Error:</strong>
+        <span class="block sm:inline">{{ searchError }}</span>
+      </div>
+
+      <!-- Loading indicator -->
+      <div *ngIf="isSearching" class="text-center my-4">
+        <ion-spinner name="crescent" class="text-[#2A51A3]"></ion-spinner>
+        <p class="mt-2 text-[#2A51A3]">Buscando medicamentos...</p>
+      </div>
+
+      <!-- Debug info panel -->
+      <div *ngIf="debugInfo" class="bg-gray-100 border border-gray-300 text-gray-700 px-4 py-3 rounded relative my-4">
+        <details>
+          <summary class="font-bold cursor-pointer">Debug Info</summary>
+          <div class="mt-2">
+            <p>Total results: {{ debugInfo.resultsTotal }}</p>
+            <p>Results displayed: {{ debugInfo.resultsCount }}</p>
+            <p>Search term: "{{ searchParams.key }}"</p>
+            <p>Search filters: {{ searchParams.filters | json }}</p>
+            <p>Is searching: {{ isSearching }}</p>
+            <p>Has table: {{ table ? 'Yes' : 'No' }}</p>
+            <p>Table elements: {{ table?.totalElements }}</p>
+            <p>Search attempt: {{ debugInfo.searchAttempt }}</p>
+            <p>Table updated: {{ tableUpdated }}</p>
+            <div class="mt-2 flex space-x-2">
+              <button (click)="forceTableRefresh()" class="bg-blue-500 text-white px-3 py-1 rounded">
+                Force Table Refresh
+              </button>
+              <button (click)="toggleAlternativeTable()" class="bg-green-500 text-white px-3 py-1 rounded">
+                Toggle Alt Table
+              </button>
+            </div>
+          </div>
+        </details>
+      </div>
+
+      <!-- Main search results table -->
+      <app-resource-table 
+        *ngIf="searchResults && searchResults.length > 0 && !isSearching && !showAlternativeTable"
+        (onRowClick)="publicationSelected($event)" 
+        (onButtonClick)="publicationSelected($event)"
+        rcp="search" 
+        [rcpParams]="searchParams" 
+        [showHeader]="true" 
+        [displaceTop]="false" 
+        [type]="resourceType" 
+        [items]="items"
+        [columnsDefinitions]="columns" 
+        title="Resultados ({{ searchResults?.length || 0 }})" 
+        #table>
+      </app-resource-table>
+
+      <!-- Alternative table for cases where the ResourceTableComponent is not working -->
+      <div *ngIf="searchResults && searchResults.length > 0 && showAlternativeTable" class="overflow-x-auto shadow-md rounded-lg my-4">
+        <div class="mb-2 font-bold text-lg">Resultados ({{ searchResults.length }})</div>
+        <table class="min-w-full bg-white border-collapse">
+          <thead>
+            <tr class="bg-[#f8fafc] text-[#2A51A3] text-left">
+              <th class="p-3 border-b"></th>
+              <th class="p-3 border-b">Nombre del producto</th>
+              <th class="p-3 border-b">Principio activo</th>
+              <th class="p-3 border-b">Presentación</th>
+              <th class="p-3 border-b">Precio normal</th>
+              <th class="p-3 border-b">Precio Bluemeds</th>
+              <th class="p-3 border-b">Ahorro</th>
+              <th class="p-3 border-b"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let product of searchResults" class="hover:bg-gray-50 cursor-pointer" (click)="publicationSelected(product)">
+              <!-- Image -->
+              <td class="p-3 border-b">
+                <img class="w-16 h-16 object-contain" 
+                     [src]="'https://blue-production-s3-public-media.s3.amazonaws.com/productos/' + product.product.productCode + '_1.jpg'" 
+                     alt="Product image">
+              </td>
+              
+              <!-- Product name -->
+              <td class="p-3 border-b font-medium">
+                {{ product.product.name }}
+              </td>
+              
+              <!-- Active ingredient -->
+              <td class="p-3 border-b text-gray-600">
+                {{ product.product.details.ingredient_1 }}
+              </td>
+              
+              <!-- Presentation -->
+              <td class="p-3 border-b">
+                {{ product.product.presentation }}
+              </td>
+              
+              <!-- Normal price -->
+              <td class="p-3 border-b text-gray-600">
+                <del>{{ product.priceText }}</del>
+              </td>
+              
+              <!-- Bluemeds price -->
+              <td class="p-3 border-b font-bold text-[#2A51A3]">
+                {{ product.portalPriceText }}
+              </td>
+              
+              <!-- Savings -->
+              <td class="p-3 border-b">
+                <div class="relative">
+                  <span class="bg-[#e45900] text-white pl-1 pr-2 rounded-l-[5px] py-1 text-bottom font-bold flag-search">
+                    {{ product.discountText.includes('Q') ? product.discountText : 'Q ' + product.discountText }}
+                  </span>
+                </div>
+              </td>
+              
+              <!-- Add button -->
+              <td class="p-3 border-b">
+                <button class="px-4 py-2 bg-[#2A51A3] text-white rounded-full text-sm hover:bg-[#1e3a8a]"
+                        (click)="publicationSelected(product); $event.stopPropagation();">
+                  Agregar
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- No results message -->
+      <div *ngIf="searchResults?.length == 0 && searchCtrl.value && searchCtrl.value.length >= 4 && !isSearching" 
+           class="text-center flex flex-col items-center my-2 card px-5 py-10">
+        <img class="w-[100px]" src="assets/icons/not-found-medicament.png" alt="Medicament not found">
+        <h4 class="font-bold text-[#198CC2] text-xl mt-2">Lo sentimos,</h4>
+        <p class="text-xl mb-1 py-2 text-[#198CC2]">ese medicamento no se encuentra disponible en estos momentos</p>
+        <span class="text-[#2C2C2C] text-md">Llena el siguiente formulario para solicitar que agreguemos tu medicamento a Bluemeds</span><br>
+        <button (click)="showResultsForm()" class="text-md text-white rounded-full bg-[#3B5FAA] mt-2 py-3 px-16">
+          Solicitar medicamento
+        </button>
+        <div *ngIf="results">
+          <app-form-results (onResetSearchParams)="resetSearch()" [searchParams]="searchParams.key"></app-form-results>
+        </div>
+      </div>
+    </ion-col>
+  </ion-row>
+</ion-grid>
+
+<!-- Help button (desktop) -->
+<div *ngIf="!(layoutService.isMobile$ | async)" class="mt-5 mb-2 flex justify-center" >
+  <ion-button routerLink="/web/search" class="font-bold h-10 mr-5 mb-5 needHelpOption" shape="round" (click)="openWindowsWhatsApp()">
+    ¿Necesitas ayuda?
+  </ion-button>
+</div>
+
+<!-- Help button (mobile) -->
+<div class="py-2" *ngIf="(layoutService.isMobile$ | async)" style="position:fixed;bottom:0;width:100%;background:transparent; z-index: 900 !important;">
+  <div class="text-center">
+    <ion-button routerLink="/web/search" class="normal-case font-bold text-lg h-10 needHelpOption" shape="round" size="default" (click)="openWindowsWhatsApp()">
+      ¿Necesitas ayuda?
+    </ion-button>
+  </div>
+</div>
+
+<!-- Styles for animations and autocomplete -->
+<style>
+  .animate-fade-in {
+    animation: fadeIn 0.3s ease-in-out;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .suggestions-container {
+    max-height: 300px;
+    overflow-y: auto;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+  }
+</style>

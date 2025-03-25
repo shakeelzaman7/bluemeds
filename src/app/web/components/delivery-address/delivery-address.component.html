@@ -1,0 +1,244 @@
+<ion-col size="12">
+  <h3 class="mt-10">
+    <ion-text class="text-[#2A51A3] text-3xl">Dirección de entrega</ion-text>
+    <ion-text class="text-base text-[#333333] block">{{ subtitle }}</ion-text>
+  </h3>
+  <br>
+  <div fxLayout="column">
+    <form *ngIf="deliveryAddressForm" [formGroup]="deliveryAddressForm" (ngSubmit)="onSubmit(true)" fxFlex="auto" fxLayout="column">
+      <h3 *ngIf="!layoutService.isMobile()" class="text-[#333333] text-xl">Persona que recibe</h3>
+      <h3 *ngIf="layoutService.isMobile() && !showExpansionPanels" class="text-[#333333] text-xl">Persona que recibe</h3>
+
+      <div *ngIf="layoutService.isMobile() && showExpansionPanels" (click)="showDeliveryUser = !showDeliveryUser" class="rounded-lg bg-[#F2F3F2] text-[#2A51A3] flex justify-between p-4">
+        <p class="text-lg">Persona que recibe</p>
+
+        <div class="flex items-center">
+          <p class="text-lg">{{ showDeliveryUser ? 'Ocultar' : 'Mostrar' }}</p>
+          <mat-icon class="ml-2 text-[#2A51A3] font-bold text-lg flex items-center" [ngClass]="{ 'rotate-chevron': showDeliveryUser, 'reset-chevron': !showDeliveryUser }" svgIcon="chevron-down" aria-hidden="false" aria-label="Chevron down"></mat-icon>
+        </div>
+      </div>
+
+      <div *ngIf="(showDeliveryUser && layoutService.isMobile()) || !layoutService.isMobile()" [@expandHeight] class="p-0">
+        <!-- Nombre de quién recibe -->
+        <div fxLayout="row" fxLayout.lt-sm="column" fxLayoutGap="16px">
+          <div class="my-4 relative flex items-center inputBox" fxFlex="grow">
+            <input type="text" formControlName="namesAddress" class="blue-input" placeholder="Ingresar dato" (focusout)="capitalizeWordsInput('namesAddress')"
+                   [class]="deliveryAddressForm.get('namesAddress').invalid && deliveryAddressForm.get('namesAddress').touched ? 'border-[#F44336]' : ''">
+            <span class="absolute left-4 p-2 pointer-events-none text-base text-[#8D8D8D] transition duration-150">Nombre de quién recibe</span>
+
+            <div *ngIf="deliveryAddressForm.get('namesAddress').invalid && deliveryAddressForm.get('namesAddress').touched" class="flex items-center input-alert">
+              <ion-icon name="alert-circle" class="text-[#621B16] font-bold text-base"></ion-icon>
+              <p class="text-[#621B16] font-bold ml-1">{{ getErrorMessage('namesAddress') }}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Número de teléfono y teléfono opcional -->
+        <div fxLayout="row" fxLayout.lt-sm="column" fxLayoutGap="16px">
+          <div class="my-4 relative flex items-center inputBox" fxFlex="grow">
+            <ngx-mat-intl-tel-input
+              class="w-full p-2 border rounded-full outline-none text-[#666666] text-base"
+              [class]="phoneBorderError('phone')"
+              [preferredCountries]="['gt', 'cr']"
+              [enablePlaceholder]="true"
+              format="national"
+              name="phone"
+              formControlName="phone"
+              describedBy="phone"
+              (input)="validatingMaskingPhone(phoneAddress.value, phoneAddress.selectedCountry.placeHolder, $event)"
+              #phoneAddress
+            >
+            </ngx-mat-intl-tel-input>
+
+            <mat-icon matTooltip="A este número te estaremos enviando mensajes sobre el avance de tu pedido y fecha de entrega."
+              svgIcon="exclamation-info" aria-hidden="false" aria-label="Exclamation Info"
+              class="w-4 h-4 ml-1 text-[#1C9AD6]">
+            </mat-icon>
+
+            <div *ngIf="deliveryAddressForm.get('phone')?.hasError('required') && (deliveryAddressForm.get('phone')?.dirty || deliveryAddressForm.get('phone')?.touched)"
+                 class="flex items-center input-alert">
+              <ion-icon name="alert-circle" class="text-[#621B16] font-bold text-base"></ion-icon>
+              <p class="text-[#621B16] font-bold ml-1">Campo requerido</p>
+            </div>
+            <div *ngIf="deliveryAddressForm.get('phone')?.hasError('validatePhoneNumber') && (deliveryAddressForm.get('phone')?.dirty || deliveryAddressForm.get('phone')?.touched)"
+                 class="flex items-center input-alert">
+              <ion-icon name="alert-circle" class="text-[#621B16] font-bold text-base"></ion-icon>
+              <p class="text-[#621B16] font-bold ml-1">Número inválido</p>
+            </div>
+
+            <span class="absolute left-4 top-[-10px] pointer-events-none text-base bg-white text-[#8D8D8D] px-1">Teléfono celular</span>
+            <span *ngIf="phoneAddress.empty" class="absolute left-[6.1rem] pointer-events-none text-base text-[#989898]">{{formatInputPhonePlaceHolder(phoneAddress.selectedCountry.placeHolder, phoneAddress.selectedCountry.dialCode)}}</span>
+          </div>
+
+          <div class="my-4 relative flex items-center inputBox" fxFlex="grow">
+            <ngx-mat-intl-tel-input
+              class="w-full p-2 border rounded-full outline-none text-[#666666] text-base"
+              [class]="phoneBorderError('phoneTwo')"
+              [preferredCountries]="['gt', 'cr']"
+              [enablePlaceholder]="true"
+              format="national"
+              name="phoneTwo"
+              formControlName="phoneTwo"
+              describedBy="phoneTwo"
+              (input)="validatingMaskingPhoneTwo(phoneTwoAddress.value, phoneTwoAddress.selectedCountry.placeHolder, $event)"
+              #phoneTwoAddress
+            >
+            </ngx-mat-intl-tel-input>
+
+            <mat-icon matTooltip="Este número lo utilizamos como segundo contacto para la entrega."
+              svgIcon="exclamation-info" aria-hidden="false" aria-label="Exclamation Info"
+              class="w-4 h-4 ml-1 text-[#1C9AD6]">
+            </mat-icon>
+
+            <div *ngIf="deliveryAddressForm.get('phoneTwo')?.hasError('required') && (deliveryAddressForm.get('phoneTwo')?.dirty || deliveryAddressForm.get('phoneTwo')?.touched)"
+                 class="flex items-center input-alert">
+              <ion-icon name="alert-circle" class="text-[#621B16] font-bold text-base"></ion-icon>
+              <p class="text-[#621B16] font-bold ml-1">Campo requerido</p>
+            </div>
+            <div *ngIf="deliveryAddressForm.get('phoneTwo')?.hasError('validatePhoneNumber') && (deliveryAddressForm.get('phoneTwo')?.dirty || deliveryAddressForm.get('phoneTwo')?.touched)"
+                 class="flex items-center input-alert">
+              <ion-icon name="alert-circle" class="text-[#621B16] font-bold text-base"></ion-icon>
+              <p class="text-[#621B16] font-bold ml-1">Número inválido</p>
+            </div>
+
+            <span class="absolute left-4 top-[-10px] pointer-events-none text-base bg-white text-[#8D8D8D] px-1">Teléfono (opcional)</span>
+            <span *ngIf="phoneTwoAddress.empty" class="absolute left-[6.1rem] pointer-events-none text-base text-[#989898]">{{formatInputPhonePlaceHolder(phoneAddress.selectedCountry.placeHolder, phoneAddress.selectedCountry.dialCode)}}</span>
+          </div>
+        </div>
+      </div>
+
+      <h3 *ngIf="!layoutService.isMobile()" class="text-[#333333] text-xl mt-3">Entrega a domicilio</h3>
+      <h3 *ngIf="layoutService.isMobile() && !showExpansionPanels" class="text-[#333333] text-xl">Entrega a domicilio</h3>
+
+      <div *ngIf="layoutService.isMobile() && showExpansionPanels" (click)="showDeliveryAddress = !showDeliveryAddress" class="rounded-lg bg-[#F2F3F2] text-[#2A51A3] flex justify-between p-4 mt-5">
+        <p class="text-lg">Entrega a domicilio</p>
+
+        <div class="flex">
+          <p class="text-lg">{{ showDeliveryAddress ? 'Ocultar' : 'Mostrar' }}</p>
+          <mat-icon class="ml-2 text-[#2A51A3] font-bold text-lg flex items-center" [ngClass]="{ 'rotate-chevron': showDeliveryAddress, 'reset-chevron': !showDeliveryAddress }" svgIcon="chevron-down" aria-hidden="false" aria-label="Chevron down"></mat-icon>
+        </div>
+      </div>
+
+      <div *ngIf="(showDeliveryAddress && layoutService.isMobile()) || !layoutService.isMobile()" [@expandHeight] class="p-0">
+        <!-- Departamento y municipio -->
+        <div fxLayout="row" fxLayout.lt-sm="column" fxLayoutGap="16px">
+          <div class="my-[0.95rem] relative flex items-center inputBoxSelect" fxFlex="grow">
+            <select formControlName="departmentAddress" class="blue-input-select" required
+                    style="border-right: 14px solid transparent;"
+                    [style]="deliveryAddressForm.get('departmentAddress').invalid && deliveryAddressForm.get('departmentAddress').touched ? 'outline: 1px solid #F44336;' : 'outline: 1px solid #0038AE;'"
+                    (change)="onStateChangeAddress($event)">
+              <option value="{{ state.id }}" *ngFor="let state of states">{{ state.name }}</option>
+            </select>
+            <span class="absolute left-4 p-2 pointer-events-none text-base text-[#8D8D8D] transition duration-150">Departamento</span>
+
+            <div *ngIf="deliveryAddressForm.get('departmentAddress').invalid && deliveryAddressForm.get('departmentAddress').touched" class="flex items-center input-alert">
+              <ion-icon name="alert-circle" class="text-[#621B16] font-bold text-base"></ion-icon>
+              <p class="text-[#621B16] font-bold ml-1">{{ getErrorMessage('departmentAddress') }}</p>
+            </div>
+          </div>
+
+          <div class="my-[0.95rem] relative flex items-center inputBoxSelect" fxFlex="grow">
+            <select formControlName="municipalityAddress" class="blue-input-select" required
+                    style="border-right: 14px solid transparent;"
+                    [style]="deliveryAddressForm.get('municipalityAddress').invalid && deliveryAddressForm.get('municipalityAddress').touched ? 'outline: 1px solid #F44336;' : 'outline: 1px solid #0038AE;'"
+                    (change)="onCityChangeAddress($event, null, false, true)"
+            >
+              <option value="{{ city.id }}" *ngFor="let city of citiesAddress">{{ city.name }}</option>
+            </select>
+            <span class="absolute left-4 p-2 pointer-events-none text-base text-[#8D8D8D] transition duration-150">Municipio</span>
+
+            <div *ngIf="deliveryAddressForm.get('municipalityAddress').invalid && deliveryAddressForm.get('municipalityAddress').touched" class="flex items-center input-alert">
+              <ion-icon name="alert-circle" class="text-[#621B16] font-bold text-base"></ion-icon>
+              <p class="text-[#621B16] font-bold ml-1">{{ getErrorMessage('municipalityAddress') }}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dirección exacta y zip code -->
+        <div class="flex flex-wrap">
+          <div class="my-4 relative flex items-center inputBox w-full sm:w-2/3 sm:mr-2 mr-0">
+            <input type="text"  class="blue-input" placeholder="Ingresar dato" formControlName="addres_line_1" maxlength="156"
+                   [class]="deliveryAddressForm.get('addres_line_1').invalid && deliveryAddressForm.get('addres_line_1').touched ? 'border-[#F44336]' : ''">
+            <span class="absolute left-4 p-2 pointer-events-none text-base text-[#8D8D8D] transition duration-150">Dirección exacta</span>
+
+            <div *ngIf="deliveryAddressForm.get('addres_line_1').invalid && (deliveryAddressForm.get('addres_line_1').dirty || deliveryAddressForm.get('addres_line_1').touched)" class="flex items-center input-alert">
+              <ion-icon name="alert-circle" class="text-[#621B16] font-bold text-base"></ion-icon>
+              <p class="text-[#621B16] font-bold ml-1">{{ getErrorMessage('addres_line_1') }}</p>
+            </div>
+          </div>
+
+          <div *ngIf="zipCodeAdress" class="w-full sm:w-[32%]">
+            <div *ngIf="zipCodeAdress && !zipCodeAdress.isList" class="my-4 relative flex items-center inputBox">
+              <input type="text" formControlName="zipCodeSelect" class="blue-input" placeholder="Ingresar dato">
+              <span class="absolute left-4 p-2 pointer-events-none text-base text-[#8D8D8D] transition duration-150">Zona</span>
+            </div>
+
+            <div *ngIf="zipCodeAdress && zipCodeAdress.isList" class="my-[0.95rem] relative flex items-center inputBoxSelect">
+              <select *ngIf="zipCodeAdress?.zone.length < 1" formControlName="zipCodeSelect" class="blue-input-select"
+                      style="border-right: 14px solid transparent;" (change)="onZipCodeChangeAddress($event)" required
+                      [style]="deliveryAddressForm.get('zipCodeSelect').invalid && deliveryAddressForm.get('zipCodeSelect').touched ? 'outline: 1px solid #F44336;' : 'outline: 1px solid #0038AE;'">
+                <option value="{{ zip_code.id }}" *ngFor="let zip_code of zipCodeAdress.zip_code">{{ zip_code.label }}</option>
+              </select>
+
+              <select *ngIf="zipCodeAdress?.zone.length > 0" formControlName="zoneZipCodeId" class="blue-input-select"
+                      style="border-right: 14px solid transparent;" (change)="onZoneChangeAddress($event)" required
+                      [style]="deliveryAddressForm.get('zoneZipCodeId').invalid && deliveryAddressForm.get('zoneZipCodeId').touched ? 'outline: 1px solid #F44336;' : 'outline: 1px solid #0038AE;'">
+                <option value="{{ zone.id }}" *ngFor="let zone of zipCodeAdress.zone">{{ zone.name }}</option>
+              </select>
+              <span class="absolute left-4 p-2 pointer-events-none text-base text-[#8D8D8D] transition duration-150">Zona</span>
+
+              <div *ngIf="deliveryAddressForm.get('zipCodeSelect').invalid && deliveryAddressForm.get('zipCodeSelect').touched" class="flex items-center input-alert">
+                <ion-icon name="alert-circle" class="text-[#621B16] font-bold text-base"></ion-icon>
+                <p class="text-[#621B16] font-bold ml-1">{{ getErrorMessage('zipCodeSelect') }}</p>
+              </div>
+
+              <div *ngIf="deliveryAddressForm.get('zoneZipCodeId').invalid && deliveryAddressForm.get('zoneZipCodeId').touched" class="flex items-center input-alert">
+                <ion-icon name="alert-circle" class="text-[#621B16] font-bold text-base"></ion-icon>
+                <p class="text-[#621B16] font-bold ml-1">{{ getErrorMessage('zoneZipCodeId') }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Instrucciones de entrega -->
+        <div fxLayout="row" fxLayout.lt-sm="column" fxLayoutGap="16px">
+          <div class="my-4 relative flex items-center inputBox" fxFlex="grow">
+            <input type="text" class="blue-input" placeholder="Ingresar dato" formControlName="notes"
+                   [class]="deliveryAddressForm.get('notes').invalid && deliveryAddressForm.get('notes').touched ? 'border-[#F44336]' : ''">
+            <span class="absolute left-4 p-2 pointer-events-none text-base text-[#8D8D8D] transition duration-150">Instrucciones de entrega (opcional)</span>
+
+            <div *ngIf="deliveryAddressForm.get('notes').invalid && deliveryAddressForm.get('notes').touched" class="flex items-center input-alert">
+              <ion-icon name="alert-circle" class="text-[#621B16] font-bold text-base"></ion-icon>
+              <p class="text-[#621B16] font-bold ml-1">{{ getErrorMessage('notes') }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Red zone message -->
+      <div *ngIf="redZonesData?.data" class="p-4 bg-[#FFD8D8] rounded-lg">
+        <mat-icon class="ml-2 text-[#01060A] font-bold text-lg flex items-center float-right cursor-pointer" (click)="showRedZones = !showRedZones"
+                  [ngClass]="{ 'rotate-chevron': showRedZones, 'reset-chevron': !showRedZones }"
+                  svgIcon="chevron-down" aria-hidden="false" aria-label="Chevron down">
+        </mat-icon>
+        <h3 class="text-[#883131] font-bold">{{ titleRedZonesWarning() }}</h3>
+        <p class="text-[#01060A] text-base">Es posible que se coordine un horario o punto de encuentro para el envío. Contáctanos al:
+          <span class="font-semibold"><a href="tel:+502 2427 2000">+502 2427 2000</a></span>
+        </p>
+
+        <p class="underline text-sm mt-4 cursor-pointer" (click)="showRedZones = !showRedZones">Zonas rojas:</p>
+
+        <div *ngIf="showRedZones" [@expandHeight]>
+          <span class="text-[#01060A] text-sm">
+            {{ redZonesData.data.details.addresses.join(', ') }}
+          </span>
+        </div>
+      </div>
+
+      <button *ngIf="showSaveButton" type="submit" class="submitButton mt-3 text-xl rounded-[1rem] py-[0.60rem] w-auto sm:w-auto md:mx-[30%] xl:mx-[18rem]"
+              [disabled]="!changeDataFormService.getChangeData || saving">
+        <ion-spinner *ngIf="saving"></ion-spinner>
+        <span *ngIf="!saving">Guardar</span>
+      </button>
+    </form>
+  </div>
+</ion-col>

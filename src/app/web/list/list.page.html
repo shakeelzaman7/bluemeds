@@ -1,0 +1,1084 @@
+<div vexContainer>
+  <!-- Modal de stock_date mayor a 90 días -->
+  <ion-modal class="modal-warning-days px-3 sm:px-0" [isOpen]="openWarningModal">
+    <ng-template>
+      <div class="p-5">
+        <div>
+          <div class="w-full">
+            <img class="w-10 mx-auto" src="/assets/icons/warning-icon.png" alt="Success Icon">
+          </div>
+
+          <h1 class="text-center text-[#593500] text-2xl">Fecha de próxima entrega</h1>
+        </div>
+
+        <div>
+          <p class="text-center text-lg" style="color: #535353">
+            {{ messageWarningModal }}
+          </p>
+        </div>
+
+        <div class="text-center mx-auto flex flex-wrap-reverse sm:flex-nowrap justify-center mt-5" style="width: 100%">
+          <button *ngIf="!loadSpiner" mat-button class="rounded-full text-[#2A51A3] sm:w-64 px-5 m-1 py-[0.6rem]" style="border: 1px solid #2A51A3" (click)="openWarningModal = false">Cancelar</button>
+          <button *ngIf="!loadSpiner" mat-button class="border-2 rounded-full border-[#2A51A3] sm:w-64 bg-[#2A51A3] text-white px-5 m-1 py-[0.6rem]" (click)="confirmUpdateMed()">Confirmar</button>
+          <ion-spinner *ngIf="loadSpiner"></ion-spinner>
+        </div>
+      </div>
+    </ng-template>
+  </ion-modal>
+  <!-- Modal de de validación de fecha menor a la de hoy y hora de corte by_recipe -->
+  <ion-modal class="modal-warning-days px-3 sm:px-0" [isOpen]="openWarningDateModal">
+    <ng-template>
+      <div class="p-5">
+        <div>
+          <h1 class="text-[#0047BB] text-center text-2xl">Información importante</h1>
+        </div>
+
+        <div class="my-3">
+          <p class="text-center text-base text-[#7B868C]">
+            Por la hora del día, <span *ngIf="itemsWarningDate.length > 1">los</span><span *ngIf="itemsWarningDate.length == 1">el</span> medicamento<span *ngIf="itemsWarningDate.length > 1">s</span>
+          </p>
+
+          <div [class]="itemsWarningDate.length > 4 ? 'h-24': 'h-auto'" class="overflow-x-auto">
+            <p *ngFor="let item of itemsWarningDate" class="text-center text-[#7B868C] font-bold my-1">{{ item.name }}</p>
+          </div>
+
+          <p class="text-center text-base text-[#7B868C]"><span *ngIf="itemsWarningDate.length > 1">serán</span><span *ngIf="itemsWarningDate.length == 1">será</span> entregado<span *ngIf="itemsWarningDate.length > 1">s</span> mañana.</p>
+
+          <p class="text-center text-base text-[#7B868C] mt-4 px-3">Si te urge, por favor comunícate al <a href="https://api.whatsapp.com/send/?phone=50224272000&text&type=phone_number&app_absent=0" target="_blank" class="font-bold text-[#009ADE] underline ">WhatsApp +502 2427-2000</a> o llama al <a href="tel:1750" class="font-bold text-[#009ADE] underline ">1750, opción 5.</a></p>
+        </div>
+
+        <div class="text-center mx-auto flex flex-wrap-reverse sm:flex-nowrap justify-center mt-5" style="width: 100%">
+          <button *ngIf="!loadSpiner" mat-button class="border-2 rounded-full border-[#2A51A3] sm:w-64 bg-[#2A51A3] text-white px-5 m-1 py-[0.6rem]" (click)="updateDeliveryDate()">Entendido</button>
+          <ion-spinner *ngIf="loadSpiner"></ion-spinner>
+        </div>
+      </div>
+    </ng-template>
+  </ion-modal>
+
+  <!-- Modal de de validación de fecha menor a la de hoy y hora de corte by_date -->
+  <ion-modal class="modal-warning-days px-3 sm:px-0" [isOpen]="openWarningDayModal">
+    <ng-template>
+      <div class="p-5">
+        <div>
+          <h1 class="text-[#0047BB] text-center text-2xl">Información importante</h1>
+        </div>
+
+        <div *ngIf="itemsWarningDay.length === 1" class="my-3">
+          <p *ngFor="let item of itemsWarningDay" class="text-center text-base text-[#7B868C]">
+            Por la hora del día, tu medicamento llegará mañana. Si te urge, por favor comunícate al <a href="https://api.whatsapp.com/send/?phone=50224272000&text&type=phone_number&app_absent=0" target="_blank" class="font-bold text-[#009ADE] underline ">WhatsApp +502 2427-2000</a> o llama al <a href="tel:1750" class="font-bold text-[#009ADE] underline ">1750, opción 5.</a>
+            Tu próxima entrega será el {{ item.delivery_day }} de cada {{ getEachName(item.each) !== '' ? getEachName(item.each) : '[Actualizar frecuencia]' }}.
+          </p>
+        </div>
+
+        <div *ngIf="itemsWarningDay.length > 1" class="my-3">
+          <p class="text-center text-base text-[#7B868C]">
+            Por la hora del día, los medicamentos
+          </p>
+
+          <div [class]="itemsWarningDay.length > 4 ? 'h-24': 'h-auto'" class="overflow-x-auto">
+            <p *ngFor="let item of itemsWarningDay" class="text-center text-[#7B868C] font-bold my-1">{{ item.name }}</p>
+          </div>
+
+          <p class="text-center text-base text-[#7B868C]">serán entregados mañana.</p>
+
+          <p class="text-center text-base text-[#7B868C] mt-4 px-3">Si te urge, por favor comunícate al <a href="https://api.whatsapp.com/send/?phone=50224272000&text&type=phone_number&app_absent=0" target="_blank" class="font-bold text-[#009ADE] underline ">WhatsApp +502 2427-2000</a> o llama al <a href="tel:1750" class="font-bold text-[#009ADE] underline ">1750, opción 5.</a></p>
+        </div>
+
+        <div class="text-center mx-auto flex flex-wrap-reverse sm:flex-nowrap justify-center mt-5" style="width: 100%">
+          <button *ngIf="!loadSpiner" mat-button class="border-2 rounded-full border-[#2A51A3] sm:w-64 bg-[#2A51A3] text-white px-5 m-1 py-[0.6rem]" (click)="goWizardToDeliveryDay()">Entendido</button>
+          <ion-spinner *ngIf="loadSpiner"></ion-spinner>
+        </div>
+      </div>
+    </ng-template>
+  </ion-modal>
+
+  <ion-grid class="rounded-lg shadow-8 bg-card py-5" style="margin-top: 1em;">
+    <ion-row *ngIf="showBanner && reference_code_save && list?.status == 'complete'" class="px-3">
+      <ion-col size="12" class="bg-[#C2D8EF] mx-auto rounded-lg p-3">
+        <button class="float-right" (click)="closeCodeBanner()">
+          <mat-icon class="text-[#1C9AD6]" [icIcon]="icClose"></mat-icon>
+        </button>
+        <h2 class="text-center text-[#1C9AD6] font-bold">Gánate Q75 en tu próxima entrega</h2>
+        <div class="flex flex-wrap items-center lg:w-5/6 mx-auto p-3 justify-center lg:justify-between">
+          <p class="text-[#2A51A3] font-bold px-3 lg:px-0">Código de referido</p>
+          <div class="rounded-full bg-white h-9 mt-3 sm:mt-0">
+            <input type="text" class="h-9 rounded-l-full pl-4 outline-none" id="referenceCodeInput" #referenceCodeInput [value]="reference_code_save" readonly [ngStyle]="{ color: '#2A51A3', background: 'white', 'font-weight': 'bold' }">
+            <button class="text-primary h-9 bg-[#F4F5F8] rounded-r-full px-2" (click)="copyToClipBoard(referenceCodeInput.value)">Copiar</button>
+          </div>
+          <p class="text-[#2A51A3] text-center lg:text-left mt-3 lg:mt-0 lg:w-1/2 lg:px-3"><span class="font-bold">Comparte el código</span> anterior con tus familiares y conocidos para obtener un <span class="font-bold">descuento en tu próxima entrega</span></p>
+        </div>
+      </ion-col>
+    </ion-row>
+
+    <ion-row *ngIf="list?.insurance_warning && list?.wizard_done">
+      <ion-col class="p-6 m-1 rounded bg-[#F7E6D8] relative">
+        <ion-icon (click)="closeWarning()" name="close-outline" class="cursor-pointer absolute right-1 top-1" style="font-size: 20px"></ion-icon>
+        <p class="text-base mr-10">
+          Adjunta tus autorizaciones, recetas o formularios del seguro
+          <span (click)="goToInsurerSection()" class="font-semibold underline cursor-pointer">
+            aquí.
+          </span>
+        </p>
+      </ion-col>
+    </ion-row>
+
+    <ion-row>
+      <ion-col size="12">
+        <h1 class="text-center text-[#2A51A3] mt-3 font-bold">Lista de medicamentos</h1>
+      </ion-col>
+    </ion-row>
+    <ion-row *ngIf="list?.wizard_done && !layoutService.isMobile() && !(!batches[0] && !batches[1])" class="flex justify-end my-3 mx-3">
+      <ion-button routerLink="/web/search" color="tertiary" shape="round" class="shadow-none">
+        <ion-label class="normal-case font-semibold flex items-center text-md">
+          <ion-icon name="add-circle-outline" class="mr-2" style="font-size: 23px"></ion-icon>
+          Agregar medicamentos
+        </ion-label>
+      </ion-button>
+    </ion-row>
+
+    <ion-row *ngIf="!list?.wizard_done && !(!batches[0] && !batches[1])" class="mb-4">
+      <ion-col>
+        <div class="text-center md:text-right">
+          <ion-button routerLink="/web/search" shape="round" class="mr-2">
+            <ion-label class="normal-case font-semibold flex items-center text-md">
+              <ion-icon name="add-circle-outline" class="mr-2" style="font-size: 23px"></ion-icon>
+              Agregar más medicamentos
+            </ion-label>
+          </ion-button>
+        </div>
+      </ion-col>
+    </ion-row>
+
+    <!-- Print Button -->
+    <ion-row *ngIf="!(!batches[0] && !batches[1])" class="flex justify-end my-3 mx-3">
+      <button 
+        (click)="downloadPdf()"
+        shape="round" 
+        class="shadow-none w-12 h-12 flex items-center justify-center rounded-full"
+        style="background: lightgray;"
+        >
+        <ion-label class="flex items-center">
+          <ion-icon 
+            name="print" 
+            class="text-white text-xl">
+          </ion-icon>
+        </ion-label>
+      </button>
+    </ion-row>      
+
+    <ion-row *ngIf="!list?.wizard_done && list?.delivery_method === 'by_recipe'" class="px-2">
+      <ion-col size="12" class="mx-auto rounded-lg">
+        <div class="bg-[#F2F3F2] rounded-lg py-2">
+          <p class="text-center text-[#2A51A3] font-semibold text-base mt-8">¿Cómo deseas recibir tus medicamentos?</p>
+          <div class="flex justify-center my-5 px-5">
+            <mat-radio-group [(ngModel)]="selectDeliveryMethod" (change)="onChangeDeliveryMethodRadioButton()" aria-label="Select an option" class="flex flex-wrap items-center">
+              <mat-radio-button value="by_date" class="text-[#666666]">Fecha fija</mat-radio-button>
+              <span (click)="tooltipDate.toggle()" matTooltip="Selecciona esta opción para elegir la fecha en la que quieres recibir tu medicamento." #tooltipDate="matTooltip">
+                <mat-icon svgIcon="exclamation-info" aria-hidden="false" aria-label="Exclamation Info" class="w-5 h-5 ml-2 mt-2 text-[#1C9AD6]"></mat-icon>
+              </span>
+
+              <div class="mx-5"></div>
+
+              <mat-radio-button value="by_recipe" class="text-[#666666]">Según mi consumo</mat-radio-button>
+              <span (click)="tooltipRecipe.toggle()" matTooltip="Selecciona esta opción para que Bluemeds te entregue según tu consumo y contenido de tu medicamento." #tooltipRecipe="matTooltip">
+                <mat-icon svgIcon="exclamation-info" aria-hidden="false" aria-label="Exclamation Info" class="w-5 h-5 ml-2 mt-2 text-[#1C9AD6]"></mat-icon>
+              </span>
+            </mat-radio-group>
+          </div>
+        </div>
+      </ion-col>
+    </ion-row>
+
+    <ion-row *ngIf="list?.wizard_done && list?.delivery_method === 'by_recipe'" class="px-2">
+      <ion-col size="12" class="mx-auto rounded-lg">
+        <mat-accordion class="headers-align-method-delivery">
+          <mat-expansion-panel (opened)="panelOpenState = true"
+                               (closed)="panelOpenState = false" hideToggle>
+            <mat-expansion-panel-header>
+              <mat-panel-title style="color: #0038AE">
+                <p class="font-bold ml-3">Método de entrega de medicamentos</p>
+              </mat-panel-title>
+              <mat-panel-description>
+                <p style="color: #F2F3F2">.</p>
+                <div class="flex" *ngIf="!panelOpenState">
+                  <p style="color: #0038AE">Mostrar</p>
+                  <mat-icon class="ml-2" svgIcon="chevron-down" aria-hidden="false" aria-label="Chevron down"></mat-icon>
+                </div>
+                <div class="flex" *ngIf="panelOpenState">
+                  <p style="color: #0038AE">Ocultar</p>
+                  <mat-icon class="ml-2" svgIcon="chevron-up" aria-hidden="false" aria-label="Chevron down"></mat-icon>
+                </div>
+              </mat-panel-description>
+            </mat-expansion-panel-header>
+            <div>
+              <p class="text-center text-[#2A51A3] font-semibold text-base mt-8">¿Cómo deseas recibir tus medicamentos?</p>
+              <div class="flex justify-center my-5">
+                <mat-radio-group [(ngModel)]="selectDeliveryMethod" (change)="onChangeDeliveryMethodRadioButton()" aria-label="Select an option" class="flex flex-wrap items-center">
+                  <mat-radio-button value="by_date" class="text-[#666666]">Fecha fija</mat-radio-button>
+                  <span (click)="tooltipDate.toggle()" matTooltip="Selecciona esta opción para elegir la fecha en la que quieres recibir tu medicamento." #tooltipDate="matTooltip">
+                    <mat-icon svgIcon="exclamation-info" aria-hidden="false" aria-label="Exclamation Info" class="w-5 h-5 ml-2 mt-2 text-[#1C9AD6]"></mat-icon>
+                  </span>
+
+                  <div class="mx-5"></div>
+
+                  <mat-radio-button value="by_recipe" class="text-[#666666]">Según mi consumo</mat-radio-button>
+                  <span (click)="tooltipRecipe.toggle()" matTooltip="Selecciona esta opción para que Bluemeds te entregue según tu consumo y contenido de tu medicamento." #tooltipRecipe="matTooltip">
+                    <mat-icon svgIcon="exclamation-info" aria-hidden="false" aria-label="Exclamation Info" class="w-5 h-5 ml-2 mt-2 text-[#1C9AD6]"></mat-icon>
+                  </span>
+                </mat-radio-group>
+              </div>
+            </div>
+          </mat-expansion-panel>
+        </mat-accordion>
+      </ion-col>
+    </ion-row>
+
+    <ion-row *ngIf="selectDeliveryMethod === 'by_recipe'" class="px-2">
+      <div class="w-full py-5">
+        <h3 class="text-xl text-center my-2">Tu método de entrega es<span class="font-bold"> Según mi consumo</span></h3>
+      </div>
+    </ion-row>
+
+    <ion-row class="mt-8 mb-5" *ngIf="list?.wizard_done && list?.insurance_agent?.name && showInsurerTitle()">
+      <div class="px-2 sm:w-auto w-full flex items-center">
+        <h2 class="text-[#0047BB] text-xl font-bold">Mi aseguradora: {{ list.insurance_agent.name }}</h2>
+
+        <div class="custom_tooltip ml-2 relative flex items-center">
+          <mat-icon svgIcon="exclamation-info" aria-hidden="false" aria-label="Exclamation Info"
+                    class="w-4 h-4 text-[#1C9AD6]">
+          </mat-icon>
+
+          <span class="absolute p-2 left-[-5.5rem] top-[-5.5rem] w-[15rem] bg-[#6f6f6f] opacity-[0.95] rounded text-white text-left hidden z-50">
+            Esta es tu aseguradora. Para cambiarla o removerla ve a la sección de Información personal <a class="font-semibold" routerLink="/web/profile" [fragment]="'insurerSection'">¿Tienes seguro?</a>
+          </span>
+        </div>
+      </div>
+
+      <p class="text-[#373D3F] px-2 mt-2 font-semibold w-full">
+        Tu fecha de entrega está calculada con base en la autorización de tu seguro. Si deseas modificarla, por favor contáctanos:
+        <span class="text-[#0047BB]"><a href="tel:2427 2000">PBX 1750</a></span>, 
+        <span class="text-[#0047BB]"><a href="https://api.whatsapp.com/send?phone=50224272000" target="_blank">WhatsApp: +502 2427 2000.</a></span>
+      </p>
+    </ion-row>
+
+    <ion-row>
+      <ion-col size="12">
+        <ng-container *ngIf="batches[0] || batches[1]">
+          <!-- **************************** Desktop Grid and delivery method by_date **************************** -->
+          <section *ngIf="!(layoutService.ltMd$ | async) && (list?.delivery_method === null || list?.delivery_method === 'by_date')">
+            <ng-container *ngFor="let typeBatch of batches; let index = index">
+              <h2 *ngIf="index > 0 && showInsurerTitle() && batches[1]" class="text-[#0047BB] mt-12 font-bold">Medicamentos sin cobertura</h2>
+              <ion-grid class="p-0">
+                <ion-row class="h-full" *ngFor="let batch of typeBatch?.batches">
+                  <div class="w-full mb-5 mt-5">
+                    <div class="flex items-center">
+                      <p class="flex items-center bg-[#E6EEF5] text-[#6B6B6B] text-base p-2 rounded-lg">
+                        <span *ngIf="batch.delivery_date === null" class="font-bold">Ingresa tu día de entrega</span>
+                        <span *ngIf="batch.delivery_date !== null">
+                            Fecha programada: <span class="font-bold">{{ calculateDateDelivery(batch.delivery_date) }}</span>
+                        </span>
+                      </p>
+
+                      <p *ngIf="batch?.insurance_auth" class="bg-[#E6EEF5] text-[#6B6B6B] text-base p-2 rounded-lg ml-2">
+                        Autorizacion: <span class="font-bold">{{ batch?.insurance_auth.auth_code }}</span>
+                      </p>
+                    </div>
+
+                    <!-- Barra de recurrencia -->
+                    <div *ngIf="batch?.insurance_auth && batch?.insurance_auth?.latest_insurance_auth_configured?.current_recurrence && batch?.insurance_auth?.latest_insurance_auth_configured?.total_recurrences" class="mt-3 px-1">
+                      <p class="text-[#0047BB] font-semibold mb-1">
+                        Autorizaciones utilizadas: {{ batch?.insurance_auth?.latest_insurance_auth_configured?.current_recurrence }} / {{ batch?.insurance_auth?.latest_insurance_auth_configured?.total_recurrences}}
+                      </p>
+                      <ion-grid>
+                        <ion-row class="relative flex items-center" style="justify-content: flex-start;">
+                          <ng-container *ngFor="let segment of range(batch?.insurance_auth?.latest_insurance_auth_configured?.total_recurrences); let i = index">
+                            <ion-col class="z-10 w-[30px] p-0 flex justify-center" style="flex: 0 0 auto;">
+                              <a>
+                                <div style="text-align: center;">
+                                  <div class="number">
+                                    <span [class.selected]="i < batch?.insurance_auth?.latest_insurance_auth_configured?.current_recurrence">{{segment}}</span>
+                                  </div>
+                                </div>
+                              </a>
+                            </ion-col>
+                            <div
+                              *ngIf="i < batch?.insurance_auth?.latest_insurance_auth_configured?.total_recurrences - 1"
+                              class="bg-[#A8A9AB]" style="height: 0.15rem; width: 75px;"
+                              [ngStyle]="{
+                                'background-color': i < batch?.insurance_auth?.latest_insurance_auth_configured?.current_recurrence ? '#2A51A3' : '#A8A9AB',
+                                'height.px': i < batch?.insurance_auth?.latest_insurance_auth_configured?.current_recurrence ? 3 : 0.15}"
+                              ></div>
+                          </ng-container>
+                        </ion-row>
+                      </ion-grid>
+                    </div>
+                  </div>
+
+                  <ion-grid class="p-0 border border-[#d9d9d9] rounded-lg">
+                    <ion-row class="bg-[#f0f2f4] font-bold flex items-center rounded-t-lg text-[#3D2930]">
+                      <ion-col size="3" class="text-center p-4">Medicamentos</ion-col>
+                      <ion-col size="4" class="text-center p-4">Datos de entrega</ion-col>
+                      <ion-col size="1" class="text-center p-4">Precio normal</ion-col>
+                      <ion-col size="1" class="text-center p-4">Precio Bluemeds</ion-col>
+                      <ion-col size="2" class="text-center p-4">Ahorro total</ion-col>
+                      <ion-col size="1" class="text-center p-4">Total</ion-col>
+                    </ion-row>
+
+                    <ion-row class="flex justify-left items-top items h-auto w-full border-b border-[#d9d9d9]"
+                             *ngFor="let i of batch?.items">
+                      <ion-col size="3" class="pt-3">
+                        <div class="w-full flex justify-left items-start flex-col md:flex-row">
+                          <div class="float-left p-2 border-2 rounded-lg mr-2 text-center">
+                            <img onerror="this.onerror=null; this.src='/assets/bluemeds/placeholder.png'"
+                                 src="https://blue-production-s3-public-media.s3.amazonaws.com/productos/{{ i.publication.product.product_code }}_1.jpg"
+                                 class="max-w-[84px]" alt="">
+                          </div>
+                          <div class="text-center md:text-left text-[#737373]" [class]="largeWord(i.publication.product.name) ? 'break-all' : ''">
+                            <span class="font-bold text-[0.915rem]">{{ i.publication.product.name }}</span>
+                            <button *ngIf="selectDeliveryMethod === 'by_date'" (click)="openPublicationModalFunction(i)" mat-button class="text-[#A8A9AB] flex items-center">
+                              <mat-icon [icIcon]="icEdit"></mat-icon>
+                            </button>
+
+                            <label *ngIf="i.covered_by_insurance" class="container-check w-full mt-4 pointer-events-none"><span class="text-[#80CDEF]">Con cobertura</span>
+                              <input type="checkbox" disabled [(ngModel)]="i.covered_by_insurance">
+                              <span class="checkmark"></span>
+                            </label>
+                          </div>
+                        </div>
+                      </ion-col>
+
+                      <ion-col size="4" class="text-center pt-3 px-0">
+                        <ion-grid class="p-0" *ngIf="selectDeliveryMethod === 'by_date'" matTooltipClass="multiline-tooltip"
+                                  matTooltip="{{ i?.insurance_auth?.latest_insurance_auth_setting?.configured ? 'Tu próxima fecha de entrega está calculada con base en la autorización de tu seguro. Si deseas cambiar la fecha, por favor comunícate con nosotros:\nPBX 1750\nWhatsApp: +502 2427 2000' : '' }}">
+                          <ion-row class="p-0">
+                            <ion-col size="7" class="p-0">
+                              <ion-grid>
+                                <ion-row class="relative">
+                                  <ion-col class="flex flex-wrap ml-3 p-0">
+                                    <div class="w-[5.7rem] text-left">
+                                      <span class="text-[#737373] text-[0.915rem]"
+                                      matTooltip="Es la cantidad de presentaciones que recibirás. Ejemplo: caja, frasco.">Cantidad:</span>
+                                    </div>
+                                    <div class="relative ml-2">
+                                      <input [(ngModel)]="i.quantity" min="1" [disabled]="i?.insurance_auth?.latest_insurance_auth_setting?.configured"
+                                             (input)="calculateDataByQuantity(i, $event)"
+                                             type="number"
+                                             class="validate-by-date w-[6.5rem] h-[1.70rem] border border-primary rounded-full pl-[0.625rem] box-border outline-none disabled:opacity-[0.7] text-[15px]">
+                                    </div>
+                                  </ion-col>
+                                </ion-row>
+
+                                <ion-row class="relative my-2">
+                                  <ion-col class="flex items-center flex-wrap ml-3 p-0">
+                                    <div class="w-[5.7rem] text-left">
+                                      <span class="text-[#737373] text-[0.915rem]"
+                                      matTooltip="En este día recibirás siempre tu medicamento.">Día de entrega:</span>
+                                    </div>
+                                    <div class="relative text-[#333333] ml-2">
+                                      <select [(ngModel)]="i.delivery_day" (change)="calculateDataByDay(i)" [disabled]="i?.insurance_auth?.latest_insurance_auth_setting?.configured"
+                                              class="validate-by-date outline-none border border-[#0038AE] rounded-full pl-[0.490rem] w-[6.5rem] h-[1.70rem] text-[15px]"
+                                      >
+                                        <option *ngFor="let day of daysToSelect" value="{{day}}">{{day}}</option>
+                                        <option *ngIf="i.delivery_day === 31" value="31">31</option>
+                                      </select>
+                                    </div>
+                                  </ion-col>
+                                </ion-row>
+
+                                <ion-row class="relative my-2">
+                                  <ion-col class="flex flex-wrap ml-3 p-0">
+                                    <div class="w-[5.7rem] text-left">
+                                      <span class="text-[#737373] text-[0.915rem]"
+                                      matTooltip="Cada cuanto recibiras tus medicamentos (un mes, dos meses).">Entrega cada:</span>
+                                    </div>
+                                    <div class="relative ml-2">
+                                      <select [(ngModel)]="i.each" (change)="calculateDataByEach(i)" [disabled]="i?.insurance_auth?.latest_insurance_auth_setting?.configured"
+                                              class="validate-by-date outline-none border border-[#0038AE] rounded-full pl-[0.490rem] w-[6.5rem] h-[1.70rem] text-[15px]">
+                                        <option *ngFor="let interval of eachIntervals" [value]="interval.value">{{interval.name}}</option>
+                                      </select>
+                                    </div>
+                                  </ion-col>
+                                </ion-row>
+
+                                <ion-row class="relative">
+                                  <ion-col class="flex flex-wrap ml-3 p-0">
+                                    <div class="w-[5.7rem] text-left">
+                                      <span class="text-[#737373] text-[0.915rem]"
+                                      matTooltip="Es el tiempo máximo que recibirás tu medicamento. Puede que sea por un tiempo establecido o indefinidamente.">Duración:</span>
+                                    </div>
+                                    <div class="relative ml-2">
+                                      <select [(ngModel)]="i.duration" (change)="calculateDataItem(i, 'by_date')" [disabled]="i?.insurance_auth?.latest_insurance_auth_setting?.configured"
+                                              class="validate-by-date outline-none border border-[#0038AE] rounded-full pl-[0.490rem] w-[6.5rem] h-[1.70rem] text-[15px]">
+                                        <option *ngFor="let interval of durationIntervals[i.each]" [value]="interval.value">{{interval.name}}</option>
+                                        <option value="undefined">Indefinido</option>
+                                      </select>
+                                    </div>
+                                  </ion-col>
+                                </ion-row>
+                              </ion-grid>
+                            </ion-col>
+
+                            <ion-col size="5" class="p-0">
+                              <p class="text-[#0038AE] text-base text-left">
+                                <span *ngIf="!i.quantity" class="text-[#BA2E24]">[Ingresar cantidad] </span>
+                                <span *ngIf="i.quantity">{{ i.quantity }} {{ i.quantity > 1 ? 'unidades' : 'unidad' }} </span>
+
+                                <span *ngIf="!i.delivery_day" class="text-[#BA2E24]">[Ingresar día de entrega]</span>
+                                <span *ngIf="i.delivery_day">el {{ i.delivery_day }}</span>
+
+                                <span [ngClass]="{ 'text-[#BA2E24]': getEachName(i.each) == '' }">
+                                  de cada {{ getEachName(i.each) !== '' ? getEachName(i.each) : '[Actualizar frecuencia]' }}
+                                </span>
+
+                                <span [ngClass]="{ 'text-[#BA2E24]': i.duration !== 'undefined' && getNameByKeyAndValue(i.each, i.duration) == '' }">
+                                  {{ i.duration === 'undefined' ? 'de manera indefinida' : (getNameByKeyAndValue(i.each, i.duration) != '' ? 'durante ' + getNameByKeyAndValue(i.each, i.duration) : '[Actualizar duración]') }}
+                                </span>
+                              </p>
+                            </ion-col>
+                          </ion-row>
+                        </ion-grid>
+
+                        <ion-grid *ngIf="selectDeliveryMethod === 'by_recipe'">
+                          <ion-row>
+                            Selecciona una fecha para recibir medicamentos
+                          </ion-row>
+                        </ion-grid>
+                      </ion-col>
+
+                      <ion-col size="1" class="text-center pt-3">
+                        <ion-text class="w-full line-through text-[#737373]">
+                          Q. {{i.more_info.normal_price}}
+                        </ion-text>
+                      </ion-col>
+
+                      <ion-col size="1" class="text-center pt-3 border-r border-[#d9d9d9]">
+                        <ion-text class="w-full">
+                          <p class="text-[#737373] mb-2 text-base">Q. {{ i.more_info.portal_price }}</p>
+                        </ion-text>
+                      </ion-col>
+
+                      <ion-col size="2" class="text-center pt-3">
+                        <p class="mb-2 text-base text-[#737373]">Q. {{ i.more_info.monthly_total_savings ? i.more_info.monthly_total_savings : '-' }}</p>
+                        <div class="relative">
+                          <span *ngIf="i?.more_info?.percentage_savings != 0.00"
+                                class="text-[0.945rem] bg-[#e45900] text-white px-2 rounded-l-[5px] py-1 font-bold flag">
+                            Ahorras {{ i.more_info.percentage_savings ? formatPorcentageNumber(i.more_info.percentage_savings) : '0' }}%
+                          </span>
+                        </div>
+                      </ion-col>
+
+                      <ion-col size="1" class="text-center pt-3">
+                        <ion-text class="w-full font-bold text-[#737373]">Q. {{ i.more_info.portal_monthly_price ? i.more_info.portal_monthly_price : '-' }}</ion-text>
+                      </ion-col>
+                    </ion-row>
+
+                    <ion-row class="py-3">
+                      <ion-col size="8">
+                        <p *ngIf="batch?.insurance_auth" class="text-[#2A51A3] text-base ml-3">
+                          El descuento de tu aseguradora se calculará sobre el precio Bluemeds.
+                        </p>
+                      </ion-col>
+
+                      <ion-col size="1">
+                        <p class="text-[#2A51A3] font-bold text-center text-xl">Total</p>
+                      </ion-col>
+
+                      <ion-col size="2" class="text-center font-bold">
+                        <span class="font-bold text-bluemedsDarkBlue">Q. {{ batch.sumSavings }}</span>
+                      </ion-col>
+
+                      <ion-col size="1" class="text-center font-bold text-bluemedsDarkBlue">
+                        Q. {{ batch.sumTotal }}
+                      </ion-col>
+                    </ion-row>
+                  </ion-grid>
+                </ion-row>
+              </ion-grid>
+            </ng-container>
+          </section>
+
+          <!-- **************************** Desktop Grid and delivery method by_recipe **************************** -->
+          <section *ngIf="!(layoutService.ltMd$ | async) && (list?.delivery_method === 'by_recipe')">
+            <ng-container *ngFor="let typeBatch of batches; let index = index">
+              <ion-grid class="p-0">
+                <ion-row *ngFor="let batch of typeBatch?.batches" class="h-full">
+                  <div class="w-full mb-5 mt-8">
+                    <label class="bg-[#E6EEF5] text-[#000000] text-base p-2 rounded-lg">
+                      Fecha de próxima entrega: <span class="font-bold">{{ formatDate(batch.delivery_date) }}</span>
+                    </label>
+                    <mat-icon matTooltip="Los siguientes medicamentos se te van a entregar en esta fecha."
+                              svgIcon="exclamation-info" aria-hidden="false" aria-label="Exclamation Info"
+                              #tooltipDeliveryDate="matTooltip"
+                              (click)="tooltipDeliveryDate.toggle()"
+                              class="w-5 h-5 ml-1 text-[#1C9AD6]">
+                    </mat-icon>
+                  </div>
+                  <ion-grid class="p-0 border-2 rounded-lg">
+                    <ion-row class="bg-[#F2F3F2] font-semibold flex items-center rounded-t-lg text-[#707070]">
+                      <ion-col size="3" class="text-left p-4">Medicamentos</ion-col>
+                      <ion-col size="3" class="text-center p-4">Dosis y frecuencia</ion-col>
+                      <ion-col size="1" class="text-center p-4">Precio normal</ion-col>
+                      <ion-col size="2" class="text-center p-4 text-bluemedsDarkBlue">Precio Bluemeds</ion-col>
+                      <ion-col size="1" class="text-center p-4">Cantidad</ion-col>
+                      <ion-col size="1" class="text-center p-4">Ahorras</ion-col>
+                      <ion-col size="1" class="text-center p-4">Total</ion-col>
+                    </ion-row>
+
+                    <ion-row class="flex justify-left items-top items h-auto w-full border-b-2"
+                             *ngFor="let i of batch.items">
+                      <ion-col size="3" class="pt-3">
+                        <ion-text class="w-full flex justify-left items-center flex-col md:flex-row">
+                          <div class="float-left p-2 border-2 rounded-lg mr-2 text-center">
+                            <img onerror="this.onerror=null; this.src='/assets/bluemeds/placeholder.png'"
+                                 src="https://blue-production-s3-public-media.s3.amazonaws.com/productos/{{ i.publication.product.product_code }}_1.jpg"
+                                 class="max-w-[84px]" alt="">
+                          </div>
+                          <ion-text class="text-center md:text-left text-[#2A51A3]" [class]="largeWord(i.publication.product.name) ? 'break-all' : ''">
+                            {{ i.publication.product.name }}
+                            <br />
+                            <button *ngIf="selectDeliveryMethod === 'by_recipe'" (click)="openPublicationModalFunction(i)" mat-button class="text-[#A8A9AB] flex items-center">
+                              <ion-text class="underline">Ver</ion-text>
+                              <mat-icon [icIcon]="icEdit" class="ml-1"></mat-icon>
+                            </button>
+                          </ion-text>
+                        </ion-text>
+                      </ion-col>
+
+                      <ion-col size="3" class="text-center pt-3 px-0">
+                        <ion-grid *ngIf="selectDeliveryMethod === 'by_recipe'">
+                          <ion-row class="relative flex items-center">
+                            <span class="text-[#707070] text-left w-[40%]">Dosis:</span>
+                            <div class="w-[60%]">
+                              <select [(ngModel)]="i.dose" (change)="changeDosage(i)" class="validate-by-recipe w-[6rem] outline-none border border-[#0038AE] rounded-full py-[0.2rem] px-2">
+                                <option *ngFor="let interval of dosageIntervals[i.publication.product.presentation?.trim()]" [value]="interval.value">
+                                  {{interval.name}} {{interval.value > 1 ?
+                                  dosageSemantics[i.publication.product.presentation?.trim()].plural :
+                                  dosageSemantics[i.publication.product.presentation?.trim()].singular}}
+                                </option>
+                                <option [value]="i?.otherDosageValue">Otro{{ i.showOther ? ' - ' + i.dose : ''}}</option>
+                              </select>
+                            </div>
+                          </ion-row>
+                          <ion-row class="relative flex items-center my-2">
+                            <span class="text-[#707070] text-left w-[40%]">Frecuencia:</span>
+                            <div class="w-[60%]">
+                              <select [(ngModel)]="i.frequency_id" (change)="calculateDataItem(i, 'by_recipe')" class="validate-by-recipe w-[6rem] outline-none border border-[#0038AE] rounded-full py-[0.2rem] px-2">
+                                <option *ngFor="let f of frequencies" [value]="f.id">{{f.name}}</option>
+                              </select>
+                            </div>
+                          </ion-row>
+                          <ion-row class="relative flex items-center">
+                            <div class="flex items-center w-[40%]">
+                              <span class="text-[#707070] w-[6.6rem] text-left">Fecha de próxima entrega:</span>
+                              <mat-icon matTooltip="En esta fecha te estaremos haciendo la próxima entrega de todos tus medicamentos."
+                                        svgIcon="exclamation-info" aria-hidden="false" aria-label="Exclamation Info"
+                                        class="w-4 h-4 text-[#1C9AD6]">
+                              </mat-icon>
+                            </div>
+                            <div class="w-[60%] flex justify-center">
+                              <mat-form-field *ngIf="list" style="visibility:hidden;max-height:0;max-width:0;">
+                                <input (dateChange)="calculateDataItem(i, 'by_recipe')" [min]="minStockDate" [max]="maxStockDate" #dateStock
+                                       matInput [(ngModel)]="i.stock_date" (click)="picker.open()" [matDatepicker]="picker" class="validate-by-recipe">
+                              </mat-form-field>
+                              <mat-datepicker #picker></mat-datepicker>
+
+                              <button style="display:block !important" (click)="picker.open()"
+                                      class="w-[6rem] rounded-full py-[0.5rem] px-2 text-[#666] border"
+                                      [style]="!i.stock_date && showGeneralErrorMessage ? 'border: 1px solid #F44336' : 'border: 1px solid #2A51A3'"
+                              >
+                                <div class="flex flex-row items-center justify-between">
+                                  <div class="normal-case inline pr-2 text-bluemedsDarkBlue">{{i.stock_date != null ? formatDate(i.stock_date) : ''}}</div>
+                                  <ion-icon name="pencil"></ion-icon>
+                                </div>
+                              </button>
+                            </div>
+                            <div *ngIf="!i.stock_date && showGeneralErrorMessage" class="valid-input-message w-full text-[#621B16] font-bold flex justify-start sm:justify-end items-center">
+                              <ion-icon name="alert-circle" class="text-[#621B16] text-base mr-1"></ion-icon> <p class="text-base">Este campo es obligatorio</p>
+                            </div>
+                          </ion-row>
+                        </ion-grid>
+                        <ion-grid *ngIf="selectDeliveryMethod === 'by_date'">
+                          <ion-row>
+                            Selecciona el día de recibir medicamentos
+                          </ion-row>
+                        </ion-grid>
+                      </ion-col>
+
+                      <ion-col size="1" class="text-center pt-3">
+                        <ion-text class="w-full line-through text-[#707070]">
+                          Q. {{i.more_info.normal_price}}
+                        </ion-text>
+                      </ion-col>
+
+                      <ion-col size="2" class="text-center pt-3">
+                        <ion-text class="w-full">
+                          <ion-text class="text-bluemedsDarkBlue">
+                            <p class="mb-2">Q. {{ i.more_info.portal_price }}</p>
+                            <span class="bg-[#e45900] text-white pl-1 pr-2 rounded-l-[5px] py-1 text-bottom font-bold flag">
+                                Ahorras {{ i.more_info.percentage_savings ? formatPorcentageNumber(i.more_info.percentage_savings) : '0' }}%
+                              </span>
+                          </ion-text>
+                        </ion-text>
+                      </ion-col>
+
+                      <ion-col size="1" class="text-center bg-[#ebf3fb] pt-3">
+                        <ion-text class="w-full">{{ i.more_info.quantity ? i.more_info.quantity : '-' }}</ion-text>
+                      </ion-col>
+
+                      <ion-col size="1" class="text-center bg-[#ebf3fb] pt-3">
+                        <ion-text class="w-full">Q. {{ i.more_info.monthly_total_savings ? i.more_info.monthly_total_savings : '-' }}</ion-text>
+                      </ion-col>
+
+                      <ion-col size="1" class="text-center bg-[#ebf3fb] pt-3">
+                        <ion-text class="w-full font-bold">Q. {{ i.more_info.portal_monthly_price ? i.more_info.portal_monthly_price : '-' }}</ion-text>
+                      </ion-col>
+                    </ion-row>
+
+                    <ion-row class="py-3">
+                      <ion-col size="8">
+                        <p class="text-[#2A51A3] text-base ml-3"><span class="font-bold">Si tienes seguro</span>, el descuento de tu aseguradora se calculará sobre el precio Bluemeds.</p>
+                      </ion-col>
+
+                      <ion-col size="2">
+                        <p class="text-[#2A51A3] font-bold text-center text-xl">Total</p>
+                      </ion-col>
+
+                      <ion-col size="1" class="text-center font-bold">
+                        <span class="bg-[#E45900] rounded-l-[5px] text-white pl-3 pr-3 text-bottom font-bold hasflag">Q. {{batch.sumSavings}}</span>
+                      </ion-col>
+
+                      <ion-col size="1" class="text-center font-bold text-bluemedsDarkBlue">
+                        Q. {{ batch.sumTotal }}
+                      </ion-col>
+                    </ion-row>
+                  </ion-grid>
+                </ion-row>
+              </ion-grid>
+            </ng-container>
+          </section>
+
+          <!-- Mobile Grid and delivery method by_date -->
+          <section *ngIf="(layoutService.ltMd$ | async) && (list?.delivery_method === null || list?.delivery_method === 'by_date')">
+            <ng-container *ngFor="let typeBatch of batches; let index = index">
+              <h2 *ngIf="index > 0 && showInsurerTitle() && batches[1]" class="text-[#0047BB] mt-5 font-bold">Medicamentos sin cobertura</h2>
+              <ion-grid>
+                <ion-row *ngFor="let batch of typeBatch?.batches" class="h-full mb-8 p-0">
+
+                  <div class="bg-[#F2F3F2] p-3 rounded-lg w-full mb-2">
+                    <span *ngIf="batch.delivery_date === null" class="font-bold">Ingresa tu día de entrega</span>
+                    <div *ngIf="batch.delivery_date !== null" class="flex justify-between">
+                      <p class="font-bold text-base">Próxima entrega:</p>
+                      <p class="text-base">{{ calculateDateDelivery(batch.delivery_date) }}</p>
+                    </div>
+
+                    <div *ngIf="batch?.insurance_auth" class="flex justify-between my-2">
+                      <p class="font-bold text-base">Autorización:</p>
+                      <p class="text-base">{{ batch?.insurance_auth.auth_code }}</p>
+                    </div>
+
+                    <div class="flex justify-between items-center my-2">
+                      <p class="font-bold text-base">Total:</p>
+                      <p class="text-base bg-[#c9e1f6] py-1 px-2 rounded-lg">Q. {{ batch.sumTotal }}</p>
+                    </div>
+
+                    <div class="flex justify-between items-center">
+                      <p class="font-bold text-base">Ahorro total:</p>
+                      <p class="text-base bg-[#c9e1f6] py-1 px-2 rounded-lg">Q. {{ batch.sumSavings }}</p>
+                    </div>
+                  </div>
+
+                  <!-- Barra de recurrencia -->
+                  <div *ngIf="batch?.insurance_auth && batch?.insurance_auth?.latest_insurance_auth_configured?.current_recurrence && batch?.insurance_auth?.latest_insurance_auth_configured?.total_recurrences"
+                       class="w-full px-1 mb-2">
+                    <p class="text-[#0047BB] font-semibold mb-1">
+                      Autorizaciones utilizadas: {{ batch?.insurance_auth?.latest_insurance_auth_configured?.current_recurrence }} / {{ batch?.insurance_auth?.latest_insurance_auth_configured?.total_recurrences }}
+                    </p>
+                    <ion-grid>
+                      <ng-container *ngFor="let row of getRows(batch?.insurance_auth?.latest_insurance_auth_configured?.total_recurrences, 6); let rowIndex = index">
+                        <ion-row class="relative flex items-center pb-2">
+                          <ng-container *ngFor="let segment of row; let i = index">
+                            <ion-col class="z-10 w-[30px] p-0 flex justify-center" style="flex: 0 0 auto;">
+                              <a>
+                                <div style="text-align: center;">
+                                  <div class="number">
+                                    <span [class.selected]="(rowIndex * 6 + i) < batch?.insurance_auth?.latest_insurance_auth_configured?.current_recurrence">{{segment}}</span>
+                                  </div>
+                                </div>
+                              </a>
+                            </ion-col>
+                            <div *ngIf="i < row.length - 1"
+                                [ngStyle]="{
+                                  'background-color': (rowIndex * 6 + i) < batch?.insurance_auth?.latest_insurance_auth_configured?.current_recurrence ? '#2A51A3' : '#A8A9AB',
+                                  'height.px': (rowIndex * 6 + i) < batch?.insurance_auth?.latest_insurance_auth_configured?.current_recurrence ? 3 : 0.15,
+                                  'width.px': elementSize
+                                }">
+                            </div>
+                          </ng-container>
+                        </ion-row>
+                      </ng-container>
+                    </ion-grid>
+                  </div>
+
+                  <ion-grid class="p-0 h-full">
+                    <ion-row *ngFor="let i of batch?.items" class="border-2 rounded-lg mb-2">
+                      <ion-grid class="p-0 pt-1">
+                        <ion-row>
+                          <ion-col size="3" class="p-2 pl-[10px]">
+                            <div class="border-2 rounded-lg w-full">
+                              <img class="w-full" default="/assets/bluemeds/placeholder.png"
+                                   [src]="'https://blue-production-s3-public-media.s3.amazonaws.com/productos/' + i.publication.product.product_code + '_'  + 1 + '.jpg'"
+                                   alt="">
+                            </div>
+                          </ion-col>
+
+                          <ion-col size="5" class="p-0">
+                            <div class="text-[#2A51A3]" id="{{ i.publication.product.id}}">
+                              {{i.publication.product.name}}
+                            </div>
+                          </ion-col>
+
+                          <ion-col class="flex-grow-1"></ion-col>
+
+                          <ion-col size="auto">
+                            <button *ngIf="selectDeliveryMethod === 'by_date'" (click)="openPublicationModalFunction(i)" mat-button
+                                    class="text-[#A8A9AB] flex items-center">
+                              <mat-icon [icIcon]="icEdit" class="text-[#2A51A3]"></mat-icon>
+                            </button>
+                          </ion-col>
+                        </ion-row>
+
+                        <ng-container>
+                          <ion-row class="ion-align-items-center">
+                            <ion-col size="7">
+                              <p class="text-base text-[#666666] p-2 text-left" (click)="openPublicationModalFunction(i)">
+                                <span class="font-bold">Recibe: </span>
+                                <span *ngIf="!i.quantity" class="text-[#BA2E24]">[Ingresar cantidad] </span>
+                                <span *ngIf="i.quantity">{{ i.quantity }} {{ i.quantity > 1 ? 'unidades' : 'unidad' }} </span>
+
+                                <span *ngIf="!i.delivery_day" class="text-[#BA2E24]">[Ingresar día de entrega]</span>
+                                <span *ngIf="i.delivery_day">el {{ i.delivery_day }}</span>
+
+                                <span [ngClass]="{ 'text-[#BA2E24]': getEachName(i.each) == '' }">
+                                  de cada {{ getEachName(i.each) !== '' ? getEachName(i.each) : '[Actualizar frecuencia]' }}
+                                </span>
+
+                                <span [ngClass]="{ 'text-[#BA2E24]': i.duration !== 'undefined' && getNameByKeyAndValue(i.each, i.duration) == '' }">
+                                  {{ i.duration === 'undefined' ? 'de manera indefinida' : (getNameByKeyAndValue(i.each, i.duration) != '' ? 'durante ' + getNameByKeyAndValue(i.each, i.duration) : '[Actualizar duración]') }}
+                                </span>
+                              </p>
+                            </ion-col>
+
+                            <ion-col size="5" class="flex flex-wrap justify-end">
+                              
+                              <div *ngIf="i.more_info.percentage_savings != '0.00'" class="mt-1 flex justify-end mb-1">
+                                <span class="text-[13px] float-left bg-[#e45900] text-white p-0 pl-2 mr-5 rounded-l-[5px] text-bottom hasflag-mobile block">
+                                  Ahorras {{ i.more_info.percentage_savings ? formatPorcentageNumber(i.more_info.percentage_savings) : '0' }}%
+                                </span>
+                              </div>
+
+                              <div class="p-2 border-2 py-1 px-2 rounded-lg text-[#666666] text-center">
+                                <p class="font-semibold text-base">Total:</p>
+                                <p class="text-base">Q. {{ i.more_info.portal_monthly_price ? i.more_info.portal_monthly_price : '0.00' }}</p>
+                              </div>
+                            </ion-col>
+                          </ion-row>
+                        </ng-container>
+
+                        <ion-row>
+                          <ion-col *ngIf="i.covered_by_insurance" size="auto" class="px-2 flex items-center">
+                            <div>
+                              <label class="container-check w-full mt-4 pointer-events-none"><span class="text-[#80CDEF]">Con cobertura</span>
+                                <input type="checkbox" disabled [(ngModel)]="i.covered_by_insurance">
+                                <span class="checkmark"></span>
+                              </label>
+                            </div>
+                          </ion-col>
+                        </ion-row>
+                      </ion-grid>
+                    </ion-row>
+
+                    <ion-row *ngIf="batch?.insurance_auth">
+                      <p class="text-[#2A51A3] text-base mt-3 text-center">
+                        El descuento de tu aseguradora se calculará sobre el precio Bluemeds.
+                      </p>
+                    </ion-row>
+                  </ion-grid>
+                </ion-row>
+              </ion-grid>
+            </ng-container>
+          </section>
+
+          <!-- Mobile Grid and delivery method by_recipe -->
+          <section *ngIf="(layoutService.ltMd$ | async) && (list?.delivery_method === 'by_recipe')">
+            <ng-container *ngFor="let typeBatch of batches; let index = index">
+              <ion-grid>
+                <ion-row *ngFor="let batch of typeBatch?.batches" class="h-full p-0">
+                  <div class="w-full bg-[#E6EEF5] p-2 mt-8 flex items-center">
+                    <label class="text-[#000000] text-base rounded-lg">
+                      Fecha de próxima entrega: <span class="font-bold">{{ formatDate(batch.delivery_date) }}</span>
+                    </label>
+                    <mat-icon matTooltip="Los siguientes medicamentos se te van a entregar en esta fecha."
+                              svgIcon="exclamation-info" aria-hidden="false" aria-label="Exclamation Info"
+                              #tooltipDeliveryDate="matTooltip"
+                              (click)="tooltipDeliveryDate.toggle()"
+                              class="w-5 h-5 ml-1 text-[#1C9AD6]">
+                    </mat-icon>
+                  </div>
+                  <ion-grid class="p-0 h-full">
+                    <ion-row *ngFor="let i of batch.items" class="border-2">
+                      <ion-grid class="p-0 pt-1">
+                        <ion-row class="p-0">
+                          <ion-col size="4">
+                            <div class="card w-full">
+                              <img class="w-full" default="/assets/bluemeds/placeholder.png"
+                                   [src]="'https://blue-production-s3-public-media.s3.amazonaws.com/productos/' + i.publication.product.product_code + '_'  + 1 + '.jpg'"
+                                   alt="">
+                            </div>
+                            <div class="text-[#2A51A3] text-center" id="{{ i.publication.product.id}}">
+                              {{i.publication.product.name}}
+                            </div>
+                            <div class="mt-2">
+                              <button *ngIf="selectDeliveryMethod === 'by_recipe'" (click)="openPublicationModalFunction(i)" mat-button class="text-[#A8A9AB] flex items-center">
+                                <ion-text class="underline">Ver</ion-text>
+                                <mat-icon [icIcon]="icEdit" class="ml-1"></mat-icon>
+                              </button>
+                            </div>
+                          </ion-col>
+                          <ion-col size="8">
+                            <ion-grid *ngIf="selectDeliveryMethod === 'by_recipe'" class="p-0">
+                              <ion-row class="p-0">
+                                <ion-col class="p-0 text-bold text-[#707070]">
+                                  <label class="block">Dosis: </label>
+
+                                  <div class="relative">
+                                    <select [(ngModel)]="i.dose" (change)="changeDosage(i)" class="validate-by-recipe w-24 outline-none border border-[#0038AE] rounded-full py-[0.2rem] px-2 mt-2">
+                                      <option *ngFor="let interval of dosageIntervals[i.publication.product.presentation?.trim()]" [value]="interval.value">
+                                        {{interval.name}} {{interval.value > 1 ?
+                                        dosageSemantics[i.publication.product.presentation?.trim()].plural :
+                                        dosageSemantics[i.publication.product.presentation?.trim()].singular}}
+                                      </option>
+                                      <option [value]="i?.otherDosageValue">Otro{{ i.showOther ? ' - ' + i.dose : ''}}</option>
+                                    </select>
+                                  </div>
+                                </ion-col>
+                              </ion-row>
+
+                              <ion-row class="items items-center my-2">
+                                <ion-col class="p-0 text-bold text-[#707070]">
+                                  <label class="block">Frecuencia: </label>
+
+                                  <div class="relative">
+                                    <select [(ngModel)]="i.frequency_id" (change)="calculateDataItem(i, 'by_recipe')" class="validate-by-recipe w-24 outline-none border border-[#0038AE] rounded-full py-[0.2rem] px-2 mt-2">
+                                      <option *ngFor="let f of frequencies" [value]="f.id">{{f.name}}</option>
+                                    </select>
+                                  </div>
+                                </ion-col>
+                              </ion-row>
+
+                              <ion-row class="border-b-[1px] border-[#999] items items-center">
+                                <ion-col class="p-0 text-bold text-[#707070]">
+                                  <div class="flex items-center" (click)="tooltipCustomDate.toggle()">
+                                    <label class="block mr-1">Fecha de próxima entrega:</label>
+                                    <mat-icon matTooltip="En esta fecha te estaremos haciendo la próxima entrega de todos tus medicamentos."
+                                              svgIcon="exclamation-info" aria-hidden="false" aria-label="Exclamation Info"
+                                              #tooltipCustomDate="matTooltip"
+                                              class="w-4 h-4 text-[#1C9AD6]">
+                                    </mat-icon>
+                                  </div>
+
+                                  <button (click)="picker.open()"
+                                          class="w-24 rounded-full py-[0.5rem] px-2 text-[#666] mt-2"
+                                          [style]="!i.stock_date && showGeneralErrorMessage ? 'border: 1px solid #F44336' : 'border: 1px solid #2A51A3'">
+                                    <div class=" flex flex-row items-center justify-center">
+                                      <div class="normal-case inline pr-2 text-bluemedsDarkBlue">{{i.stock_date != null ? formatDate(i.stock_date) : ''}}</div>
+                                      <ion-icon name="pencil"></ion-icon>
+                                    </div>
+                                  </button>
+                                  <div *ngIf="!i.stock_date && showGeneralErrorMessage" class="valid-input-message w-full text-[#621B16] font-bold flex justify-start sm:justify-end items-center">
+                                    <ion-icon name="alert-circle" class="text-[#621B16] text-base mr-1"></ion-icon> <p class="text-base">Este campo es obligatorio</p>
+                                  </div>
+
+                                  <div class="relative h-1">
+                                    <mat-form-field *ngIf="list" style="visibility:hidden;max-height:0;max-width:0;">
+                                      <input (dateChange)="calculateDataItem(i, 'by_recipe')" [min]="minStockDate" [max]="maxStockDate" #dateStock
+                                             matInput [(ngModel)]="i.stock_date" (click)="picker.open()" [matDatepicker]="picker">
+                                    </mat-form-field>
+                                    <mat-datepicker #picker></mat-datepicker>
+                                  </div>
+
+                                </ion-col>
+                              </ion-row>
+
+                              <ion-row class="p-0">
+                                <ion-col>
+                                  <ion-text class="font-semibold text-[#333333] block">Precio normal:</ion-text>
+                                  <ion-text class="w-full line-through text-[#666666] block">Q. {{i.more_info.normal_price}}</ion-text>
+                                </ion-col>
+                              </ion-row>
+                              <ion-row class="p-0">
+                                <ion-col>
+                                  <ion-text class="font-semibold text-[#2A51A3] block">Precio Bluemeds:</ion-text>
+                                  <ion-text class="w-full block">
+                                    <ion-text>
+                                      <span class="font-bold text-[#2A51A3]">Q. {{ i.more_info.portal_price }}</span><br>
+                                      <span
+                                        class="text-base float-left mr-2 bg-[#e45900] text-white pl-1 pr-2 rounded-l-[5px] text-bottom hasflag-mobile">
+                                        Ahorras {{ i.more_info.percentage_savings ? formatPorcentageNumber(i.more_info.percentage_savings) : '0' }}%
+                                    </span>
+                                    </ion-text>
+                                  </ion-text>
+                                </ion-col>
+                              </ion-row>
+
+                              <ion-row>
+                                <ion-col size="7" class="">
+                                  <div class="bg-[#C9E1F6] rounded p-1">
+                                    <ion-text class="font-semibold block text-[#333333]">Cantidad:</ion-text>
+                                    <ion-text class="w-full text-[#666666] block">{{ i.more_info.quantity ? i.more_info.quantity : '0' }}</ion-text>
+                                    <div class="my-1"></div>
+                                    <ion-text class="font-semibold block text-[#333333]">Ahorro total:</ion-text>
+                                    <ion-text class="w-full text-[#666666] block">Q {{ i.more_info.monthly_total_savings ? i.more_info.monthly_total_savings : '0' }}</ion-text>
+                                    <div class="my-1"></div>
+                                    <ion-text class="font-semibold block text-[#333333]">Total:</ion-text>
+                                    <ion-text class=" w-full text-[#666666] block">Q {{ i.more_info.portal_monthly_price ? i.more_info.portal_monthly_price : '0' }}</ion-text>
+                                  </div>
+                                </ion-col>
+                              </ion-row>
+                            </ion-grid>
+                            <ion-grid *ngIf="selectDeliveryMethod === 'by_date'">
+                              <ion-row>
+                                Selecciona el día de recibir medicamentos
+                              </ion-row>
+                            </ion-grid>
+                          </ion-col>
+                        </ion-row>
+                      </ion-grid>
+                    </ion-row>
+                    <ion-row class="pt-2">
+                      <ion-col size="6">
+                        <ion-text class="text-[#2A51A3] text-base font-bold">Total a pagar</ion-text>
+                      </ion-col>
+                      <ion-col size="6">
+                        <ion-text class="text-right text-[#2A51A3] text-base font-bold block">Q. {{ batch.sumTotal }}</ion-text>
+                      </ion-col>
+                    </ion-row>
+                    <ion-row >
+                      <ion-col size="6">
+                        <ion-text class="text-[#2A51A3] text-base font-bold">Ahorro total</ion-text>
+                      </ion-col>
+                      <ion-col size="6" class="text-right">
+                        <span class="bg-[#E45900] rounded-l-[5px] text-white pl-3 pr-3 text-bottom font-bold hasflag">Q. {{ batch.sumSavings }}</span>
+                      </ion-col>
+                    </ion-row>
+                    <ion-row>
+                      <p class="text-[#2A51A3] text-base text-center mt-4"><span class="font-bold">Si tienes seguro</span>, el descuento de tu aseguradora se calculará sobre el precio Bluemeds.</p>
+                    </ion-row>
+                  </ion-grid>
+                </ion-row>
+              </ion-grid>
+            </ng-container>
+          </section>
+        </ng-container>
+
+        <ng-container *ngIf="!batches[0] && !batches[1]">
+          <ion-grid class="">
+            <ion-row class="ion-justify-content-center">
+              <ion-col size="10">
+                <div fxLayout="column" fxLayoutAlign="center center" class="mt-2 sm:mt-12 mb-2 sm:mb-8">
+                  <span class="font-extrabold mb-4 text-center text-[19px] text-[#7B868C]">No tienes medicamentos agregados actualmente</span>
+                  <span class="mb-10 font-normal text-base text-center sm:whitespace-pre-wrap text-[#7B868C]" >{{list?.wizard_done ? 'Recuerda agregar al menos un producto para avanzar' : 'Recuerda agregar al menos un producto para configurar fechas de \nentrega y registrar tus datos personales'}}</span>
+                  <ion-button  color="tertiary" routerLink="/web/search" shape="round">
+                    <ion-icon name="add-circle-outline"></ion-icon>
+                    <ion-label class="ml-2 normal-case font-semibold text-md">
+                      Agregar medicamentos
+                    </ion-label>
+                  </ion-button>
+                </div>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ng-container>
+      </ion-col>
+    </ion-row>
+
+    <ion-row id="insurer_documents" *ngIf="list?.wizard_done" class="mx-2">
+      <ion-col size="12" class="mx-auto rounded-lg">
+        <mat-accordion class="headers-align-method-delivery">
+          <mat-expansion-panel (opened)="panelOpenStateDocuments = true"
+                               (closed)="panelOpenStateDocuments = false" [expanded]="panelOpenStateDocuments" hideToggle>
+            <mat-expansion-panel-header>
+              <mat-panel-title style="color: #0038AE">
+                <p class="font-bold ml-3">Documentos para el seguro</p>
+              </mat-panel-title>
+              <mat-panel-description>
+                <p style="color: #F2F3F2">.</p>
+                <div class="flex" *ngIf="!panelOpenStateDocuments">
+                  <p style="color: #0038AE">Mostrar</p>
+                  <mat-icon class="ml-2" svgIcon="chevron-down" aria-hidden="false" aria-label="Chevron down"></mat-icon>
+                </div>
+                <div class="flex" *ngIf="panelOpenStateDocuments">
+                  <p style="color: #0038AE">Ocultar</p>
+                  <mat-icon class="ml-2" svgIcon="chevron-up" aria-hidden="false" aria-label="Chevron down"></mat-icon>
+                </div>
+              </mat-panel-description>
+            </mat-expansion-panel-header>
+            <div>
+              <div *ngIf="documentsFiles && documentsFiles?.length > 0" class="text-center flex flex-col items-center my-2 py-10">
+                <li *ngFor="let item of documentsFiles; let i = index" (click)="downloadDocument(item)" class="flex items-center border-[#A8A9AB] my-2 border rounded-lg p-2 pointer w-full sm:w-[500px] md:w-[620px] justify-between">
+                  <div class="flex">
+                    <div class="flex items-center justify-center">
+                      <img class="w-8 h-8" src="/assets/icons/pdf-icon.png" alt="File Icon">
+                    </div>
+                    <p class="ml-3 text-[#666666]">{{item.document_name}}</p>
+                  </div>
+                  <div class="flex items-center justify-center">
+                    <ion-icon (click)="deleteFile(item, $event)" class="remove-file text-[#A8A9AB]" slot="icon-only" name="trash-outline" style="font-size: 20px"></ion-icon>
+                  </div>
+                </li>
+
+                <button (click)="openUploadFileModal()" class="text-md text-white rounded-full bg-[#3B5FAA] mt-8 py-3 px-10">
+                  Agregar
+                </button>
+              </div>
+
+              <div *ngIf="!documentsFiles || documentsFiles?.length < 1" class="text-center flex flex-col items-center my-2 px-5 py-10">
+                <img class="w-[100px]" src="assets/icons/document-icon-insurance.png" alt="Medicament not found">
+                <h4 class="font-bold text-[#198CC2] text-base mt-2">No hay documentos adjuntos</h4>
+                <button (click)="openUploadFileModal()" class="text-md text-white rounded-full bg-[#3B5FAA] mt-2 py-3 px-10">
+                  Agregar
+                </button>
+              </div>
+            </div>
+          </mat-expansion-panel>
+        </mat-accordion>
+      </ion-col>
+    </ion-row>
+
+    <div *ngIf="!list?.wizard_done &&  !(!batches[0] && !batches[1])" class="mt-2 mx-2">
+      <div class="text-center flex flex-wrap items-center justify-center md:justify-end space-x-4">
+        <div class="sm:w-auto w-full">
+          <p class="text-[#666666] text-lg">Agregar información personal</p>
+          <div *ngIf="showGeneralErrorMessage" class="flex items-center justify-center sm:justify-start">
+            <ion-icon name="alert-circle" class="text-[#621B16] font-bold text-base mr-1"></ion-icon>
+            <ion-text class="text-[#621B16] font-bold text-base">Verifica que tu información esté en orden</ion-text>
+          </div>
+        </div>
+        <ion-button [disabled]="list?.batches.length < 1" (click)="goToWizard()" class="normal-case font-bold text-lg h-10 needHelpOption" shape="round" size="default" [ngStyle]="{'margin' : layoutService.isMobile() ?  '12px 0px 0px 0px' : '0px 0px 0px 16px' }">
+          Continuar
+        </ion-button>
+      </div>
+    </div>
+  </ion-grid>
+</div>
+
+<div style="width:100%; height: 20px;"></div>
+<div *ngIf="list?.wizard_done && layoutService.isMobile()" class="fixed bottom-2 w-full bg-transparent z-50">
+  <div class="flex flex-wrap justify-center">
+    <ion-button routerLink="/web/search" color="tertiary" shape="round">
+      <ion-label class="normal-case flex items-center text-md">
+        <ion-icon name="add-circle-outline" class="mr-2" style="font-size: 23px"></ion-icon>
+        Agregar medicamentos
+      </ion-label>
+    </ion-button>
+  </div>
+</div>

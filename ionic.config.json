@@ -1,0 +1,8 @@
+{
+  "name": "bluemeds",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular",
+  "id": "248026f7"
+}

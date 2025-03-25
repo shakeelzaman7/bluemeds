@@ -1,0 +1,264 @@
+image: amazon/aws-cli:latest
+
+pipelines:
+  branches:
+    QA:
+      - step:
+          name: "Push container image"
+          deployment: QA
+          services:
+            - docker
+          script:
+            - export PROJECT_NAME="portal"
+            - export PROJECT_ENVIRONMENT="QA"
+            - IMAGE="${AWS_ECR_URL}/${AWS_ECR_REPOSITORY}"
+            - TAG="${PROJECT_NAME}-${PROJECT_ENVIRONMENT}-${BITBUCKET_BUILD_NUMBER}"
+            - echo "${AWS_ECR_URL}/${AWS_ECR_REPOSITORY}:${TAG}"
+            # Las variables de entorno se tienen q quemar en el proceso
+            - cp ./src/environments/environment.prod.ts ./src/environments/environment.ts
+            - sed -i -e 's%$BLUEMEDICAL_PAYMENT_TOKEN%'"$BLUEMEDICAL_PAYMENT_TOKEN"'%g' ./src/environments/environment.prod.ts
+            - sed -i -e 's%$BLUEMEDICAL_PAYMENT_VAULT%'"tnt8ix930yh"'%g' ./src/environments/environment.prod.ts
+            - sed -i -e 's%$BLUEMEDICAL_PAYMENT_ENVIRONMENT%'"sandbox"'%g' ./src/environments/environment.prod.ts
+            - sed -i -e 's%$BLUEMEDICAL_PAYMENT_COMMERCE_ID%'"2"'%g' ./src/environments/environment.prod.ts
+            - sed -i -e 's%$CURRENT_ENVIRONMENT%'"QA"'%g' ./src/environments/environment.prod.ts
+            - sed -i -e 's%$HOME_URI%'"/web/home"'%g' ./src/environments/environment.prod.ts
+            - sed -i -e 's%$TIME_REMAINING%'"1"'%g' ./src/environments/environment.prod.ts
+            - sed -i -e 's%$API_DOMAIN%'"api-qa.mibluemeds.com"'%g' ./src/environments/environment.prod.ts
+            - sed -i -e 's%$SECURE%'"true"'%g' ./src/environments/environment.prod.ts
+            - sed -i -e 's%$API_PREFIX%'"/api"'%g' ./src/environments/environment.prod.ts
+            - sed -i -e 's%$REDIRECT_UNAUTHENTICATED%'"/web/login"'%g' ./src/environments/environment.prod.ts
+            - sed -i -e 's%$PAYMENT_SERVICE%'"https://payment-service-qa.mibluemedical.dev"'%g' ./src/environments/environment.prod.ts
+            - sed -i -e 's%$CERT_FILE%'"mibluemds_com_cert.pem"'%g' ./docker/nginx.conf
+            - sed -i -e 's%$CERT_KEY%'"mibluemds_com_key.pem"'%g' ./docker/nginx.conf
+            # Docker build & push a ECR
+            - aws configure set aws_access_key_id "${AWS_ACCESS_KEY}"
+            - aws configure set aws_secret_access_key "${AWS_SECRET_ACCESS_KEY}"
+            - aws ecr get-login-password --region "${AWS_DEFAULT_REGION}" | docker login --username AWS --password-stdin ${AWS_ECR_URL}
+            - docker build -t $IMAGE:$TAG .
+            - docker push $IMAGE:$TAG
+            - pipe: atlassian/ssh-run:0.4.1
+              variables:
+                SSH_USER: '${AWS_EC2_USER}'
+                SERVER: '${AWS_EC2_INSTANCE_IP}'
+                SSH_KEY: '${AWS_EC2_KEY_PAIR}' # Optional
+                DEBUG: 'true' # Optional
+                COMMAND: '
+                ./deploy-ecr-ionic_angular.sh
+                  AWS_DEFAULT_REGION="${AWS_DEFAULT_REGION}"
+                  AWS_ECR_URL="${AWS_ECR_URL}"
+                  AWS_ECR_REPOSITORY="${AWS_ECR_REPOSITORY}:${TAG}"
+                  AWS_ACCESS_KEY="${AWS_ACCESS_KEY}"
+                  AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS_KEY}"
+                  ENVIRONMENT="${PROJECT_ENVIRONMENT}"
+                '
+            - pipe: atlassian/ssh-run:0.4.1
+              variables:
+                SSH_USER: '${AWS_EC2_USER}'
+                SERVER: '${AWS_EC2_INSTANCE_IP}'
+                SSH_KEY: '${AWS_EC2_KEY_PAIR}' # Optional
+                DEBUG: 'true' # Optional
+                COMMAND: '
+                  sudo docker run -d --restart unless-stopped
+                    --name "${TAG}-"`date +%Y%m%d%H%M%S`
+                    -p 80:80 -p 443:443
+                    -e APP_NAME="${APP_NAME}"
+                  $AWS_ECR_URL/$AWS_ECR_REPOSITORY:$TAG
+                '
+    master:
+      - step:
+          name: "Push container to Production"
+          script:
+            - echo "Production Pipeline"
+      - step:
+          name: "Push container image"
+          trigger: manual
+          deployment: Production
+          services:
+            - docker
+          script:
+            - export PROJECT_NAME="portal"
+            - export PROJECT_ENVIRONMENT="production"
+            - IMAGE="${AWS_ECR_URL}/${AWS_ECR_REPOSITORY}"
+            - TAG="${PROJECT_NAME}-${PROJECT_ENVIRONMENT}-${BITBUCKET_BUILD_NUMBER}"
+            - echo "${AWS_ECR_URL}/${AWS_ECR_REPOSITORY}:${TAG}"
+            # Las variables de entorno se tienen q quemar en el proceso
+            - cp ./src/environments/environment.prod.ts ./src/environments/environment.ts
+            - sed -i -e 's%$BLUEMEDICAL_PAYMENT_TOKEN%'"$BLUEMEDICAL_PAYMENT_TOKEN"'%g' ./src/environments/environment.prod.ts
+            - sed -i -e 's%$BLUEMEDICAL_PAYMENT_VAULT%'"tnt2npan8pm"'%g' ./src/environments/environment.prod.ts
+            - sed -i -e 's%$BLUEMEDICAL_PAYMENT_ENVIRONMENT%'"live"'%g' ./src/environments/environment.prod.ts
+            - sed -i -e 's%$BLUEMEDICAL_PAYMENT_COMMERCE_ID%'"2"'%g' ./src/environments/environment.prod.ts
+            - sed -i -e 's%$CURRENT_ENVIRONMENT%'"Production"'%g' ./src/environments/environment.prod.ts
+            - sed -i -e 's%$HOME_URI%'"/web/home"'%g' ./src/environments/environment.prod.ts
+            - sed -i -e 's%$TIME_REMAINING%'"1"'%g' ./src/environments/environment.prod.ts
+            - sed -i -e 's%$API_DOMAIN%'"api.mibluemeds.com"'%g' ./src/environments/environment.prod.ts
+            - sed -i -e 's%$SECURE%'"true"'%g' ./src/environments/environment.prod.ts
+            - sed -i -e 's%$API_PREFIX%'"/api"'%g' ./src/environments/environment.prod.ts
+            - sed -i -e 's%$REDIRECT_UNAUTHENTICATED%'"/web/login"'%g' ./src/environments/environment.prod.ts
+            - sed -i -e 's%$PAYMENT_SERVICE%'"https://payment-service-production.mibluemedical.com"'%g' ./src/environments/environment.prod.ts
+            - sed -i -e 's%$CERT_FILE%'"mibluemds_com_cert.pem"'%g' ./docker/nginx.conf
+            - sed -i -e 's%$CERT_KEY%'"mibluemds_com_key.pem"'%g' ./docker/nginx.conf
+            # Docker build & push a ECR
+            - aws configure set aws_access_key_id "${AWS_ACCESS_KEY}"
+            - aws configure set aws_secret_access_key "${AWS_SECRET_ACCESS_KEY}"
+            - aws ecr get-login-password --region "${AWS_DEFAULT_REGION}" | docker login --username AWS --password-stdin ${AWS_ECR_URL}
+            - docker build -t $IMAGE:$TAG .
+            - docker push $IMAGE:$TAG
+            - pipe: atlassian/ssh-run:0.4.1
+              variables:
+                SSH_USER: '${AWS_EC2_USER}'
+                SERVER: '${AWS_EC2_INSTANCE_IP}'
+                SSH_KEY: '${AWS_EC2_KEY_PAIR}' # Optional
+                DEBUG: 'true' # Optional
+                COMMAND: '
+                ./deploy-ecr-ionic_angular.sh
+                  AWS_DEFAULT_REGION="${AWS_DEFAULT_REGION}"
+                  AWS_ECR_URL="${AWS_ECR_URL}"
+                  AWS_ECR_REPOSITORY="${AWS_ECR_REPOSITORY}:${TAG}"
+                  AWS_ACCESS_KEY="${AWS_ACCESS_KEY}"
+                  AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS_KEY}"
+                  ENVIRONMENT="${PROJECT_ENVIRONMENT}"
+                '
+            - pipe: atlassian/ssh-run:0.4.1
+              variables:
+                SSH_USER: '${AWS_EC2_USER}'
+                SERVER: '${AWS_EC2_INSTANCE_IP}'
+                SSH_KEY: '${AWS_EC2_KEY_PAIR}' # Optional
+                DEBUG: 'true' # Optional
+                COMMAND: '
+                  sudo docker run -d --restart unless-stopped
+                    --name "${TAG}-"`date +%Y%m%d%H%M%S`
+                    -p 80:80 -p 443:443
+                    -e APP_NAME="${APP_NAME}"
+                  $AWS_ECR_URL/$AWS_ECR_REPOSITORY:$TAG
+                '
+    staging:
+      - step:
+          name: "Push container image"
+          deployment: Staging
+          services:
+            - docker
+          script:
+            - export PROJECT_NAME="portal"
+            - export PROJECT_ENVIRONMENT="staging"
+            - IMAGE="${AWS_ECR_URL}/${AWS_ECR_REPOSITORY}"
+            - TAG="${PROJECT_NAME}-${PROJECT_ENVIRONMENT}-${BITBUCKET_BUILD_NUMBER}"
+            - echo "${AWS_ECR_URL}/${AWS_ECR_REPOSITORY}:${TAG}"
+            # Las variables de entorno se tienen q quemar en el proceso
+            - cp ./src/environments/environment.prod.ts ./src/environments/environment.ts
+            - sed -i -e 's%$BLUEMEDICAL_PAYMENT_TOKEN%'"$BLUEMEDICAL_PAYMENT_TOKEN"'%g' ./src/environments/environment.prod.ts
+            - sed -i -e 's%$BLUEMEDICAL_PAYMENT_VAULT%'"tnt8ix930yh"'%g' ./src/environments/environment.prod.ts
+            - sed -i -e 's%$BLUEMEDICAL_PAYMENT_ENVIRONMENT%'"sandbox"'%g' ./src/environments/environment.prod.ts
+            - sed -i -e 's%$BLUEMEDICAL_PAYMENT_COMMERCE_ID%'"2"'%g' ./src/environments/environment.prod.ts
+            - sed -i -e 's%$CURRENT_ENVIRONMENT%'"staging"'%g' ./src/environments/environment.prod.ts
+            - sed -i -e 's%$HOME_URI%'"/web/home"'%g' ./src/environments/environment.prod.ts
+            - sed -i -e 's%$TIME_REMAINING%'"1"'%g' ./src/environments/environment.prod.ts
+            - sed -i -e 's%$API_DOMAIN%'"api-staging.mibluemeds.com"'%g' ./src/environments/environment.prod.ts
+            - sed -i -e 's%$SECURE%'"true"'%g' ./src/environments/environment.prod.ts
+            - sed -i -e 's%$API_PREFIX%'"/api"'%g' ./src/environments/environment.prod.ts
+            - sed -i -e 's%$REDIRECT_UNAUTHENTICATED%'"/web/login"'%g' ./src/environments/environment.prod.ts
+            - sed -i -e 's%$PAYMENT_SERVICE%'"https://payment-service-qa.mibluemedical.dev"'%g' ./src/environments/environment.prod.ts            
+            - sed -i -e 's%$CERT_FILE%'"mibluemds_com_cert.pem"'%g' ./docker/nginx.conf
+            - sed -i -e 's%$CERT_KEY%'"mibluemds_com_key.pem"'%g' ./docker/nginx.conf
+            # Docker build & push a ECR
+            - aws configure set aws_access_key_id "${AWS_ACCESS_KEY}"
+            - aws configure set aws_secret_access_key "${AWS_SECRET_ACCESS_KEY}"
+            - aws ecr get-login-password --region "${AWS_DEFAULT_REGION}" | docker login --username AWS --password-stdin ${AWS_ECR_URL}
+            - docker build -t $IMAGE:$TAG .
+            - docker push $IMAGE:$TAG
+            - pipe: atlassian/ssh-run:0.4.1
+              variables:
+                SSH_USER: '${AWS_EC2_USER}'
+                SERVER: '${AWS_EC2_INSTANCE_IP}'
+                SSH_KEY: '${AWS_EC2_KEY_PAIR}' # Optional
+                DEBUG: 'true' # Optional
+                COMMAND: '
+                ./deploy-ecr-ionic_angular.sh
+                  AWS_DEFAULT_REGION="${AWS_DEFAULT_REGION}"
+                  AWS_ECR_URL="${AWS_ECR_URL}"
+                  AWS_ECR_REPOSITORY="${AWS_ECR_REPOSITORY}:${TAG}"
+                  AWS_ACCESS_KEY="${AWS_ACCESS_KEY}"
+                  AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS_KEY}"
+                  ENVIRONMENT="${PROJECT_ENVIRONMENT}"
+                '
+            - pipe: atlassian/ssh-run:0.4.1
+              variables:
+                SSH_USER: '${AWS_EC2_USER}'
+                SERVER: '${AWS_EC2_INSTANCE_IP}'
+                SSH_KEY: '${AWS_EC2_KEY_PAIR}' # Optional
+                DEBUG: 'true' # Optional
+                COMMAND: '
+                  sudo docker run -d --restart unless-stopped
+                    --name "${TAG}-"`date +%Y%m%d%H%M%S`
+                    -p 80:80 -p 443:443
+                    -e APP_NAME="${APP_NAME}"
+                  $AWS_ECR_URL/$AWS_ECR_REPOSITORY:$TAG
+                '
+
+    staging2:
+      - step:
+          name: "Push container image"
+          deployment: Staging2
+          services:
+            - docker
+          script:
+            - export PROJECT_NAME="portal"
+            - export PROJECT_ENVIRONMENT="staging2"
+            - IMAGE="${AWS_ECR_URL}/${AWS_ECR_REPOSITORY}"
+            - TAG="${PROJECT_NAME}-${PROJECT_ENVIRONMENT}-${BITBUCKET_BUILD_NUMBER}"
+            - echo "${AWS_ECR_URL}/${AWS_ECR_REPOSITORY}:${TAG}"
+            # Las variables de entorno se tienen q quemar en el proceso
+            - cp ./src/environments/environment.prod.ts ./src/environments/environment.ts
+            - sed -i -e 's%$BLUEMEDICAL_PAYMENT_TOKEN%'"$BLUEMEDICAL_PAYMENT_TOKEN"'%g' ./src/environments/environment.prod.ts
+            - sed -i -e 's%$BLUEMEDICAL_PAYMENT_VAULT%'"tnt8ix930yh"'%g' ./src/environments/environment.prod.ts
+            - sed -i -e 's%$BLUEMEDICAL_PAYMENT_ENVIRONMENT%'"sandbox"'%g' ./src/environments/environment.prod.ts
+            - sed -i -e 's%$BLUEMEDICAL_PAYMENT_COMMERCE_ID%'"2"'%g' ./src/environments/environment.prod.ts
+            - sed -i -e 's%$CURRENT_ENVIRONMENT%'"staging"'%g' ./src/environments/environment.prod.ts
+            - sed -i -e 's%$HOME_URI%'"/web/home"'%g' ./src/environments/environment.prod.ts
+            - sed -i -e 's%$TIME_REMAINING%'"1"'%g' ./src/environments/environment.prod.ts
+            - sed -i -e 's%$API_DOMAIN%'"api-staging2.mibluemeds.com"'%g' ./src/environments/environment.prod.ts
+            - sed -i -e 's%$SECURE%'"true"'%g' ./src/environments/environment.prod.ts
+            - sed -i -e 's%$API_PREFIX%'"/api"'%g' ./src/environments/environment.prod.ts
+            - sed -i -e 's%$REDIRECT_UNAUTHENTICATED%'"/web/login"'%g' ./src/environments/environment.prod.ts
+            - sed -i -e 's%$PAYMENT_SERVICE%'"https://payment-service-qa.mibluemedical.dev"'%g' ./src/environments/environment.prod.ts            
+            - sed -i -e 's%$CERT_FILE%'"mibluemds_com_cert.pem"'%g' ./docker/nginx.conf
+            - sed -i -e 's%$CERT_KEY%'"mibluemds_com_key.pem"'%g' ./docker/nginx.conf
+            # Docker build & push a ECR
+            - aws configure set aws_access_key_id "${AWS_ACCESS_KEY}"
+            - aws configure set aws_secret_access_key "${AWS_SECRET_ACCESS_KEY}"
+            - aws ecr get-login-password --region "${AWS_DEFAULT_REGION}" | docker login --username AWS --password-stdin ${AWS_ECR_URL}
+            - docker build -t $IMAGE:$TAG .
+            - docker push $IMAGE:$TAG
+            - pipe: atlassian/ssh-run:0.4.1
+              variables:
+                SSH_USER: '${AWS_EC2_USER}'
+                SERVER: '${AWS_EC2_INSTANCE_IP}'
+                SSH_KEY: '${AWS_EC2_KEY_PAIR}' # Optional
+                DEBUG: 'true' # Optional
+                COMMAND: '
+                ./deploy-ecr-ionic_angular.sh
+                  AWS_DEFAULT_REGION="${AWS_DEFAULT_REGION}"
+                  AWS_ECR_URL="${AWS_ECR_URL}"
+                  AWS_ECR_REPOSITORY="${AWS_ECR_REPOSITORY}:${TAG}"
+                  AWS_ACCESS_KEY="${AWS_ACCESS_KEY}"
+                  AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS_KEY}"
+                  ENVIRONMENT="${PROJECT_ENVIRONMENT}"
+                '
+            - pipe: atlassian/ssh-run:0.4.1
+              variables:
+                SSH_USER: '${AWS_EC2_USER}'
+                SERVER: '${AWS_EC2_INSTANCE_IP}'
+                SSH_KEY: '${AWS_EC2_KEY_PAIR}' # Optional
+                DEBUG: 'true' # Optional
+                COMMAND: '
+                  sudo docker run -d --restart unless-stopped
+                    --name "${TAG}-"`date +%Y%m%d%H%M%S`
+                    -p 80:80 -p 443:443
+                    -e APP_NAME="${APP_NAME}"
+                  $AWS_ECR_URL/$AWS_ECR_REPOSITORY:$TAG
+                '            
+
+definitions:
+  services:
+    docker:
+      memory: 3072
+      #image: docker:dind

@@ -1,0 +1,314 @@
+.card-secondary-light {
+    background-color: #c1e1f6; // black
+    color: black;
+}
+
+.no-shadow {
+    box-shadow: none;
+}
+
+.clear-text {
+    color: grey
+}
+
+.same-height {
+    ion-col {
+        ion-card {
+            height: 90%;
+
+            ion-card-content {
+                height: 80%;
+            }
+        }
+    }
+}
+
+.bg-jumbo {
+    background: url("/assets/bluemeds/bg-jumbo.png");
+    // background-size: 110%;
+    background-size: 200rem;
+    padding: 5.25%;
+    margin-bottom: -5%;
+    background-repeat: repeat-x;
+}
+
+.card-background-cyan {
+    background-color: #1c9ad6;
+}
+
+.image-offset {
+    position: absolute;
+    z-index: 9999;
+    left: 20%;
+    margin-left: -11em;
+}
+
+.spacer {
+    height: 3em;
+}
+
+.card-background-grey {
+    background-color: #f2f2f2;
+}
+
+.card-secondary-round {
+    // black
+    box-shadow: none;
+    border-radius: 2em;
+}
+
+* {
+    font-family: SourceSansPro !important;
+}
+
+.no-wrap {
+    text-overflow: initial;
+    white-space: initial;
+}
+
+.no-padding {
+    padding: 0
+}
+
+.border-radius-2 {
+    border-radius: 1em
+}
+
+.card-white-1 {
+    border-radius: 1.5em;
+}
+
+ion-card {
+    border-radius: 1em;
+}
+
+.video-responsive {
+    position: relative;
+    display: block;
+    overflow: hidden;
+}
+
+.video-responsive::before {
+    display: block;
+    content: "";
+    padding-top: 56.25%;
+}
+
+.video-responsive-item {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+}
+
+.video-responsive-square {
+    position: relative;
+    display: block;
+    overflow: hidden;
+}
+
+.video-responsive-square::before {
+    display: block;
+    content: "";
+    padding-top: 45%;
+}
+
+.video-responsive-square::after {
+    display: block;
+    content: "";
+    padding-bottom: 45%;
+}
+
+.video-responsive-item-square {
+    position: absolute;
+    margin: 0;
+    top: 49%;
+    left: 50%;
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    height: 100%;
+    width: 100%;
+}
+
+/* SLIDER BANNER */
+#bluemeds-slider{
+  width: 100%;
+  height: auto;
+  position: relative;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  margin-bottom: -5%;
+}
+
+.next{
+  padding: 20px;
+  border: none;
+  font-size: 30px;
+  color: #7394C9;
+  position: absolute;
+  top:50%;
+  right: 40px;
+  cursor: pointer;
+
+  border-radius: 10px 0px 0px 10px;
+}
+.prew{
+  padding: 20px;
+  border: none;
+  font-size: 30px;
+  color: #7394C9;
+  position: absolute;
+  top:50%;
+  left: 40px;
+  cursor: pointer;
+
+  border-radius: 0px 10px 10px 0px;
+}
+
+.fade-in-image { animation: fadeIn 1s; }
+
+@keyframes fadeIn {
+  0% { opacity: 0.3; }
+  100% { opacity: 1; }
+}
+
+/* animacion de salida */
+.fade-out-image { animation: fadeOut 1s; }
+
+@keyframes fadeOut {
+  0% { opacity: 0.3; }
+  100% { opacity: 0; }
+}
+
+@media screen and (max-width : 620px) {
+  .next {
+    top: 45%;
+    right: 0;
+    padding: 5px;
+  }
+
+  .prew {
+    top: 45%;
+    left: 0;
+    padding: 5px;
+  }
+
+  #bluemeds-slider {
+    margin-bottom: 0;
+    display: grid;
+    place-items: center;
+    background-color: #C9E1F6;
+  }
+
+  .fade-in-image {
+    margin: 0 auto;
+  }
+}
+
+/* SLIDER DE MEDICAMENTOS */
+.card-meds .img-meds img {
+  width: 170px;
+  height: 155px;
+  object-fit: contain;
+  margin: 0 auto;
+}
+
+.wrapper {
+  max-width: 1100px;
+  width: 100%;
+  position: relative;
+}
+
+.wrapper .carousel {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: calc((100% / 4) - 12px);
+  gap: 16px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+}
+
+.carousel::-webkit-scrollbar {
+  display: none;
+}
+
+.carousel .card-meds {
+  scroll-snap-align: start;
+  list-style: none;
+  background-color: #EFEFEF;
+  border-radius: 10px;
+}
+
+.carousel.dragging .card-meds {
+  cursor: grab;
+  user-select: none;
+}
+
+.carousel.dragging {
+  scroll-snap-type: none !important;
+  scroll-behavior: auto !important;
+}
+
+.next-meds, .prev-meds {
+  text-align: center;
+  cursor: pointer;
+  font-size: 20px;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.next-meds:first-child, .prev-meds:first-child {
+  left: -22px;
+}
+
+.next-meds:last-child, .prev-meds:last-child {
+  right: -22px;
+}
+
+@media screen and (max-width: 1024px) {
+  .wrapper .carousel {
+    grid-auto-columns: calc((100% / 3) - 12px);
+  }
+}
+@media screen and (max-width: 724px) {
+  .wrapper .carousel {
+    grid-auto-columns: calc((100% / 2) - 9px);
+  }
+}
+@media screen and (max-width: 530px) {
+  .wrapper .carousel {
+    grid-auto-columns: 100%;
+  }
+}
+
+.card-container{
+    @media (width <= 580px) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    padding: 10px 5px 10px 15px;
+    height: 100% !important;
+    }
+}
+
+ion-card:has(ion-card-content.card-container)  {
+  @media (width <= 580px) {
+    border-radius: 1.5rem;
+    }
+}
+
+.route-link-cont {
+  cursor: pointer;
+
+  &-deactivated {
+    cursor: none;
+    pointer-events: none;
+  }
+}

@@ -1,0 +1,50 @@
+<ion-col size="12">
+  <h3 class="mt-10" *ngIf="showTitle">
+    <ion-text class="text-[#2A51A3] text-3xl">Método de pago</ion-text>
+    <ion-text class="text-base text-[#333333] block">{{ subtitle }}</ion-text>
+  </h3>
+  <br />
+  <div class="my-4" fxLayoutGap="5px">
+    <ion-row *ngIf="this.defaultPaymentMethod !== undefined">
+      <ion-col size="12">
+        <h2 fxFlex="auto" class="card-title" >
+          Método de cobro predeterminado
+        </h2>
+      </ion-col>
+      <ion-col size="12">
+        <app-component-payment-method-card
+          [paymentMethod]="this.defaultPaymentMethod"
+          [selectedPaymentMethod]="this.defaultPaymentMethod"
+          [canDelete]="false"
+          [deliveryId]="this.delivery?.id"
+          (changedPaymentMethod)="handleChangedPaymentMethod($event)"
+          (paymentMethodUpdated)="handlePaymentMethodUpdate($event)"
+        ></app-component-payment-method-card>
+      </ion-col>
+    </ion-row>
+
+    <ion-row *ngIf="this.availablePaymentMethods.length > 0">
+      <ion-col size="12">
+        <h2 fxFlex="auto" class="card-title">
+          Método de cobro adicionales
+        </h2>
+      </ion-col>
+      <ion-col
+        size="12"
+        *ngFor="let paymentMethod of this.availablePaymentMethods"
+      >
+        <app-component-payment-method-card
+          [paymentMethod]="paymentMethod"
+          [selectedPaymentMethod]="this.defaultPaymentMethod"
+          [canDelete]="true"
+          [deliveryId]="this.delivery?.id"
+          (changedPaymentMethod)="handleChangedPaymentMethod($event)"
+          (paymentMethodUpdated)="handlePaymentMethodUpdate($event)"
+          (paymentMethodDeleted)="handlePaymentMethodDeleted($event)"
+        ></app-component-payment-method-card>
+      </ion-col>
+    </ion-row>
+  </div>
+  <div fxLayout="column">
+  </div>
+</ion-col>
